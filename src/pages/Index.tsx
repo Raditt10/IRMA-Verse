@@ -101,21 +101,30 @@ const Index = () => {
 
       {/* Hero Section - Enhanced */}
       <section className="relative pt-32 pb-28 overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        {/* Animated Background with Mesh Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10">
           <div className="absolute inset-0">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-10 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-primary/30 to-accent/20 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-10 right-10 w-[600px] h-[600px] bg-gradient-to-l from-accent/30 to-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-tr from-primary/20 via-accent/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+            <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-gradient-to-bl from-accent/25 to-primary/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
           </div>
         </div>
 
-        {/* Decorative Grid */}
-        <div className="absolute inset-0 opacity-[0.02]">
+        {/* Decorative Grid with Gradient */}
+        <div className="absolute inset-0 opacity-[0.03]">
           <div className="absolute inset-0" style={{
-            backgroundImage: 'linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)',
-            backgroundSize: '50px 50px'
+            backgroundImage: 'linear-gradient(hsl(var(--primary)) 1.5px, transparent 1.5px), linear-gradient(90deg, hsl(var(--primary)) 1.5px, transparent 1.5px)',
+            backgroundSize: '60px 60px'
           }} />
+        </div>
+
+        {/* Floating Particles Effect */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-2 h-2 bg-primary/40 rounded-full top-1/4 left-1/4 animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute w-3 h-3 bg-accent/40 rounded-full top-1/3 right-1/3 animate-pulse" style={{ animationDelay: '1.2s' }} />
+          <div className="absolute w-2 h-2 bg-primary/40 rounded-full bottom-1/4 left-1/3 animate-pulse" style={{ animationDelay: '2s' }} />
+          <div className="absolute w-3 h-3 bg-accent/40 rounded-full bottom-1/3 right-1/4 animate-pulse" style={{ animationDelay: '0.8s' }} />
         </div>
 
         <div className="absolute inset-0 opacity-5">
@@ -125,16 +134,16 @@ const Index = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 mb-8 bg-gradient-to-r from-primary/10 via-primary/5 to-secondary/10 border border-primary/20 rounded-full backdrop-blur-md animate-fade-in shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 mb-8 bg-gradient-to-r from-primary/15 via-accent/10 to-primary/15 border-2 border-primary/30 rounded-full backdrop-blur-md animate-fade-in shadow-xl hover:shadow-glow-primary transition-all duration-300 hover:scale-105">
               <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-              <span className="text-sm font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Platform Digital IRMA SMK N 13 Bandung</span>
+              <span className="text-sm font-semibold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">Platform Digital IRMA SMK N 13 Bandung</span>
             </div>
 
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-foreground mb-8 animate-fade-in leading-[1.1] tracking-tight">
               Selamat Datang di{" "}
               <span className="relative inline-block">
-                <span className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent blur-lg opacity-50 animate-pulse" />
-                <span className="relative bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                <span className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent blur-xl opacity-60 animate-pulse" />
+                <span className="relative bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent drop-shadow-2xl">
                   IRMAVerse
                 </span>
               </span>
@@ -151,15 +160,17 @@ const Index = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-20">
               <Link to="/auth">
-                <Button size="lg" className="w-full sm:w-auto px-8 py-6 text-lg group shadow-2xl hover:shadow-glow-primary transition-all duration-300 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] hover:bg-right animate-gradient">
-                  <Sparkles className="mr-2 h-5 w-5 animate-pulse" />
-                  Mulai Sekarang
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
+                <Button size="lg" className="w-full sm:w-auto px-8 py-6 text-lg group shadow-2xl hover:shadow-glow-primary transition-all duration-300 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] hover:bg-right animate-gradient relative overflow-hidden">
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+                  <Sparkles className="mr-2 h-5 w-5 animate-pulse relative z-10" />
+                  <span className="relative z-10">Mulai Sekarang</span>
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300 relative z-10" />
                 </Button>
               </Link>
               <Link to="/structure">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 py-6 text-lg border-2 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                  Pelajari Lebih Lanjut
+                <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 py-6 text-lg border-2 border-primary/30 hover:border-primary/60 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group relative overflow-hidden">
+                  <span className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <span className="relative z-10">Pelajari Lebih Lanjut</span>
                 </Button>
               </Link>
             </div>
@@ -169,15 +180,21 @@ const Index = () => {
               {stats.map((stat, index) => (
                 <div
                   key={index}
-                  className="group relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br from-card via-card/95 to-muted/30 border-2 border-border/50 backdrop-blur-xl hover:border-primary/30 hover:shadow-2xl transition-all duration-500 animate-fade-in hover:scale-105"
+                  className="group relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br from-card via-card/95 to-primary/5 border-2 border-primary/20 backdrop-blur-xl hover:border-primary/50 hover:shadow-glow-primary transition-all duration-500 animate-fade-in hover:scale-105"
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-accent/0 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  {/* Shine effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12" />
+                  </div>
+                  
                   <div className="relative">
-                    <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                    <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br from-primary/20 via-accent/15 to-primary/20 mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg group-hover:shadow-glow-primary`}>
                       <stat.icon className={`h-8 w-8 ${stat.color} group-hover:scale-110 transition-transform duration-300`} />
                     </div>
-                    <div className="text-4xl font-black text-foreground mb-2 group-hover:text-primary transition-colors duration-300">{stat.value}</div>
+                    <div className="text-4xl font-black bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent mb-2 group-hover:from-primary group-hover:via-accent group-hover:to-primary transition-all duration-300">{stat.value}</div>
                     <div className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{stat.label}</div>
                   </div>
                 </div>
@@ -188,15 +205,15 @@ const Index = () => {
       </section>
 
       {/* Features Section - Enhanced */}
-      <section className="py-28 relative bg-gradient-to-b from-background via-muted/20 to-background">
+      <section className="py-28 relative bg-gradient-to-b from-background via-primary/5 to-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 mb-6 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-full backdrop-blur-md shadow-lg">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 mb-6 bg-gradient-to-r from-primary/15 via-accent/10 to-primary/15 border-2 border-primary/30 rounded-full backdrop-blur-md shadow-xl">
               <Zap className="h-4 w-4 text-primary animate-pulse" />
-              <span className="text-sm font-bold text-primary uppercase tracking-wider">Fitur Unggulan</span>
+              <span className="text-sm font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-wider">Fitur Unggulan</span>
             </div>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-foreground mb-6 leading-tight">
-              Semua yang <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Kamu Butuhkan</span>
+              Semua yang <span className="bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent">Kamu Butuhkan</span>
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Kelola semua aktivitas IRMA dengan mudah, efisien, dan menyenangkan dalam satu platform terintegrasi
