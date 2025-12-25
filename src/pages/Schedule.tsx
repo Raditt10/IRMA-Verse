@@ -58,18 +58,23 @@ const Schedule = () => {
     <div className="min-h-screen bg-gradient-subtle">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-        <div className="mb-8 relative">
-          <div className="absolute -top-4 -left-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl" />
+        <div className="mb-8 relative overflow-hidden p-8 rounded-3xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-purple-500/10" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-pink-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          
           <div className="relative">
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm">
-              <Calendar className="h-4 w-4 text-purple-500" />
-              <span className="text-sm font-medium text-foreground">Kegiatan Mendatang</span>
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 mb-6 bg-gradient-to-r from-purple-500/15 via-pink-500/10 to-purple-500/15 border-2 border-purple-500/30 rounded-full backdrop-blur-md shadow-lg">
+              <Calendar className="h-4 w-4 text-purple-500 animate-pulse" />
+              <span className="text-sm font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent uppercase tracking-wider">Kegiatan Mendatang</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
-              Jadwal Kajian
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
+              <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent">
+                Jadwal Kajian
+              </span>
             </h1>
-            <p className="text-lg text-muted-foreground">
-              Jadwal kegiatan kajian IRMA Al-Hikmah
+            <p className="text-lg md:text-xl text-muted-foreground font-light">
+              Jadwal kegiatan kajian IRMA Al-Hikmah ✨
             </p>
           </div>
         </div>

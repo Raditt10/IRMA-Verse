@@ -57,18 +57,23 @@ const Announcements = () => {
     <div className="min-h-screen bg-gradient-subtle">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-        <div className="mb-8 relative">
-          <div className="absolute -top-4 -left-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
+        <div className="mb-8 relative overflow-hidden p-8 rounded-3xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-blue-500/10" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          
           <div className="relative">
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-full backdrop-blur-sm">
-              <Bell className="h-4 w-4 text-blue-500" />
-              <span className="text-sm font-medium text-foreground">Informasi Terbaru</span>
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 mb-6 bg-gradient-to-r from-blue-500/15 via-cyan-500/10 to-blue-500/15 border-2 border-blue-500/30 rounded-full backdrop-blur-md shadow-lg">
+              <Bell className="h-4 w-4 text-blue-500 animate-pulse" />
+              <span className="text-sm font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent uppercase tracking-wider">Informasi Terbaru</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
-              Pengumuman
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
+              <span className="bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent">
+                Pengumuman
+              </span>
             </h1>
-            <p className="text-lg text-muted-foreground">
-              Dapatkan informasi terbaru tentang kegiatan IRMA
+            <p className="text-lg md:text-xl text-muted-foreground font-light">
+              Dapatkan informasi terbaru tentang kegiatan IRMA ✨
             </p>
           </div>
         </div>
@@ -92,9 +97,12 @@ const Announcements = () => {
             {announcements.map((announcement) => (
               <Card 
                 key={announcement.id} 
-                className="group border-2 border-transparent hover:border-blue-500/20 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-gradient-card backdrop-blur-sm overflow-hidden"
+                className="group relative overflow-hidden border-2 border-blue-500/20 hover:border-blue-500/50 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 bg-gradient-to-br from-card via-card to-blue-500/5 backdrop-blur-xl"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
+                </div>
                 
                 <CardHeader className="relative">
                   <div className="flex items-start justify-between">

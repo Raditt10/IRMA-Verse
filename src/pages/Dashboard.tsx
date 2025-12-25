@@ -160,81 +160,110 @@ const Dashboard = () => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         {/* Welcome Section */}
-        <div className="mb-8 relative">
-          <div className="absolute -top-4 -left-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
+        <div className="mb-8 relative overflow-hidden p-8 rounded-3xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/10" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          
           <div className="relative">
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-full backdrop-blur-sm">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">Dashboard</span>
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 mb-6 bg-gradient-to-r from-primary/15 via-accent/10 to-primary/15 border-2 border-primary/30 rounded-full backdrop-blur-md shadow-lg">
+              <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+              <span className="text-sm font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-wider">Dashboard</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3 bg-gradient-primary bg-clip-text text-transparent">
-              Assalamualaikum, {user.user_metadata?.full_name || user.email?.split('@')[0]}! 👋
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">
+              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent">
+                Assalamualaikum, {user.user_metadata?.full_name || user.email?.split('@')[0]}! 👋
+              </span>
             </h1>
-            <p className="text-lg text-muted-foreground">
-              Selamat datang kembali. Semangat belajarnya hari ini!
+            <p className="text-lg md:text-xl text-muted-foreground font-light">
+              Selamat datang kembali. Semangat belajarnya hari ini! ✨
             </p>
           </div>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" data-tour="dashboard-stats">
-          <Card className="border-2 border-transparent hover:border-primary/30 transition-all duration-300 hover:shadow-lg bg-gradient-card backdrop-blur-sm group">
-            <CardHeader className="pb-3">
+          <Card className="group relative overflow-hidden border-2 border-primary/20 hover:border-primary/50 transition-all duration-500 hover:shadow-glow-primary bg-gradient-to-br from-card via-card to-primary/5 backdrop-blur-xl hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/0 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
+            </div>
+            <CardHeader className="pb-3 relative">
               <div className="flex items-center justify-between">
-                <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
                   <Trophy className="h-6 w-6 text-white" />
                 </div>
-                <TrendingUp className="h-5 w-5 text-green-500" />
+                <div className="p-2 bg-green-500/10 rounded-lg">
+                  <TrendingUp className="h-5 w-5 text-green-500" />
+                </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground mb-1">{stats.totalPoints}</div>
-              <p className="text-sm text-muted-foreground">Total Poin</p>
+            <CardContent className="relative">
+              <div className="text-3xl font-black bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent mb-1">{stats.totalPoints}</div>
+              <p className="text-sm text-muted-foreground font-medium">Total Poin</p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-transparent hover:border-primary/30 transition-all duration-300 hover:shadow-lg bg-gradient-card backdrop-blur-sm group">
-            <CardHeader className="pb-3">
+          <Card className="group relative overflow-hidden border-2 border-primary/20 hover:border-primary/50 transition-all duration-500 hover:shadow-glow-primary bg-gradient-to-br from-card via-card to-primary/5 backdrop-blur-xl hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
+            </div>
+            <CardHeader className="pb-3 relative">
               <div className="flex items-center justify-between">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
                   <Award className="h-6 w-6 text-white" />
                 </div>
-                <Sparkles className="h-5 w-5 text-yellow-500" />
+                <div className="p-2 bg-yellow-500/10 rounded-lg">
+                  <Sparkles className="h-5 w-5 text-yellow-500 animate-pulse" />
+                </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground mb-1">{stats.totalBadges}</div>
-              <p className="text-sm text-muted-foreground">Badge Terkumpul</p>
+            <CardContent className="relative">
+              <div className="text-3xl font-black bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent mb-1">{stats.totalBadges}</div>
+              <p className="text-sm text-muted-foreground font-medium">Badge Terkumpul</p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-transparent hover:border-primary/30 transition-all duration-300 hover:shadow-lg bg-gradient-card backdrop-blur-sm group">
-            <CardHeader className="pb-3">
+          <Card className="group relative overflow-hidden border-2 border-primary/20 hover:border-primary/50 transition-all duration-500 hover:shadow-glow-primary bg-gradient-to-br from-card via-card to-primary/5 backdrop-blur-xl hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
+            </div>
+            <CardHeader className="pb-3 relative">
               <div className="flex items-center justify-between">
-                <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
                   <BookOpen className="h-6 w-6 text-white" />
                 </div>
-                <BarChart3 className="h-5 w-5 text-purple-500" />
+                <div className="p-2 bg-purple-500/10 rounded-lg">
+                  <BarChart3 className="h-5 w-5 text-purple-500" />
+                </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground mb-1">{stats.totalQuizzes}</div>
-              <p className="text-sm text-muted-foreground">Quiz Dikerjakan</p>
+            <CardContent className="relative">
+              <div className="text-3xl font-black bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent mb-1">{stats.totalQuizzes}</div>
+              <p className="text-sm text-muted-foreground font-medium">Quiz Dikerjakan</p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-transparent hover:border-primary/30 transition-all duration-300 hover:shadow-lg bg-gradient-card backdrop-blur-sm group">
-            <CardHeader className="pb-3">
+          <Card className="group relative overflow-hidden border-2 border-primary/20 hover:border-primary/50 transition-all duration-500 hover:shadow-glow-primary bg-gradient-to-br from-card via-card to-primary/5 backdrop-blur-xl hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
+            </div>
+            <CardHeader className="pb-3 relative">
               <div className="flex items-center justify-between">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <div className="p-3 bg-gradient-to-br from-primary to-accent rounded-2xl shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
                   <TrendingUp className="h-6 w-6 text-white" />
                 </div>
-                <Users className="h-5 w-5 text-green-500" />
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Users className="h-5 w-5 text-primary" />
+                </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground mb-1">{stats.averageScore}%</div>
-              <p className="text-sm text-muted-foreground">Rata-rata Skor</p>
+            <CardContent className="relative">
+              <div className="text-3xl font-black bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent mb-1">{stats.averageScore}%</div>
+              <p className="text-sm text-muted-foreground font-medium">Rata-rata Skor</p>
             </CardContent>
           </Card>
         </div>
@@ -243,31 +272,36 @@ const Dashboard = () => {
           {/* Quick Actions - Takes 2 columns */}
           <div className="lg:col-span-2 space-y-6" data-tour="quick-actions">
             <div>
-              <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <Sparkles className="h-6 w-6 text-primary" />
-                Akses Cepat
+              <h2 className="text-3xl font-extrabold mb-8 flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl">
+                  <Sparkles className="h-6 w-6 text-primary animate-pulse" />
+                </div>
+                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">Akses Cepat</span>
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {quickActions.map((action, index) => (
                   <Card
                     key={index}
-                    className="group relative overflow-hidden border-2 border-transparent hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 bg-gradient-card backdrop-blur-sm cursor-pointer"
+                    className="group relative overflow-hidden border-2 border-border hover:border-primary/50 transition-all duration-500 hover:shadow-glow-primary hover:-translate-y-2 bg-gradient-to-br from-card via-card to-primary/5 backdrop-blur-xl cursor-pointer"
                     onClick={() => navigate(action.link)}
                   >
-                    <div className={`absolute inset-0 bg-gradient-to-br ${action.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${action.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
+                    </div>
                     
                     <CardHeader className="relative pb-3">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className={`p-3 bg-gradient-to-br ${action.color} rounded-xl shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className={`p-3 bg-gradient-to-br ${action.color} rounded-2xl shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
                           <action.icon className="h-6 w-6 text-white" />
                         </div>
                         {action.badge && (
-                          <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white border-0">
+                          <Badge className="bg-gradient-to-r from-primary via-accent to-primary text-white border-0 shadow-lg animate-pulse">
                             {action.badge}
                           </Badge>
                         )}
                       </div>
-                      <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                      <CardTitle className="text-xl font-bold group-hover:text-primary transition-colors duration-300">
                         {action.title}
                       </CardTitle>
                       <CardDescription>{action.description}</CardDescription>
@@ -291,11 +325,13 @@ const Dashboard = () => {
             <LevelDisplay totalPoints={stats.totalPoints} />
 
             {/* Recent Activities */}
-            <Card className="border-2 border-border/50 bg-gradient-card backdrop-blur-sm">
+            <Card className="border-2 border-primary/20 bg-gradient-to-br from-card via-card to-primary/5 backdrop-blur-xl shadow-lg">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  Aktivitas Terakhir
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl">
+                    <Sparkles className="h-5 w-5 text-primary animate-pulse" />
+                  </div>
+                  <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-extrabold">Aktivitas Terakhir</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -307,7 +343,7 @@ const Dashboard = () => {
                   recentActivities.map((activity: any, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                      className="group flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-muted/30 to-primary/5 hover:from-primary/10 hover:to-accent/10 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg"
                     >
                       <div className="text-2xl">{activity.badges?.icon}</div>
                       <div className="flex-1 min-w-0">
