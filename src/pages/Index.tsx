@@ -1,8 +1,30 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Users, Award, Calendar, Bell, BarChart, ArrowRight, Sparkles, Zap, Target, Shield, Clock, TrendingUp, Heart, Star, Quote } from "lucide-react";
-import Navbar from "@/components/Navbar";
+import {
+  ArrowRight,
+  Award,
+  BarChart,
+  Bell,
+  BookOpen,
+  Calendar,
+  CalendarDays,
+  Clock,
+  Facebook,
+  Heart,
+  Instagram,
+  MapPin,
+  Quote,
+  Search,
+  Shield,
+  Sparkles,
+  Star,
+  Target,
+  TrendingUp,
+  Users,
+  Youtube,
+  Zap,
+} from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
 
 const Index = () => {
@@ -46,9 +68,9 @@ const Index = () => {
   ];
 
   const stats = [
-    { icon: Users, label: "Member Aktif", value: "150+", color: "text-blue-500" },
-    { icon: BookOpen, label: "Materi Kajian", value: "50+", color: "text-green-500" },
-    { icon: Award, label: "Badge Tersedia", value: "30+", color: "text-yellow-500" },
+    { icon: Users, label: "Member Aktif", value: "150+" },
+    { icon: BookOpen, label: "Materi Kajian", value: "50+" },
+    { icon: Award, label: "Badge Tersedia", value: "30+" },
   ];
 
   const benefits = [
@@ -96,111 +118,152 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      <Navbar />
+    <div className="min-h-screen bg-gradient-to-br from-emerald-700 via-teal-600 to-cyan-500 text-white relative overflow-hidden">
+      <div className="absolute inset-0 opacity-35" style={{
+        backgroundImage: "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.22), transparent 38%), radial-gradient(circle at 78% 12%, rgba(59,130,246,0.28), transparent 32%), radial-gradient(circle at 68% 72%, rgba(16,185,129,0.42), transparent 32%)"
+      }} />
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px)",
+        backgroundSize: "72px 72px"
+      }} />
 
-      {/* Hero Section - Enhanced */}
-      <section className="relative pt-32 pb-28 overflow-hidden">
-        {/* Animated Background with Mesh Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10">
-          <div className="absolute inset-0">
-            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-primary/30 to-accent/20 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-10 right-10 w-[600px] h-[600px] bg-gradient-to-l from-accent/30 to-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-tr from-primary/20 via-accent/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-            <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-gradient-to-bl from-accent/25 to-primary/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="flex items-center justify-between py-4 text-sm text-white/80">
+          <div className="flex items-center gap-2">
+            <CalendarDays className="h-4 w-4" />
+            <span>Ahad, 28 Desember 2025</span>
+          </div>
+          <div className="hidden md:flex items-center gap-2 text-white/70">
+            <MapPin className="h-4 w-4" />
+            <span>Bandung, Indonesia</span>
           </div>
         </div>
 
-        {/* Decorative Grid with Gradient */}
-        <div className="absolute inset-0 opacity-[0.03]">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'linear-gradient(hsl(var(--primary)) 1.5px, transparent 1.5px), linear-gradient(90deg, hsl(var(--primary)) 1.5px, transparent 1.5px)',
-            backgroundSize: '60px 60px'
-          }} />
-        </div>
-
-        {/* Floating Particles Effect */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute w-2 h-2 bg-primary/40 rounded-full top-1/4 left-1/4 animate-pulse" style={{ animationDelay: '0.5s' }} />
-          <div className="absolute w-3 h-3 bg-accent/40 rounded-full top-1/3 right-1/3 animate-pulse" style={{ animationDelay: '1.2s' }} />
-          <div className="absolute w-2 h-2 bg-primary/40 rounded-full bottom-1/4 left-1/3 animate-pulse" style={{ animationDelay: '2s' }} />
-          <div className="absolute w-3 h-3 bg-accent/40 rounded-full bottom-1/3 right-1/4 animate-pulse" style={{ animationDelay: '0.8s' }} />
-        </div>
-
-        <div className="absolute inset-0 opacity-5">
-          <img src={heroImage} alt="Hero" className="w-full h-full object-cover mix-blend-multiply dark:mix-blend-lighten" />
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 mb-8 bg-gradient-to-r from-primary/15 via-accent/10 to-primary/15 border-2 border-primary/30 rounded-full backdrop-blur-md animate-fade-in shadow-xl hover:shadow-glow-primary transition-all duration-300 hover:scale-105">
-              <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-              <span className="text-sm font-semibold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">Platform Digital IRMA SMK N 13 Bandung</span>
+        <div className="flex flex-col gap-4 rounded-2xl bg-white/5 border border-white/10 px-6 py-4 backdrop-blur-xl shadow-[0_20px_80px_rgba(0,0,0,0.35)]">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 flex items-center justify-center">
+                <img src="/logo.png" alt="IRMA Verse" className="h-10 w-10 object-contain" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-white/70">Platform Rohis Digital</p>
+                <h1 className="text-2xl font-black leading-tight">IRMA Verse</h1>
+              </div>
             </div>
 
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-foreground mb-8 animate-fade-in leading-[1.1] tracking-tight">
-              Selamat Datang di{" "}
-              <span className="relative inline-block">
-                <span className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent blur-xl opacity-60 animate-pulse" />
-                <span className="relative bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent drop-shadow-2xl">
-                  IRMAVerse
-                </span>
-              </span>
-            </h1>
-            
-            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed font-light">
-              Platform digital untuk mengelola kegiatan, pembelajaran, dan membangun
-              <span className="relative inline-block mx-2">
-                <span className="text-primary font-bold">komunitas Islami</span>
-                <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-accent rounded-full" />
-              </span>
-              yang lebih modern dan terorganisir
-            </p>
+            <nav className="hidden lg:flex items-center gap-6 text-sm font-semibold text-white/80">
+              <Link to="/" className="hover:text-white transition-colors">Beranda</Link>
+              <Link to="/profile" className="hover:text-white transition-colors">Profil</Link>
+              <Link to="/announcements" className="hover:text-white transition-colors">Informasi</Link>
+              <Link to="/gallery" className="hover:text-white transition-colors">Galeri</Link>
+              <Link to="/faq" className="hover:text-white transition-colors">FAQ</Link>
+              <Link to="/contact" className="hover:text-white transition-colors">Kontak</Link>
+            </nav>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-20">
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-2 text-white/70">
+                <Instagram className="h-5 w-5" />
+                <Youtube className="h-5 w-5" />
+                <Facebook className="h-5 w-5" />
+              </div>
               <Link to="/auth">
-                <Button size="lg" className="w-full sm:w-auto px-8 py-6 text-lg group shadow-2xl hover:shadow-glow-primary transition-all duration-300 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] hover:bg-right animate-gradient relative overflow-hidden">
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
-                  <Sparkles className="mr-2 h-5 w-5 animate-pulse relative z-10" />
-                  <span className="relative z-10">Mulai Sekarang</span>
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300 relative z-10" />
+                <Button size="lg" variant="secondary" className="bg-white text-emerald-900 hover:bg-white/90 px-6 py-3 font-semibold shadow-lg">
+                  Login
                 </Button>
               </Link>
-              <Link to="/structure">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 py-6 text-lg border-2 border-primary/30 hover:border-primary/60 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group relative overflow-hidden">
-                  <span className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <span className="relative z-10">Pelajari Lebih Lanjut</span>
-                </Button>
-              </Link>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              {stats.map((stat, index) => (
-                <div
-                  key={index}
-                  className="group relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br from-card via-card/95 to-primary/5 border-2 border-primary/20 backdrop-blur-xl hover:border-primary/50 hover:shadow-glow-primary transition-all duration-500 animate-fade-in hover:scale-105"
-                  style={{ animationDelay: `${index * 150}ms` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-accent/0 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
-                  {/* Shine effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12" />
-                  </div>
-                  
-                  <div className="relative">
-                    <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br from-primary/20 via-accent/15 to-primary/20 mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg group-hover:shadow-glow-primary`}>
-                      <stat.icon className={`h-8 w-8 ${stat.color} group-hover:scale-110 transition-transform duration-300`} />
-                    </div>
-                    <div className="text-4xl font-black bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent mb-2 group-hover:from-primary group-hover:via-accent group-hover:to-primary transition-all duration-300">{stat.value}</div>
-                    <div className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{stat.label}</div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
+
+          <div className="grid lg:grid-cols-2 gap-10 items-center pt-6">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/15 text-white/90 text-sm font-semibold shadow-lg">
+                Official Website <span className="bg-gradient-to-r from-emerald-300 via-white to-cyan-200 bg-clip-text text-transparent">IRMA13</span>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-lg text-white/80 font-medium">ROHIS DIGITAL SEKOLAH</p>
+                <h2 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[0.95] drop-shadow-xl">
+                  IRMA <span className="bg-gradient-to-r from-emerald-300 via-white to-cyan-200 bg-clip-text text-transparent">VERSE</span>
+                </h2>
+              </div>
+
+              <p className="text-lg sm:text-xl text-white/80 max-w-2xl leading-relaxed">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-3 shadow-inner">
+                <div className="flex items-center gap-3 w-full">
+                  <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center">
+                    <Search className="h-5 w-5 text-white/80" />
+                  </div>
+                  <input
+                    className="flex-1 bg-transparent focus:outline-none placeholder:text-white/60 text-white text-base"
+                    placeholder="Cari informasi yang anda inginkan di sini..."
+                  />
+                </div>
+                <Button className="w-full sm:w-auto px-6 py-3 bg-white text-emerald-900 font-semibold hover:bg-white/90">
+                  Cari
+                </Button>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Card className="bg-white/10 border-white/10 text-white shadow-xl">
+                  <CardContent className="p-5 text-base leading-relaxed">
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-emerald-400 to-cyan-400 text-emerald-950 border-0 shadow-xl">
+                  <CardContent className="p-5">
+                    <p className="text-sm font-semibold uppercase tracking-wide bg-gradient-to-r from-white via-white/85 to-white/70 bg-clip-text text-transparent">Platform IRMA</p>
+                    <p className="text-2xl font-black bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent">SMKN 13 Bandung</p>
+                    <div className="mt-3 flex items-center justify-center">
+                      <div className="p-2 rounded-xl border border-white/40 bg-white/10 backdrop-blur shadow-lg">
+                        <img src="/logo13.png" alt="SMKN 13 Bandung" className="h-10 w-auto object-contain" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="absolute -inset-6 bg-gradient-to-br from-white/25 via-emerald-200/25 to-cyan-200/25 blur-3xl" />
+              <div className="relative h-full min-h-[360px] rounded-[28px] overflow-hidden border border-white/15 shadow-[0_30px_120px_rgba(0,0,0,0.35)] bg-white/5 backdrop-blur flex items-end justify-center p-4">
+                <img
+                  src="/model.png"
+                  alt="Role model IRMA"
+                  className="max-h-[400px] w-full object-contain drop-shadow-2xl"
+                  onError={(e) => {
+                    e.currentTarget.src = heroImage;
+                    e.currentTarget.onerror = null;
+                  }}
+                />
+                <div className="absolute top-4 left-4 inline-flex items-center gap-2 bg-white/85 text-emerald-900 px-3 py-2 rounded-full text-sm font-semibold shadow-md">
+                  <span>IRMA Role Model</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <section className="relative z-10 -mt-8 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {stats.map((stat, index) => (
+            <div
+              key={index}
+              className="p-6 rounded-2xl bg-white/10 border border-white/15 backdrop-blur shadow-lg"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-12 w-12 rounded-xl bg-white/15 flex items-center justify-center">
+                  <stat.icon className="h-6 w-6 text-white" />
+                </div>
+                <p className="text-sm uppercase tracking-wide text-white/70">{stat.label}</p>
+              </div>
+              <p className="text-3xl font-black text-white">{stat.value}</p>
+            </div>
+          ))}
         </div>
       </section>
 
