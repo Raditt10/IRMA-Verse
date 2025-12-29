@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -116,6 +117,27 @@ const Index = () => {
       rating: 5,
     },
   ];
+  
+  const today = new Date();
+  const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const tanggalStr = `${hari[today.getDay()]}, ${today.getDate()} ${bulan[today.getMonth()]} ${today.getFullYear()}`;
+
+  const [userLocation, setUserLocation] = React.useState<string>("Lokasi tidak diketahui");
+  React.useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await res.json();
+          setUserLocation(data.address.city || data.address.town || data.address.village || data.address.state || data.display_name || "Lokasi ditemukan");
+        } catch {
+          setUserLocation("Lokasi ditemukan");
+        }
+      }, () => setUserLocation("Lokasi tidak diketahui"));
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-700 via-teal-600 to-cyan-500 text-white relative overflow-hidden">
@@ -127,20 +149,20 @@ const Index = () => {
         backgroundSize: "72px 72px"
       }} />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="flex items-center justify-between py-4 text-sm text-white/80">
+      <div className="relative w-full">
+        <div className="flex items-center justify-between py-4 text-sm text-white/80 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
             <CalendarDays className="h-4 w-4" />
-            <span>Ahad, 28 Desember 2025</span>
+            <span>{tanggalStr}</span>
           </div>
           <div className="hidden md:flex items-center gap-2 text-white/70">
             <MapPin className="h-4 w-4" />
-            <span>Bandung, Indonesia</span>
+            <span>{userLocation}</span>
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 rounded-2xl bg-white/5 border border-white/10 px-6 py-4 backdrop-blur-xl shadow-[0_20px_80px_rgba(0,0,0,0.35)]">
-          <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-3.5 overflow-hidden">
+          <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto w-full">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 flex items-center justify-center">
                 <img src="/logo.png" alt="IRMA Verse" className="h-10 w-10 object-contain" />
@@ -174,17 +196,19 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-10 items-center pt-6">
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-[1fr,auto] gap-8 items-end pt-4 pb-2 max-w-7xl mx-auto w-full">
+            <div className="space-y-5 lg:pr-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/15 text-white/90 text-sm font-semibold shadow-lg">
                 Official Website <span className="bg-gradient-to-r from-emerald-300 via-white to-cyan-200 bg-clip-text text-transparent">IRMA13</span>
               </div>
 
               <div className="space-y-2">
                 <p className="text-lg text-white/80 font-medium">ROHIS DIGITAL SEKOLAH</p>
-                <h2 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[0.95] drop-shadow-xl">
-                  IRMA <span className="bg-gradient-to-r from-emerald-300 via-white to-cyan-200 bg-clip-text text-transparent">VERSE</span>
-                </h2>
+                <div className="text-left">
+                  <span className="text-5xl sm:text-6xl md:text-7xl font-black leading-none tracking-tight drop-shadow-xl whitespace-nowrap align-top">
+                    IRMA <span className="bg-gradient-to-r from-emerald-300 via-white to-cyan-200 bg-clip-text text-transparent align-top">VERSE</span>
+                  </span>
+                </div>
               </div>
 
               <p className="text-lg sm:text-xl text-white/80 max-w-2xl leading-relaxed">
@@ -212,118 +236,41 @@ const Index = () => {
                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
                   </CardContent>
                 </Card>
-                <Card className="bg-gradient-to-br from-emerald-400 to-cyan-400 text-emerald-950 border-0 shadow-xl">
-                  <CardContent className="p-5">
-                    <p className="text-sm font-semibold uppercase tracking-wide bg-gradient-to-r from-white via-white/85 to-white/70 bg-clip-text text-transparent">Platform IRMA</p>
-                    <p className="text-2xl font-black bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent">SMKN 13 Bandung</p>
-                    <div className="mt-3 flex items-center justify-center">
-                      <div className="p-2 rounded-xl border border-white/40 bg-white/10 backdrop-blur shadow-lg">
-                        <img src="/logo13.png" alt="SMKN 13 Bandung" className="h-10 w-auto object-contain" />
+                <Card className="bg-white/90 rounded-2xl shadow-lg border-0 flex flex-col items-center justify-center py-8 px-6 min-h-[260px]">
+                  <div className="flex flex-col items-center w-full">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="rounded-xl bg-white shadow p-2 border border-gray-200">
+                        <img src="/logo13.png" alt="SMKN 13 Bandung" className="h-14 w-auto object-contain" />
                       </div>
                     </div>
-                  </CardContent>
+                    <div className="text-center w-full">
+                      <div className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-1">Platform Ekskul IRMA</div>
+                      <div className="text-lg font-bold text-gray-700 mb-1">SMKN 13 Bandung</div>
+                    </div>
+                  </div>
                 </Card>
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative -mr-6 -mb-4 self-end">
               <div className="absolute -inset-6 bg-gradient-to-br from-white/25 via-emerald-200/25 to-cyan-200/25 blur-3xl" />
-              <div className="relative h-full min-h-[360px] rounded-[28px] overflow-hidden border border-white/15 shadow-[0_30px_120px_rgba(0,0,0,0.35)] bg-white/5 backdrop-blur flex items-end justify-center p-4">
+              <div className="relative h-[500px] sm:h-[600px] md:h-[700px] w-auto max-w-none flex items-end">
                 <img
                   src="/model.png"
                   alt="Role model IRMA"
-                  className="max-h-[400px] w-full object-contain drop-shadow-2xl"
+                  className="h-full w-auto object-cover object-bottom drop-shadow-[0_25px_80px_rgba(0,0,0,0.45)] block"
+                  style={{ display: 'block' }}
                   onError={(e) => {
                     e.currentTarget.src = heroImage;
                     e.currentTarget.onerror = null;
                   }}
                 />
-                <div className="absolute top-4 left-4 inline-flex items-center gap-2 bg-white/85 text-emerald-900 px-3 py-2 rounded-full text-sm font-semibold shadow-md">
-                  <span>IRMA Role Model</span>
-                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats */}
-      <section className="relative z-10 -mt-8 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              className="p-6 rounded-2xl bg-white/10 border border-white/15 backdrop-blur shadow-lg"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="h-12 w-12 rounded-xl bg-white/15 flex items-center justify-center">
-                  <stat.icon className="h-6 w-6 text-white" />
-                </div>
-                <p className="text-sm uppercase tracking-wide text-white/70">{stat.label}</p>
-              </div>
-              <p className="text-3xl font-black text-white">{stat.value}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features Section - Enhanced */}
-      <section className="py-28 relative bg-gradient-to-b from-background via-primary/5 to-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 mb-6 bg-gradient-to-r from-primary/15 via-accent/10 to-primary/15 border-2 border-primary/30 rounded-full backdrop-blur-md shadow-xl">
-              <Zap className="h-4 w-4 text-primary animate-pulse" />
-              <span className="text-sm font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-wider">Fitur Unggulan</span>
-            </div>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-foreground mb-6 leading-tight">
-              Semua yang <span className="bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent">Kamu Butuhkan</span>
-            </h2>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Kelola semua aktivitas IRMA dengan mudah, efisien, dan menyenangkan dalam satu platform terintegrasi
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <Card
-                key={index}
-                className="group relative overflow-hidden border-2 border-border hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 bg-gradient-to-br from-card via-card to-muted/20 backdrop-blur-xl animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                {/* Gradient Overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
-                
-                {/* Shine Effect */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
-                </div>
-                
-                <CardHeader className="relative pb-4">
-                  <div className={`relative w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-xl`}>
-                    <feature.icon className="h-8 w-8 text-white relative z-10" />
-                    <div className="absolute inset-0 bg-white/20 rounded-2xl blur-sm" />
-                  </div>
-                  <CardTitle className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
-                    {feature.title}
-                  </CardTitle>
-                  <CardDescription className="text-base leading-relaxed pt-2 text-muted-foreground">
-                    {feature.description}
-                  </CardDescription>
-                </CardHeader>
-                
-                <CardContent className="relative pt-0">
-                  <div className="flex items-center text-primary font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-2">
-                    <span className="text-sm uppercase tracking-wider">Pelajari lebih lanjut</span>
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits Section - New */}
       <section className="py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
         
@@ -367,7 +314,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Testimonials Section - New */}
       <section className="py-28 relative bg-gradient-to-b from-background via-muted/20 to-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
@@ -421,19 +367,15 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA Section - Enhanced */}
       <section className="py-28 relative overflow-hidden">
-        {/* Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary" />
         
-        {/* Animated Blobs */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
         </div>
 
-        {/* Grid Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
             backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
@@ -492,7 +434,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Footer - Enhanced */}
+      {/* Footer */}
       <footer className="relative bg-gradient-to-br from-card via-muted/20 to-card border-t-2 border-border/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
