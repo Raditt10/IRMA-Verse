@@ -230,12 +230,7 @@ const Index = () => {
                 </Button>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Card className="bg-white/10 border-white/10 text-white shadow-xl">
-                  <CardContent className="p-5 text-base leading-relaxed">
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-                  </CardContent>
-                </Card>
+              <div className="grid sm:grid-cols-2 gap-4">               
                 <Card className="bg-white/90 rounded-2xl shadow-lg border-0 flex flex-col items-center justify-center py-8 px-6 min-h-[260px]">
                   <div className="flex flex-col items-center w-full">
                     <div className="flex items-center justify-center mb-4">
