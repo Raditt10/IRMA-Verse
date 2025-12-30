@@ -195,7 +195,6 @@ const Auth = () => {
           {/* Ilustrasi & Deskripsi */}
           <div className="hidden md:flex flex-col justify-center items-center text-center px-6">
             <div className="mb-8">
-              {/* Ilustrasi SVG sederhana */}
               <svg width="220" height="120" viewBox="0 0 220 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <ellipse cx="110" cy="90" rx="60" ry="30" fill="#14b8a6" fillOpacity="0.12" />
                 <rect x="90" y="60" width="40" height="40" rx="8" fill="#14b8a6" fillOpacity="0.12" />
