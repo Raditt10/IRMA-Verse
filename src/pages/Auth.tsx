@@ -89,7 +89,7 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-emerald-100 flex flex-col">
       <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-4xl">
-          {/* Card Form */}
+          {/* Card Form login */}
           <div className="bg-white rounded-2xl shadow-2xl p-10 flex flex-col justify-center w-full max-w-md border border-gray-100">
             <div className="flex items-center gap-3 mb-6">
               <img src="/logo.png" alt="IRMA Verse" className="h-8 w-8 object-contain" />
