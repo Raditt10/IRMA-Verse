@@ -212,7 +212,7 @@ const Index = () => {
               </div>
 
               <p className="text-lg sm:text-xl text-white/80 max-w-2xl leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Platform digital yang menghubungkan seluruh anggota IRMA dengan sistem terorganisir, modern, dan efisien untuk pembelajaran Islami yang lebih baik.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-3 shadow-inner">
@@ -265,6 +265,64 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Menu Icons Section */}
+      <section className="py-20 relative bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-6">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center gap-3 group cursor-pointer"
+              >
+                <div className={`w-20 h-20 rounded-[2rem] border-2 border-white/40 bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
+                  <feature.icon className="h-10 w-10 text-white" />
+                </div>
+                <p className="text-sm font-semibold text-gray-700 text-center leading-tight">
+                  {feature.title}
+                </p>
+              </div>
+            ))}
+            
+            {/* Additional Menu Items */}
+            <div className="flex flex-col items-center gap-3 group cursor-pointer">
+              <div className="w-20 h-20 rounded-[2rem] border-2 border-white/40 bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <Zap className="h-10 w-10 text-white" />
+              </div>
+              <p className="text-sm font-semibold text-gray-700 text-center leading-tight">
+                Kegiatan
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-center gap-3 group cursor-pointer">
+             <div className="w-20 h-20 rounded-[2rem] border-2 border-white/40 bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <Target className="h-10 w-10 text-white" />
+              </div>
+              <p className="text-sm font-semibold text-gray-700 text-center leading-tight">
+                Program
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-center gap-3 group cursor-pointer">
+              <div className="w-20 h-20 rounded-[2rem] border-2 border-white/40 bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <CalendarDays className="h-10 w-10 text-white" />
+              </div>
+              <p className="text-sm font-semibold text-gray-700 text-center leading-tight">
+                Event
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-center gap-3 group cursor-pointer">
+             <div className="w-20 h-20 rounded-[2rem] border-2 border-white/40 bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <Heart className="h-10 w-10 text-white" />
+              </div>
+              <p className="text-sm font-semibold text-gray-700 text-center leading-tight">
+                Donasi
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
@@ -449,66 +507,66 @@ const Index = () => {
               </p>
             </div>
 
-            {/* Quick Links */}
+           <div>
+  <h3 className="font-bold text-foreground mb-4">Quick Links</h3>
+  <ul className="space-y-3">
+    <li>
+      <Link to="/auth" className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm flex items-center gap-2 group">
+        <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+        Login / Register
+      </Link>
+    </li>
+    <li>
+      <Link to="/structure" className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm flex items-center gap-2 group">
+        <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+        Struktur Organisasi
+      </Link>
+    </li>
+    <li>
+      <Link to="/schedule" className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm flex items-center gap-2 group">
+        <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+        Jadwal Kajian
+      </Link>
+    </li>
+    <li>
+      <Link to="/announcements" className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm flex items-center gap-2 group">
+        <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+        Pengumuman
+      </Link>
+    </li>
+    <li>
+      <Link to="/gallery" className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm flex items-center gap-2 group">
+        <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+        Galeri
+      </Link>
+    </li>
+    <li>
+      <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm flex items-center gap-2 group">
+        <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+        Kontak
+      </Link>
+    </li>
+  </ul>
+</div>
             <div>
-              <h3 className="font-bold text-foreground mb-4">Quick Links</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link to="/auth" className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm flex items-center gap-2 group">
-                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
-                    Login / Register
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/structure" className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm flex items-center gap-2 group">
-                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
-                    Struktur Organisasi
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/announcements" className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm flex items-center gap-2 group">
-                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
-                    Pengumuman
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Contact Info */}
-            <div>
-              <h3 className="font-bold text-foreground mb-4">Kontak Kami</h3>
-              <div className="space-y-3 text-sm text-muted-foreground">
-                <p className="leading-relaxed">
-                  <span className="font-semibold text-foreground">IRMA SMK Negeri 13 Bandung</span>
-                  <br />
-                  Jl. Soekarno-Hatta, Bandung
-                </p>
-                <div className="flex items-center gap-2 pt-4">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                    <Heart className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="text-xs">Made with love by IRMA Team</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-border/50">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-              <p className="text-muted-foreground text-sm">
-                &copy; 2024 IRMAVerse - Ikatan Remaja Masjid SMK Negeri 13 Bandung. All rights reserved.
+              <h3 className="font-bold text-foreground mb-4">Contact Us</h3>
+              <p className="text-sm text-muted-foreground mb-2">
+                Jl. SMK Negeri 13 Bandung, Kota Bandung, Jawa Barat
               </p>
-              <div className="flex items-center gap-2">
-                <div className="px-3 py-1 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full border border-primary/20">
-                  <span className="text-xs font-semibold text-primary">v1.0.0</span>
-                </div>
-              </div>
+              <p className="text-sm text-muted-foreground mb-2">
+                Email: 1CtJ3@example.com
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Telepon: 0812-3456-7890
+              </p>
             </div>
           </div>
+          <p className="text-center text-muted-foreground text-sm">
+            &copy; {new Date().getFullYear()} IRMAVerse. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
   );
 };
-
 export default Index;
