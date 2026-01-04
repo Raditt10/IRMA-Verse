@@ -192,7 +192,6 @@ const Auth = () => {
               </TabsContent>
             </Tabs>
           </div>
-          {/* Ilustrasi ama deskripsi*/}
           <div className="hidden md:flex flex-col justify-center items-center text-center px-6">
             <div className="mb-8">
               <svg width="220" height="120" viewBox="0 0 220 120" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -43,55 +43,68 @@ const Dashboard = () => {
   useAchievementNotifications(user?.id);
 
   useEffect(() => {
-    checkAuth();
-    fetchDashboardData();
+    loadDashboard();
   }, []);
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-      return;
+  const loadDashboard = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setUser(session.user);
+      } else {
+        // Allow anonymous access with default user
+        setUser({
+          id: 'anonymous',
+          email: 'guest@irmaverse.local',
+          user_metadata: { full_name: 'Guest User' }
+        });
+      }
+    } finally {
+      setLoading(false);
     }
-    setUser(session.user);
   };
 
   const fetchDashboardData = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id || 'anonymous';
 
-    // Fetch user badges
-    const { data: userBadges } = await supabase
-      .from("user_badges")
-      .select("badges(points)")
-      .eq("user_id", session.user.id);
+      // Fetch user badges
+      const { data: userBadges } = await supabase
+        .from("user_badges")
+        .select("*")
+        .eq("user_id", userId);
 
-    const totalPoints = userBadges?.reduce((sum, ub: any) => sum + (ub.badges?.points || 0), 0) || 0;
-    const totalBadges = userBadges?.length || 0;
+      const totalPoints = userBadges?.reduce((sum, ub: any) => sum + (ub.badges?.points || 10), 0) || 0;
+      const totalBadges = userBadges?.length || 0;
 
-    // Fetch quiz stats
-    const { data: quizAttempts } = await supabase
-      .from("quiz_attempts")
-      .select("score")
-      .eq("user_id", session.user.id);
+      // Fetch quiz stats
+      const { data: quizAttempts } = await supabase
+        .from("quiz_attempts")
+        .select("*")
+        .eq("user_id", userId);
 
-    const totalQuizzes = quizAttempts?.length || 0;
-    const averageScore = totalQuizzes > 0
-      ? Math.round(quizAttempts.reduce((sum, a) => sum + a.score, 0) / totalQuizzes)
-      : 0;
+      const totalQuizzes = quizAttempts?.length || 0;
+      const averageScore = totalQuizzes > 0
+        ? Math.round(quizAttempts!.reduce((sum, a) => sum + a.score, 0) / totalQuizzes)
+        : 0;
 
-    setStats({ totalPoints, totalBadges, totalQuizzes, averageScore });
+      setStats({ totalPoints, totalBadges, totalQuizzes, averageScore });
 
-    // Fetch recent activities
-    const { data: recentBadges } = await supabase
-      .from("user_badges")
-      .select("earned_at, badges(name, icon)")
-      .eq("user_id", session.user.id)
-      .order("earned_at", { ascending: false })
-      .limit(3);
+      // Fetch recent activities
+      const { data: recentBadges } = await supabase
+        .from("user_badges")
+        .select("*")
+        .eq("user_id", userId)
+        .order("earned_at", { ascending: false })
+        .limit(3);
 
-    setRecentActivities(recentBadges || []);
-    setLoading(false);
+      setRecentActivities(recentBadges || []);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const quickActions = [
