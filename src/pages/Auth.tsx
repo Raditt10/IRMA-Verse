@@ -69,6 +69,7 @@ const Auth = () => {
     toast({
       title: "Login Berhasil",
       description: "Selamat datang kembali!",
+      className: "bg-emerald-50/90 border border-emerald-200 text-emerald-900 backdrop-blur shadow-[0_16px_40px_-24px_rgba(16,185,129,0.8)]",
     });
     
     setIsLoading(false);
