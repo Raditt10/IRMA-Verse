@@ -41,13 +41,13 @@ const Index = () => {
     },
     {
       icon: BookOpen,
-      title: "Ringkasan Materi",
+      title: "Kajian Mingguan",
       description: "Akses materi kajian yang telah dirangkum",
       color: "from-green-500 to-emerald-500",
     },
     {
       icon: Users,
-      title: "Struktur Organisasi",
+      title: "Anggota & Pengurus",
       description: "Kenali pengurus IRMA SMK Negeri 13 Bandung",
       color: "from-orange-500 to-red-500",
     },
@@ -279,7 +279,7 @@ const Index = () => {
                 <Zap className="h-9 w-9 text-slate-800 group-hover:text-slate-900 transition-colors duration-300" />
               </div>
               <p className="text-sm font-semibold text-gray-800 text-center leading-tight">
-                Kegiatan
+                Event Terbaru
               </p>
             </div>
 
@@ -288,7 +288,7 @@ const Index = () => {
                 <Target className="h-9 w-9 text-slate-800 group-hover:text-slate-900 transition-colors duration-300" />
               </div>
               <p className="text-sm font-semibold text-gray-800 text-center leading-tight">
-                Program
+                Program Kurikulum
               </p>
             </div>
 
@@ -297,7 +297,7 @@ const Index = () => {
                 <CalendarDays className="h-9 w-9 text-slate-800 group-hover:text-slate-900 transition-colors duration-300" />
               </div>
               <p className="text-sm font-semibold text-gray-800 text-center leading-tight">
-                Event
+                Absensi Kajian
               </p>
             </div>
 
@@ -306,7 +306,7 @@ const Index = () => {
                 <Heart className="h-9 w-9 text-slate-800 group-hover:text-slate-900 transition-colors duration-300" />
               </div>
               <p className="text-sm font-semibold text-gray-800 text-center leading-tight">
-                Donasi
+                Fitur Keren Lainnya
               </p>
             </div>
           </div>
