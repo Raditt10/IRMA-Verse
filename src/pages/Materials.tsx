@@ -17,6 +17,7 @@ interface Material {
   date: string;
   pemateri: string | null;
   category?: string;
+  classLevel?: string;
   time?: string;
   participants?: number;
   thumbnail?: string;
@@ -25,13 +26,15 @@ interface Material {
 const Materials = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("Semua");
+  const [selectedProgram, setSelectedProgram] = useState("Semua");
+  const [selectedClass, setSelectedClass] = useState("Semua");
   const [searchQuery, setSearchQuery] = useState("");
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const categories = ["Semua", "Akhlak", "Fiqih", "Tafsir", "Sejarah", "Aqidah"];
+  const programCategories = ["Semua", "Program Wajib", "Program Ekstra", "Program Next Level"];
+  const classCategories = ["Semua", "Kelas 10", "Kelas 11", "Kelas 12"];
 
   useEffect(() => {
     loadUser();
@@ -60,7 +63,8 @@ const Materials = () => {
           date: "2024-11-25",
           time: "13:00 - 15:00",
           pemateri: "Ustadz Ahmad Zaki",
-          category: "Akhlak",
+          category: "Program Wajib",
+          classLevel: "Kelas 10",
           participants: 45,
           thumbnail: "https://picsum.photos/seed/kajian1/400/300"
         },
@@ -72,7 +76,8 @@ const Materials = () => {
           date: "2024-11-28",
           time: "14:00 - 16:00",
           pemateri: "Ustadzah Fatimah",
-          category: "Fiqih",
+          category: "Program Wajib",
+          classLevel: "Kelas 11",
           participants: 38,
           thumbnail: "https://picsum.photos/seed/kajian2/400/300"
         },
@@ -84,7 +89,8 @@ const Materials = () => {
           date: "2024-12-01",
           time: "15:00 - 17:00",
           pemateri: "Ustadz Muhammad Rizki",
-          category: "Tafsir",
+          category: "Program Next Level",
+          classLevel: "Kelas 12",
           participants: 52,
           thumbnail: "https://picsum.photos/seed/kajian3/400/300"
         },
@@ -96,7 +102,8 @@ const Materials = () => {
           date: "2024-12-05",
           time: "13:00 - 15:00",
           pemateri: "Ustadz Abdullah",
-          category: "Sejarah",
+          category: "Program Ekstra",
+          classLevel: "Kelas 10",
           participants: 41,
           thumbnail: "https://picsum.photos/seed/kajian4/400/300"
         },
@@ -108,7 +115,8 @@ const Materials = () => {
           date: "2024-12-08",
           time: "14:00 - 16:00",
           pemateri: "Ustadz Ali Hasan",
-          category: "Aqidah",
+          category: "Program Ekstra",
+          classLevel: "Kelas 11",
           participants: 47,
           thumbnail: "https://picsum.photos/seed/kajian5/400/300"
         },
@@ -120,7 +128,8 @@ const Materials = () => {
           date: "2024-12-10",
           time: "15:00 - 17:00",
           pemateri: "Ustadzah Khadijah",
-          category: "Akhlak",
+          category: "Program Next Level",
+          classLevel: "Kelas 12",
           participants: 55,
           thumbnail: "https://picsum.photos/seed/kajian6/400/300"
         }
@@ -138,10 +147,11 @@ const Materials = () => {
   };
 
   const filteredMaterials = materials.filter((material) => {
-    const matchesCategory = selectedCategory === "Semua" || material.category === selectedCategory;
+    const matchesProgram = selectedProgram === "Semua" || material.category === selectedProgram;
+    const matchesClass = selectedClass === "Semua" || material.classLevel === selectedClass;
     const matchesSearch = material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          material.pemateri?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesProgram && matchesClass && matchesSearch;
   });
 
   if (!user) {
@@ -169,21 +179,39 @@ const Materials = () => {
               </p>
             </div>
 
-            {/* Category Tabs */}
-            <div className="flex flex-wrap gap-3 mb-6">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-6 py-2.5 rounded-full font-semibold transition-all duration-300 ${
-                    selectedCategory === category
-                      ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg scale-105"
-                      : "bg-white text-slate-700 hover:bg-slate-100 shadow-sm"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
+            {/* Filters */}
+            <div className="grid gap-3 mb-6 sm:grid-cols-2">
+              <div className="flex flex-wrap gap-3">
+                {programCategories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedProgram(category)}
+                    className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 ${
+                      selectedProgram === category
+                        ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg scale-105"
+                        : "bg-white text-slate-700 hover:bg-slate-100 shadow-sm"
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                {classCategories.map((kelas) => (
+                  <button
+                    key={kelas}
+                    onClick={() => setSelectedClass(kelas)}
+                    className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 ${
+                      selectedClass === kelas
+                        ? "bg-gradient-to-r from-emerald-500 to-lime-400 text-white shadow-lg scale-105"
+                        : "bg-white text-slate-700 hover:bg-slate-100 shadow-sm"
+                    }`}
+                  >
+                    {kelas}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Search Bar */}
@@ -224,11 +252,16 @@ const Materials = () => {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-                      {/* Category Badge */}
-                      <div className="absolute top-4 left-4">
+                      {/* Category + Class Badges */}
+                      <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
                         <span className="px-4 py-1.5 rounded-full bg-teal-500 text-white text-sm font-semibold shadow-lg">
                           {material.category}
                         </span>
+                        {material.classLevel && (
+                          <span className="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold border border-emerald-200 shadow-md">
+                            {material.classLevel}
+                          </span>
+                        )}
                       </div>
                     </div>
 
@@ -258,15 +291,15 @@ const Materials = () => {
                           </div>
                         )}
                         {material.participants && (
-                          <div className="flex items-center gap-2 text-sm text-slate-600">
-                            <Users className="h-4 w-4" />
-                            <span>{material.participants} peserta</span>
-                          </div>
+                          <div className="h-0" aria-hidden="true"></div>
                         )}
                       </div>
 
                       {/* Button */}
-                      <button className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <button
+                        onClick={() => navigate("/absensi")}
+                        className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
                         Aku ikut!
                       </button>
                     </div>

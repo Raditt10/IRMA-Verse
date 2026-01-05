@@ -379,10 +379,7 @@ const Profile = () => {
                               <Clock3 className="h-4 w-4 text-slate-700" />
                               {program.duration}
                             </span>
-                            <span className="flex items-center gap-1">
-                              <BookOpen className="h-4 w-4 text-slate-700" />
-                              {program.level}
-                            </span>
+                            <span className="text-slate-700 font-medium">{program.level}</span>
                           </div>
                         </div>
 

@@ -1,347 +1,347 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { Calendar, Clock, MapPin, Star, ThumbsUp, User } from "lucide-react";
+import DashboardHeader from "@/components/DashboardHeader";
+import Sidebar from "@/components/Sidebar";
+import ChatbotButton from "@/components/ChatbotButton";
 import { useToast } from "@/hooks/use-toast";
-import { ClipboardCheck, QrCode, Calendar, MapPin, User } from "lucide-react";
-import { CardSkeleton } from "@/components/LoadingSkeletons";
-import QRCode from "qrcode";
+import { Input } from "@/components/ui/input";
+
+type AttendanceForm = {
+	session: string;
+	date: string;
+	time: string;
+	location: string;
+	status: "hadir" | "tidak";
+	notes: string;
+	reason?: string;
+	instructorArrival: string;
+	startTime: string;
+	endTime: string;
+};
+
+type SurveyForm = {
+	rating: number;
+	clarity: "yes" | "no";
+	relevance: "yes" | "no";
+	feedback: string;
+};
 
 const Absensi = () => {
-  const [jadwal, setJadwal] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedJadwal, setSelectedJadwal] = useState<string>("");
-  const [pin, setPin] = useState("");
-  const [qrCodeUrl, setQrCodeUrl] = useState("");
-  const [showScanner, setShowScanner] = useState(false);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+	const navigate = useNavigate();
+	const { toast } = useToast();
+	const [user, setUser] = useState<any>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    checkAuth();
-    fetchJadwal();
-  }, []);
+	const [attendance, setAttendance] = useState<AttendanceForm>({
+		session: "Kedudukan Akal dan Wahyu",
+		date: "2024-12-15",
+		time: "13:00 - 15:00",
+		location: "Aula Utama",
+		status: "hadir",
+		notes: "",
+		reason: "",
+		instructorArrival: "12:45",
+		startTime: "13:00",
+		endTime: "15:00",
+	});
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-    }
-  };
+	const [survey, setSurvey] = useState<SurveyForm>({
+		rating: 4,
+		clarity: "yes",
+		relevance: "yes",
+		feedback: "",
+	});
 
-  const fetchJadwal = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("jadwal_kajian")
-        .select("*")
-        .gte("date", new Date().toISOString())
-        .order("date", { ascending: true });
+	useEffect(() => {
+		setUser({
+			id: "user-123",
+			full_name: "Rafaditya Syahputra",
+			email: "rafaditya@irmaverse.local",
+			avatar: "RS",
+		});
+	}, []);
 
-      if (error) throw error;
-      setJadwal(data || []);
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setIsSubmitting(true);
 
-  const generateQRCode = async (jadwalId: string) => {
-    try {
-      const qrData = JSON.stringify({ jadwalId, timestamp: Date.now() });
-      const url = await QRCode.toDataURL(qrData);
-      setQrCodeUrl(url);
-      
-      await supabase.from("absensi_settings").insert({
-        jadwal_id: jadwalId,
-        qr_code: qrData,
-        expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-      });
+		setTimeout(() => {
+			setIsSubmitting(false);
+			toast({
+				title: "Absensi terkirim",
+				description: "Terima kasih, absensi dan angket sudah dicatat.",
+				className:
+					"bg-emerald-50/90 border border-emerald-200 text-emerald-900 backdrop-blur shadow-[0_16px_40px_-24px_rgba(16,185,129,0.8)]",
+			});
+			navigate("/dashboard");
+		}, 600);
+	};
 
-      toast({
-        title: "QR Code Generated",
-        description: "QR Code berlaku selama 15 menit",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
+	if (!user) {
+		return (
+			<div className="min-h-screen bg-slate-50 flex items-center justify-center">
+				<p className="text-slate-500">Memuat...</p>
+			</div>
+		);
+	}
 
-  const submitAbsensi = async (jadwalId: string, metode: string) => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/auth");
-        return;
-      }
+	return (
+		<div
+			className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100"
+			style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}
+		>
+			<DashboardHeader user={user} />
+			<div className="flex">
+				<Sidebar />
 
-      const { error } = await supabase.from("absensi").insert({
-        jadwal_id: jadwalId,
-        user_id: session.user.id,
-        metode: metode,
-        status: "hadir",
-      });
+				<div className="flex-1 px-6 lg:px-8 py-12">
+					<div className="max-w-6xl mx-auto space-y-8">
+						<div className="flex items-center justify-between flex-wrap gap-4">
+							<div>
+								<h1 className="text-4xl font-black text-slate-800">Absensi Kajian</h1>
+								<p className="text-slate-600 text-lg">Isi kehadiran dan angket kajian minggu ini</p>
+							</div>
+							<button
+								onClick={() => navigate("/materials")}
+								className="px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold shadow-sm hover:bg-slate-50"
+							>
+								Kembali ke kajian
+							</button>
+						</div>
 
-      if (error) throw error;
+						<form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+							{/* Absensi */}
+							<div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm space-y-5">
+								<div className="flex items-center gap-3">
+									<Calendar className="h-5 w-5 text-emerald-600" />
+									<h2 className="text-xl font-bold text-slate-900">Form Absensi</h2>
+								</div>
 
-      toast({
-        title: "Berhasil",
-        description: "Absensi berhasil dicatat",
-      });
+								<div className="space-y-4">
+									<div className="space-y-2">
+										<label className="text-sm font-semibold text-slate-700">Kajian</label>
+										<Input
+											value={attendance.session}
+											onChange={(e) => setAttendance({ ...attendance, session: e.target.value })}
+											className="bg-slate-50"
+										/>
+									</div>
 
-      setPin("");
-      setSelectedJadwal("");
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
+									<div className="grid grid-cols-2 gap-4">
+										<div className="space-y-2">
+											<label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+												<Calendar className="h-4 w-4 text-slate-600" /> Tanggal
+											</label>
+											<Input
+												type="date"
+												value={attendance.date}
+												onChange={(e) => setAttendance({ ...attendance, date: e.target.value })}
+												className="bg-slate-50"
+											/>
+										</div>
+										<div className="space-y-2">
+											<label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+												<Clock className="h-4 w-4 text-slate-600" /> Waktu
+											</label>
+											<Input
+												value={attendance.time}
+												onChange={(e) => setAttendance({ ...attendance, time: e.target.value })}
+												className="bg-slate-50"
+											/>
+										</div>
+									</div>
 
-  const handlePinAbsensi = async () => {
-    if (!pin || !selectedJadwal) {
-      toast({
-        title: "Error",
-        description: "Pilih jadwal dan masukkan PIN",
-        variant: "destructive",
-      });
-      return;
-    }
+									<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+										<div className="space-y-2">
+											<label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+												<User className="h-4 w-4 text-slate-600" /> Instruktur datang
+											</label>
+											<Input
+												type="time"
+												value={attendance.instructorArrival}
+												onChange={(e) => setAttendance({ ...attendance, instructorArrival: e.target.value })}
+												className="bg-slate-50"
+											/>
+										</div>
+										<div className="space-y-2">
+											<label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+												<Clock className="h-4 w-4 text-slate-600" /> Kajian dimulai
+											</label>
+											<Input
+												type="time"
+												value={attendance.startTime}
+												onChange={(e) => setAttendance({ ...attendance, startTime: e.target.value })}
+												className="bg-slate-50"
+											/>
+										</div>
+										<div className="space-y-2">
+											<label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+												<Clock className="h-4 w-4 text-slate-600" /> Kajian selesai
+											</label>
+											<Input
+												type="time"
+												value={attendance.endTime}
+												onChange={(e) => setAttendance({ ...attendance, endTime: e.target.value })}
+												className="bg-slate-50"
+											/>
+										</div>
+									</div>
 
-    try {
-      const { data: settings, error: settingsError } = await supabase
-        .from("absensi_settings")
-        .select("*")
-        .eq("jadwal_id", selectedJadwal)
-        .eq("pin", pin)
-        .eq("is_active", true)
-        .single();
+									<div className="space-y-2">
+										<label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+											<MapPin className="h-4 w-4 text-slate-600" /> Lokasi
+										</label>
+										<Input
+											value={attendance.location}
+											onChange={(e) => setAttendance({ ...attendance, location: e.target.value })}
+											className="bg-slate-50"
+										/>
+									</div>
 
-      if (settingsError || !settings) {
-        toast({
-          title: "Error",
-          description: "PIN tidak valid",
-          variant: "destructive",
-        });
-        return;
-      }
+									<div className="space-y-2">
+										<label className="text-sm font-semibold text-slate-700">Status Kehadiran</label>
+										<div className="grid grid-cols-2 gap-3">
+											{[
+												{ value: "hadir", label: "Hadir" },
+												{ value: "tidak", label: "Tidak hadir" },
+											].map((item) => (
+												<button
+													key={item.value}
+													type="button"
+													onClick={() => setAttendance({ ...attendance, status: item.value as "hadir" | "tidak" })}
+													className={`rounded-xl border px-4 py-3 font-semibold transition-all ${
+														attendance.status === item.value
+															? "border-emerald-400 bg-emerald-50 text-emerald-800 shadow-[0_8px_24px_-16px_rgba(16,185,129,0.6)]"
+															: "border-slate-200 bg-white text-slate-700 hover:border-emerald-200"
+													}`}
+												>
+													{item.label}
+												</button>
+											))}
+										</div>
+									</div>
 
-      await submitAbsensi(selectedJadwal, "pin");
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
+									<div className="space-y-2">
+										<label className="text-sm font-semibold text-slate-700">Catatan (opsional)</label>
+										<textarea
+											value={attendance.notes}
+											onChange={(e) => setAttendance({ ...attendance, notes: e.target.value })}
+											rows={3}
+											className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+											placeholder="Tambahkan catatan singkat"
+										/>
+									</div>
 
-  return (
-    <div className="min-h-screen bg-gradient-subtle">
-      <Navbar />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-        <div className="mb-8 text-center">
-          <div className="inline-flex items-center gap-3 mb-4 p-4 bg-gradient-card rounded-2xl shadow-lg backdrop-blur-sm">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
-              <ClipboardCheck className="h-6 w-6 text-white" />
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Absensi Kajian
-            </h1>
-          </div>
-          <p className="text-muted-foreground text-lg">
-            Catat kehadiran Anda dengan mudah menggunakan PIN atau QR Code
-          </p>
-        </div>
+									<div className="space-y-2">
+										<label className="text-sm font-semibold text-slate-700">Alasan tidak mengikuti kajian (opsional)</label>
+										<textarea
+											value={attendance.reason ?? ""}
+											onChange={(e) => setAttendance({ ...attendance, reason: e.target.value })}
+											rows={3}
+											className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+											placeholder="Isi jika tidak bisa hadir"
+										/>
+									</div>
+								</div>
+							</div>
 
-        {loading ? (
-          <div className="space-y-4">
-            <CardSkeleton />
-            <CardSkeleton />
-          </div>
-        ) : jadwal.length === 0 ? (
-          <Card className="bg-gradient-card backdrop-blur-sm border-border/50">
-            <CardContent className="text-center py-12">
-              <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
-              <p className="text-muted-foreground text-lg">Belum ada jadwal kajian yang akan datang</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <Tabs defaultValue="pin" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1 h-auto">
-              <TabsTrigger value="pin" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-white py-3">
-                <ClipboardCheck className="mr-2 h-4 w-4" />
-                PIN Absensi
-              </TabsTrigger>
-              <TabsTrigger value="qr" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white py-3">
-                <QrCode className="mr-2 h-4 w-4" />
-                QR Code
-              </TabsTrigger>
-            </TabsList>
+							{/* Angket */}
+							<div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm space-y-5">
+								<div className="flex items-center gap-3">
+									<Star className="h-5 w-5 text-amber-500" />
+									<h2 className="text-xl font-bold text-slate-900">Angket Kajian</h2>
+								</div>
 
-            <TabsContent value="pin" className="space-y-4">
-              <Card className="bg-gradient-card backdrop-blur-sm border-border/50 shadow-lg">
-                <CardHeader className="space-y-1">
-                  <CardTitle className="text-2xl flex items-center gap-2">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
-                      <ClipboardCheck className="h-5 w-5 text-white" />
-                    </div>
-                    Absensi dengan PIN
-                  </CardTitle>
-                  <CardDescription className="text-base">Pilih kajian dan masukkan PIN yang diberikan pemateri</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Available Kajian Cards */}
-                  <div className="space-y-3">
-                    <label className="text-sm font-semibold text-foreground">Jadwal Kajian Tersedia:</label>
-                    <div className="grid gap-3">
-                      {jadwal.map((j) => (
-                        <div
-                          key={j.id}
-                          onClick={() => setSelectedJadwal(j.id)}
-                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                            selectedJadwal === j.id
-                              ? 'border-primary bg-primary/5 shadow-md'
-                              : 'border-border/50 hover:border-primary/50 hover:shadow-sm'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex-1 space-y-2">
-                              <h3 className="font-semibold text-foreground flex items-center gap-2">
-                                {j.title}
-                                {selectedJadwal === j.id && (
-                                  <Badge className="bg-primary">Dipilih</Badge>
-                                )}
-                              </h3>
-                              <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-1">
-                                  <Calendar className="h-4 w-4" />
-                                  {new Date(j.date).toLocaleDateString("id-ID", { 
-                                    weekday: 'long', 
-                                    year: 'numeric', 
-                                    month: 'long', 
-                                    day: 'numeric' 
-                                  })}
-                                </div>
-                                {j.pemateri && (
-                                  <div className="flex items-center gap-1">
-                                    <User className="h-4 w-4" />
-                                    {j.pemateri}
-                                  </div>
-                                )}
-                                {j.location && (
-                                  <div className="flex items-center gap-1">
-                                    <MapPin className="h-4 w-4" />
-                                    {j.location}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+								<div className="space-y-4">
+									<div className="space-y-2">
+										<label className="text-sm font-semibold text-slate-700">Seberapa puas kamu?</label>
+										<div className="flex gap-2">
+											{[1, 2, 3, 4, 5].map((score) => (
+												<button
+													key={score}
+													type="button"
+													onClick={() => setSurvey({ ...survey, rating: score })}
+													className={`h-10 w-10 rounded-full border text-sm font-bold transition-all ${
+														survey.rating === score
+															? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-[0_8px_24px_-16px_rgba(16,185,129,0.6)]"
+															: "border-slate-200 bg-white text-slate-700 hover:border-emerald-200"
+													}`}
+												>
+													{score}
+												</button>
+											))}
+										</div>
+									</div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-foreground">PIN Absensi</label>
-                    <Input
-                      type="text"
-                      placeholder="Masukkan 6 digit PIN"
-                      value={pin}
-                      onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                      maxLength={6}
-                      className="text-center text-2xl font-mono tracking-widest h-14"
-                    />
-                    <p className="text-xs text-muted-foreground">Minta PIN kepada pemateri atau admin</p>
-                  </div>
+									<div className="grid grid-cols-1 gap-3">
+										{[
+											{ key: "clarity", label: "Materi mudah dipahami" },
+											{ key: "relevance", label: "Materi relevan dengan kebutuhan" },
+										].map((item) => (
+											<div
+												key={item.key}
+												className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+											>
+												<span className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+													<ThumbsUp className="h-4 w-4 text-slate-600" /> {item.label}
+												</span>
+												<div className="flex gap-2">
+													{[{ value: "yes", label: "Ya" }, { value: "no", label: "Tidak" }].map((opt) => (
+														<button
+															key={opt.value}
+															type="button"
+															onClick={() => setSurvey({ ...survey, [item.key]: opt.value } as SurveyForm)}
+															className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all ${
+																(survey as any)[item.key] === opt.value
+																	? "bg-emerald-500 text-white shadow-[0_8px_24px_-16px_rgba(16,185,129,0.6)]"
+																	: "bg-white text-slate-700 border border-slate-200 hover:border-emerald-200"
+															}`}
+														>
+															{opt.label}
+														</button>
+													))}
+												</div>
+											</div>
+										))}
+									</div>
 
-                  <Button 
-                    onClick={handlePinAbsensi} 
-                    className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 hover:shadow-lg transition-all"
-                    disabled={!selectedJadwal || pin.length !== 6}
-                  >
-                    <ClipboardCheck className="mr-2 h-5 w-5" />
-                    Submit Absensi
-                  </Button>
-                </CardContent>
-              </Card>
-            </TabsContent>
+									<div className="space-y-2">
+										<label className="text-sm font-semibold text-slate-700">Saran atau kesan</label>
+										<textarea
+											value={survey.feedback}
+											onChange={(e) => setSurvey({ ...survey, feedback: e.target.value })}
+											rows={4}
+											className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+											placeholder="Tulis masukan untuk panitia/pemateri"
+										/>
+									</div>
+								</div>
+							</div>
 
-            <TabsContent value="qr">
-              <Card className="bg-gradient-card backdrop-blur-sm border-border/50 shadow-lg">
-                <CardHeader className="space-y-1">
-                  <CardTitle className="text-2xl flex items-center gap-2">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                      <QrCode className="h-5 w-5 text-white" />
-                    </div>
-                    Generate QR Code
-                  </CardTitle>
-                  <CardDescription className="text-base">Generate QR code untuk absensi (Khusus Admin/Pemateri)</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-3">
-                    <label className="text-sm font-semibold text-foreground">Pilih Jadwal Kajian:</label>
-                    <select
-                      className="w-full p-3 border-2 rounded-xl bg-background hover:border-primary/50 transition-colors text-base"
-                      value={selectedJadwal}
-                      onChange={(e) => setSelectedJadwal(e.target.value)}
-                    >
-                      <option value="">-- Pilih Jadwal --</option>
-                      {jadwal.map((j) => (
-                        <option key={j.id} value={j.id}>
-                          {j.title} - {new Date(j.date).toLocaleDateString("id-ID")}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <Button
-                    onClick={() => selectedJadwal && generateQRCode(selectedJadwal)}
-                    className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-500 to-cyan-500 hover:shadow-lg transition-all"
-                    disabled={!selectedJadwal}
-                  >
-                    <QrCode className="mr-2 h-5 w-5" />
-                    Generate QR Code
-                  </Button>
-
-                  {qrCodeUrl && (
-                    <div className="mt-6 p-6 bg-white dark:bg-muted rounded-2xl text-center space-y-4 animate-fade-in">
-                      <Badge className="bg-blue-500 text-white">QR Code Aktif</Badge>
-                      <img 
-                        src={qrCodeUrl} 
-                        alt="QR Code" 
-                        className="mx-auto w-64 h-64 border-4 border-border rounded-2xl p-4 shadow-xl bg-white" 
-                      />
-                      <div className="space-y-1">
-                        <p className="text-sm font-semibold text-foreground">QR Code siap digunakan!</p>
-                        <p className="text-xs text-muted-foreground">Berlaku selama 15 menit</p>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        )}
-      </div>
-    </div>
-  );
+							{/* Submit */}
+							<div className="lg:col-span-2">
+								<div className="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+									<div>
+										<p className="text-base font-semibold text-slate-900">Kirim absensi dan angket</p>
+										<p className="text-sm text-slate-600">Pastikan data sudah benar sebelum dikirim.</p>
+									</div>
+									<button
+										type="submit"
+										disabled={isSubmitting}
+										className="px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-semibold shadow-lg hover:from-emerald-600 hover:to-cyan-600 transition-all disabled:opacity-60"
+									>
+										{isSubmitting ? "Mengirim..." : "Kirim sekarang"}
+									</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<ChatbotButton />
+		</div>
+	);
 };
 
 export default Absensi;
