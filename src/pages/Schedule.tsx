@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "@/components/Navbar";
+import DashboardHeader from "@/components/DashboardHeader";
+import Sidebar from "@/components/Sidebar";
+import ChatbotButton from "@/components/ChatbotButton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, User, Clock, Sparkles } from "lucide-react";
+import { Calendar, MapPin, User, Clock, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,37 +14,88 @@ interface Schedule {
   title: string;
   description: string | null;
   date: string;
+  time?: string;
   location: string | null;
   pemateri: string | null;
+  registeredCount?: number;
+  status?: string;
 }
 
 const Schedule = () => {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    checkAuth();
+    loadUser();
     fetchSchedules();
   }, []);
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-    }
+  const loadUser = async () => {
+    setUser({
+      id: "user-123",
+      full_name: "Rafaditya Syahputra",
+      email: "rafaditya@irmaverse.local",
+      avatar: "RS"
+    });
   };
 
   const fetchSchedules = async () => {
     try {
-      const { data, error } = await supabase
-        .from("jadwal_kajian")
-        .select("*")
-        .order("date", { ascending: true });
-
-      if (error) throw error;
-      setSchedules(data || []);
+      // Mock data untuk demo
+      const mockSchedules: Schedule[] = [
+        {
+          id: "1",
+          title: "Semesta 1",
+          description: "Belajar strategi dakwah di era digital",
+          date: "2024-11-25",
+          time: "13:00 WIB",
+          location: "Aula Utama",
+          pemateri: "Ustadz Ahmad Zaki",
+          registeredCount: 45,
+          status: "Pendaftaran Dibuka"
+        },
+        {
+          id: "2",
+          title: "Semesta 2",
+          description: "Persiapan menyambut bulan suci",
+          date: "2024-11-28",
+          time: "14:00 WIB",
+          location: "Musholla",
+          pemateri: "Ustadzah Fatimah",
+          registeredCount: 67,
+          status: "Pendaftaran Dibuka"
+        },
+        {
+          id: "3",
+          title: "Buka Puasa Bersama",
+          description: "Meningkatkan kemampuan menghafal Al-Quran",
+          date: "2024-12-01",
+          time: "15:00 WIB",
+          location: "Ruang Tahfidz",
+          pemateri: "Ustadz Muhammad Rizki",
+          registeredCount: 32,
+          status: "Pendaftaran Dibuka"
+        },
+        {
+          id: "4",
+          title: "Seminar Akhlak Pemuda",
+          description: "Membangun karakter islami generasi muda",
+          date: "2024-12-05",
+          time: "09:00 WIB",
+          location: "Aula Besar",
+          pemateri: "Ustadz Abdullah Hakim",
+          registeredCount: 89,
+          status: "Pendaftaran Dibuka"
+        }
+      ];
+      // Add thumbnail images to each schedule
+      mockSchedules.forEach((schedule, index) => {
+        (schedule as any).thumbnail = `https://picsum.photos/seed/event${index + 1}/200/200`;
+      });
+      setSchedules(mockSchedules);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -54,112 +107,120 @@ const Schedule = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-subtle">
-      <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-        <div className="mb-8 relative overflow-hidden p-8 rounded-3xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-purple-500/10" />
-          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-pink-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          
-          <div className="relative">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 mb-6 bg-gradient-to-r from-purple-500/15 via-pink-500/10 to-purple-500/15 border-2 border-purple-500/30 rounded-full backdrop-blur-md shadow-lg">
-              <Calendar className="h-4 w-4 text-purple-500 animate-pulse" />
-              <span className="text-sm font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent uppercase tracking-wider">Kegiatan Mendatang</span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
-              <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent">
-                Jadwal Kajian
-              </span>
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground font-light">
-              Jadwal kegiatan kajian IRMA Al-Hikmah ✨
-            </p>
-          </div>
-        </div>
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+        <p className="text-slate-500">Memuat...</p>
+      </div>
+    );
+  }
 
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-flex items-center gap-2">
-              <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-              <p className="text-muted-foreground">Memuat jadwal...</p>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}>
+      <DashboardHeader user={user} />
+      <div className="flex">
+        <Sidebar />
+        <div className="flex-1 px-6 lg:px-8 py-12">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-4xl font-black text-slate-800 mb-2">
+                Event & Kegiatan
+              </h1>
+              <p className="text-slate-600 text-lg">
+                Daftar event dan kegiatan rohani yang akan datang
+              </p>
             </div>
-          </div>
-        ) : schedules.length === 0 ? (
-          <Card className="border-2 border-dashed border-border/50 bg-muted/20">
-            <CardContent className="text-center py-12">
-              <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-              <p className="text-muted-foreground text-lg">Belum ada jadwal kajian</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {schedules.map((schedule) => {
-              const isUpcoming = new Date(schedule.date) > new Date();
-              return (
-                <Card 
-                  key={schedule.id} 
-                  className="group border-2 border-transparent hover:border-purple-500/20 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-gradient-card backdrop-blur-sm overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  <CardHeader className="relative">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <Calendar className="h-5 w-5 text-white" />
-                          </div>
-                          {isUpcoming && (
-                            <Badge className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 text-green-600 dark:text-green-400 border-green-500/20">
-                              Mendatang
-                            </Badge>
-                          )}
+
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-slate-500">Memuat jadwal...</p>
+              </div>
+            ) : schedules.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-slate-500">Belum ada event terdaftar</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {schedules.map((schedule) => (
+                  <div
+                    key={schedule.id}
+                    className="bg-white rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-2"
+                  >
+                    <div className="p-6">
+                      <div className="flex items-start gap-4 mb-4">
+                        {/* Event Image */}
+                        <div className="flex-shrink-0 w-16 h-16 rounded-2xl overflow-hidden shadow-lg">
+                          <img 
+                            src={(schedule as any).thumbnail} 
+                            alt={schedule.title}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        <CardTitle className="text-xl mb-2 group-hover:text-primary transition-colors">
-                          {schedule.title}
-                        </CardTitle>
-                        {schedule.description && (
-                          <CardDescription className="text-base leading-relaxed">
-                            {schedule.description}
-                          </CardDescription>
+                        
+                        <div className="flex-1">
+                          {/* Status Badge */}
+                          {schedule.status && (
+                            <span className="inline-block px-3 py-1 mb-2 rounded-full bg-teal-100 text-teal-700 text-xs font-semibold">
+                              {schedule.status}
+                            </span>
+                          )}
+                          
+                          {/* Title */}
+                          <h3 className="text-xl font-bold text-slate-800 mb-1 group-hover:text-teal-600 transition-colors">
+                            {schedule.title}
+                          </h3>
+                        </div>
+                      </div>
+
+                      {/* Event Details */}
+                      <div className="space-y-2.5 mb-6">
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <Calendar className="h-4 w-4 text-slate-400" />
+                          <span>
+                            {new Date(schedule.date).toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </span>
+                        </div>
+                        
+                        {schedule.time && (
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Clock className="h-4 w-4 text-slate-400" />
+                            <span>{schedule.time}</span>
+                          </div>
+                        )}
+                        
+                        {schedule.location && (
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <MapPin className="h-4 w-4 text-slate-400" />
+                            <span>{schedule.location}</span>
+                          </div>
+                        )}
+                        
+                        {schedule.registeredCount && (
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Users className="h-4 w-4 text-slate-400" />
+                            <span>{schedule.registeredCount} peserta terdaftar</span>
+                          </div>
                         )}
                       </div>
+
+                      {/* Button */}
+                      <button className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-300">
+                        Daftar Event
+                      </button>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-border/50">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Clock className="h-4 w-4 text-primary" />
-                        <span className="text-muted-foreground">
-                          {new Date(schedule.date).toLocaleDateString("id-ID", {
-                            weekday: "short",
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-                      {schedule.location && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <MapPin className="h-4 w-4 text-primary" />
-                          <span className="text-muted-foreground">{schedule.location}</span>
-                        </div>
-                      )}
-                      {schedule.pemateri && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <User className="h-4 w-4 text-primary" />
-                          <span className="text-muted-foreground">{schedule.pemateri}</span>
-                        </div>
-                      )}
-                    </div>
-                  </CardHeader>
-                </Card>
-              );
-            })}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
+      <ChatbotButton />
     </div>
   );
 };

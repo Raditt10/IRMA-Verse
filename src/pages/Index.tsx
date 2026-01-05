@@ -131,12 +131,12 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-teal-800 to-cyan-900 text-white relative overflow-hidden">
-      <div className="absolute inset-0 opacity-20" style={{
-        backgroundImage: "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 38%), radial-gradient(circle at 78% 12%, rgba(59,130,246,0.12), transparent 32%), radial-gradient(circle at 68% 72%, rgba(16,185,129,0.15), transparent 32%)"
+    <div className="min-h-screen bg-gradient-to-br from-emerald-800 via-teal-700 to-cyan-800 text-white relative overflow-hidden" style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}>
+      <div className="absolute inset-0 opacity-30" style={{
+        backgroundImage: "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.12), transparent 38%), radial-gradient(circle at 78% 12%, rgba(59,130,246,0.16), transparent 32%), radial-gradient(circle at 68% 72%, rgba(16,185,129,0.2), transparent 32%)"
       }} />
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px)",
+        backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)",
         backgroundSize: "72px 72px"
       }} />
 
@@ -253,55 +253,59 @@ const Index = () => {
         </div>
       </div>
 
-      <section className="py-20 relative">
+      <section className="py-20 relative bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-4">Fitur Tersedia</h2>
+            <p className="text-lg text-slate-600">Berbagai fitur yang memudahkan aktivitas IRMA Anda</p>
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-6">
             {features.map((feature, index) => (
               <div
                 key={index}
                 className="flex flex-col items-center gap-3 group cursor-pointer"
               >
-                <div className={`w-20 h-20 rounded-[2rem] border-2 border-white/20 bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
-                  <feature.icon className="h-10 w-10 text-white" />
+                <div className="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300">
+                  <feature.icon className="h-9 w-9 text-slate-800 group-hover:text-slate-900 transition-colors duration-300" />
                 </div>
-                <p className="text-sm font-semibold text-white/90 text-center leading-tight">
+                <p className="text-sm font-semibold text-gray-800 text-center leading-tight">
                   {feature.title}
                 </p>
               </div>
             ))}
 
             <div className="flex flex-col items-center gap-3 group cursor-pointer">
-              <div className="w-20 h-20 rounded-[2rem] border-2 border-white/20 bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <Zap className="h-10 w-10 text-white" />
+              <div className="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300">
+                <Zap className="h-9 w-9 text-slate-800 group-hover:text-slate-900 transition-colors duration-300" />
               </div>
-              <p className="text-sm font-semibold text-white/90 text-center leading-tight">
+              <p className="text-sm font-semibold text-gray-800 text-center leading-tight">
                 Kegiatan
               </p>
             </div>
 
             <div className="flex flex-col items-center gap-3 group cursor-pointer">
-             <div className="w-20 h-20 rounded-[2rem] border-2 border-white/20 bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <Target className="h-10 w-10 text-white" />
+             <div className="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300">
+                <Target className="h-9 w-9 text-slate-800 group-hover:text-slate-900 transition-colors duration-300" />
               </div>
-              <p className="text-sm font-semibold text-white/90 text-center leading-tight">
+              <p className="text-sm font-semibold text-gray-800 text-center leading-tight">
                 Program
               </p>
             </div>
 
             <div className="flex flex-col items-center gap-3 group cursor-pointer">
-              <div className="w-20 h-20 rounded-[2rem] border-2 border-white/20 bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <CalendarDays className="h-10 w-10 text-white" />
+              <div className="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300">
+                <CalendarDays className="h-9 w-9 text-slate-800 group-hover:text-slate-900 transition-colors duration-300" />
               </div>
-              <p className="text-sm font-semibold text-white/90 text-center leading-tight">
+              <p className="text-sm font-semibold text-gray-800 text-center leading-tight">
                 Event
               </p>
             </div>
 
             <div className="flex flex-col items-center gap-3 group cursor-pointer">
-             <div className="w-20 h-20 rounded-[2rem] border-2 border-white/20 bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <Heart className="h-10 w-10 text-white" />
+             <div className="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300">
+                <Heart className="h-9 w-9 text-slate-800 group-hover:text-slate-900 transition-colors duration-300" />
               </div>
-              <p className="text-sm font-semibold text-white/90 text-center leading-tight">
+              <p className="text-sm font-semibold text-gray-800 text-center leading-tight">
                 Donasi
               </p>
             </div>
@@ -548,4 +552,3 @@ const Index = () => {
 };
 
 export default Index;
-  

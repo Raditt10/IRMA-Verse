@@ -20,37 +20,29 @@ const Auth = () => {
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get("signup-email") as string;
-    const password = formData.get("signup-password") as string;
     const fullName = formData.get("full-name") as string;
 
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            full_name: fullName,
-          },
-        },
-      });
+    // Mock session - no backend needed
+    const mockSession = {
+      access_token: 'mock-token-' + Date.now(),
+      user: {
+        id: 'user-' + Math.random().toString(36).substr(2, 9),
+        email: email,
+        user_metadata: {
+          full_name: fullName
+        }
+      }
+    };
 
-      if (error) throw error;
+    localStorage.setItem('sb-session', JSON.stringify(mockSession));
 
-      toast({
-        title: "Pendaftaran Berhasil",
-        description: "Anda telah berhasil login!",
-      });
-      navigate("/dashboard");
-    } catch (error: any) {
-      toast({
-        title: "Pendaftaran Gagal",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    toast({
+      title: "Pendaftaran Berhasil",
+      description: "Selamat datang di IRMA Verse!",
+    });
+    
+    setIsLoading(false);
+    navigate("/dashboard");
   };
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -59,34 +51,32 @@ const Auth = () => {
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get("signin-email") as string;
-    const password = formData.get("signin-password") as string;
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    // Mock session - no backend needed
+    const mockSession = {
+      access_token: 'mock-token-' + Date.now(),
+      user: {
+        id: 'user-' + Math.random().toString(36).substr(2, 9),
+        email: email,
+        user_metadata: {
+          full_name: email.split('@')[0]
+        }
+      }
+    };
 
-      if (error) throw error;
+    localStorage.setItem('sb-session', JSON.stringify(mockSession));
 
-      toast({
-        title: "Login Berhasil",
-        description: "Selamat datang kembali!",
-      });
-      navigate("/dashboard");
-    } catch (error: any) {
-      toast({
-        title: "Login Gagal",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    toast({
+      title: "Login Berhasil",
+      description: "Selamat datang kembali!",
+    });
+    
+    setIsLoading(false);
+    navigate("/dashboard");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-emerald-100 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-emerald-100 flex flex-col" style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}>
       <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-4xl">
           {/* Card Form login */}

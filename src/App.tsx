@@ -29,6 +29,11 @@ import AdminPanel from "./pages/AdminPanel";
 import PemateriDashboard from "./pages/PemateriDashboard";
 import Absensi from "./pages/Absensi";
 import AdminAbsensi from "./pages/AdminAbsensi";
+import Instructors from "./pages/Instructors";
+import OurPrograms from "./pages/OurPrograms";
+import Competitions from "./pages/Competitions";
+import Members from "./pages/Members";
+import News from "./pages/News";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +52,11 @@ const App = () => (
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/materials" element={<Materials />} />
+            <Route path="/instructors" element={<Instructors />} />
+            <Route path="/programs" element={<OurPrograms />} />
+            <Route path="/competitions" element={<Competitions />} />
+            <Route path="/members" element={<Members />} />
+            <Route path="/news" element={<News />} />
             <Route path="/achievements" element={<Achievements />} />
             <Route path="/ratings" element={<Ratings />} />
             <Route path="/structure" element={<Structure />} />
