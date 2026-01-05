@@ -1,525 +1,403 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import {
+  User,
+  Mail,
+  Calendar,
+  MapPin,
+  Phone,
+  Edit2,
+  Save,
+  X,
+  Award,
+  Trophy,
+  Star,
+  Target,
+  Flame,
+  BookOpen,
+  MessageCircle,
+  BarChart3,
+  Camera,
+  ArrowLeft,
+  ArrowRight,
+  Clock3,
+} from "lucide-react";
+import DashboardHeader from "@/components/DashboardHeader";
+import Sidebar from "@/components/Sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Trophy, Award, Calendar, Target, TrendingUp, Edit2, Save, X, Upload } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import LevelDisplay from "@/components/LevelDisplay";
-
-interface UserStats {
-  totalQuizzes: number;
-  averageScore: number;
-  bestScore: number;
-  totalAttendance: number;
-  totalBadges: number;
-  totalPoints: number;
-}
-
-interface BadgeData {
-  id: string;
-  name: string;
-  icon: string;
-  points: number;
-  earned_at: string;
-}
-
-interface AttendanceRecord {
-  id: string;
-  waktu_absen: string;
-  status: string;
-  jadwal: {
-    title: string;
-    date: string;
-  };
-}
 
 const Profile = () => {
-  const [profile, setProfile] = useState<any>(null);
-  const [stats, setStats] = useState<UserStats>({
-    totalQuizzes: 0,
-    averageScore: 0,
-    bestScore: 0,
-    totalAttendance: 0,
-    totalBadges: 0,
-    totalPoints: 0,
-  });
-  const [badges, setBadges] = useState<BadgeData[]>([]);
-  const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ full_name: "", bio: "" });
-  const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [user, setUser] = useState({
+    id: "user-123",
+    full_name: "Rafaditya Syahputra",
+    email: "rafaditya@irmaverse.local",
+    phone: "+62 812 3456 7890",
+    location: "Jakarta, Indonesia",
+    bio: "Pembelajar aktif yang terus berkembang dalam memahami ajaran Islam. Senang berdiskusi dan berbagi ilmu dengan sesama.",
+    join_date: "Januari 2024",
+    avatar: "RS",
+  });
 
-  useEffect(() => {
-    checkAuth();
-    fetchProfileData();
-  }, []);
+  const [editedUser, setEditedUser] = useState(user);
+  const avatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatimah";
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-    }
+  const stats = {
+    totalPoints: 2450,
+    totalBadges: 8,
+    totalQuizzes: 24,
+    averageScore: 87,
+    streak: 7,
+    level: 5,
+    rank: 12,
   };
 
-  const fetchProfileData = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+  const programs = [
+    { id: "1", title: "Kedudukan akal dan wahyu", duration: "3 bulan", level: "Program Wajib", status: "in-progress" },
+    { id: "2", title: "Kursus Bahasa Arab", duration: "6 bulan", level: "Program Wajib", status: "done" },
+    { id: "3", title: "Training Imam & Khatib", duration: "2 bulan", level: "Lanjutan", status: "in-progress" },
+    { id: "4", title: "Tahsin & Tajwid Intensif", duration: "4 bulan", level: "Program Wajib", status: "done" },
+    { id: "5", title: "Manajemen Masjid Modern", duration: "3 bulan", level: "Lanjutan", status: "upcoming" },
+    { id: "6", title: "Media Dakwah Digital", duration: "5 bulan", level: "Program Wajib", status: "upcoming" },
+  ] as const;
 
-      // Fetch profile
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .single();
+  const activities = [
+    { type: "quiz", title: "Menyelesaikan Quiz Dasar Islam", date: "Hari ini, 14:30", points: "+50" },
+    { type: "badge", title: "Mendapat Badge Konsisten", date: "Hari ini, 09:00", points: "+100" },
+    { type: "discussion", title: "Berkomentar di Diskusi Sholat", date: "Kemarin, 20:15", points: "+20" },
+    { type: "material", title: "Membaca Materi Tauhid", date: "Kemarin, 18:00", points: "+30" },
+    { type: "level", title: "Naik ke Level 5", date: "2 hari lalu", points: "+200" },
+  ];
 
-      setProfile(profileData);
-      setEditForm({
-        full_name: profileData?.full_name || "",
-        bio: profileData?.bio || "",
-      });
-
-      // Fetch quiz stats
-      const { data: quizAttempts } = await supabase
-        .from("quiz_attempts")
-        .select("score")
-        .eq("user_id", session.user.id);
-
-      const totalQuizzes = quizAttempts?.length || 0;
-      const averageScore = totalQuizzes > 0
-        ? Math.round(quizAttempts.reduce((sum, a) => sum + a.score, 0) / totalQuizzes)
-        : 0;
-      const bestScore = totalQuizzes > 0
-        ? Math.max(...quizAttempts.map(a => a.score))
-        : 0;
-
-      // Fetch attendance
-      const { data: attendanceData } = await supabase
-        .from("absensi")
-        .select(`
-          id,
-          waktu_absen,
-          status,
-          jadwal_id
-        `)
-        .eq("user_id", session.user.id)
-        .order("waktu_absen", { ascending: false })
-        .limit(10);
-
-      // Fetch jadwal details for each attendance
-      const attendanceWithDetails = await Promise.all(
-        (attendanceData || []).map(async (record) => {
-          const { data: jadwalData } = await supabase
-            .from("jadwal_kajian")
-            .select("title, date")
-            .eq("id", record.jadwal_id)
-            .single();
-
-          return {
-            ...record,
-            jadwal: jadwalData || { title: "Unknown", date: "" },
-          };
-        })
-      );
-
-      setAttendance(attendanceWithDetails);
-
-      // Fetch badges
-      const { data: userBadgesData } = await supabase
-        .from("user_badges")
-        .select(`
-          earned_at,
-          badge_id
-        `)
-        .eq("user_id", session.user.id);
-
-      const badgeDetails = await Promise.all(
-        (userBadgesData || []).map(async (ub) => {
-          const { data: badgeData } = await supabase
-            .from("badges")
-            .select("id, name, icon, points")
-            .eq("id", ub.badge_id)
-            .single();
-
-          return {
-            ...badgeData,
-            earned_at: ub.earned_at,
-          };
-        })
-      );
-
-      setBadges(badgeDetails);
-
-      const totalPoints = badgeDetails.reduce((sum, b) => sum + (b.points || 0), 0);
-
-      setStats({
-        totalQuizzes,
-        averageScore,
-        bestScore,
-        totalAttendance: attendanceData?.length || 0,
-        totalBadges: badgeDetails.length,
-        totalPoints,
-      });
-
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+  const handleSave = () => {
+    setUser(editedUser);
+    setIsEditing(false);
   };
 
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      setUploading(true);
-
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${session.user.id}/${Math.random()}.${fileExt}`;
-
-      // Upload to storage
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
-
-      // Update profile
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: data.publicUrl })
-        .eq('user_id', session.user.id);
-
-      if (updateError) throw updateError;
-
-      setProfile({ ...profile, avatar_url: data.publicUrl });
-
-      toast({
-        title: "Foto profil diupdate",
-        description: "Foto profil berhasil diperbarui",
-      });
-
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-    }
+  const handleCancel = () => {
+    setEditedUser(user);
+    setIsEditing(false);
   };
 
-  const handleSaveProfile = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: editForm.full_name,
-          bio: editForm.bio,
-        })
-        .eq('user_id', session.user.id);
-
-      if (error) throw error;
-
-      setProfile({
-        ...profile,
-        full_name: editForm.full_name,
-        bio: editForm.bio,
-      });
-      setIsEditing(false);
-
-      toast({
-        title: "Profil diupdate",
-        description: "Profil berhasil diperbarui",
-      });
-
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case "quiz":
+        return <BarChart3 className="h-4 w-4" />;
+      case "badge":
+        return <Award className="h-4 w-4" />;
+      case "discussion":
+        return <MessageCircle className="h-4 w-4" />;
+      case "material":
+        return <BookOpen className="h-4 w-4" />;
+      case "level":
+        return <Trophy className="h-4 w-4" />;
+      default:
+        return <Star className="h-4 w-4" />;
     }
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map(n => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      <Navbar />
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-        {loading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Memuat profil...</p>
+    <div
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100"
+      style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}
+    >
+      <DashboardHeader user={user} />
+
+      <div className="flex">
+        <Sidebar />
+
+        <div className="flex-1 px-6 lg:px-8 py-12">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6 transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span className="font-semibold">Kembali ke Dashboard</span>
+          </button>
+
+          {/* Profile Header */}
+          <div className="mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-2">Profile Saya</h1>
+            <p className="text-lg text-slate-600">Kelola informasi dan preferensi akun Anda</p>
           </div>
-        ) : (
-          <div className="space-y-8">
-            {/* Profile Header */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-6">
-                  <div className="relative">
-                    <Avatar className="h-24 w-24">
-                      {profile?.avatar_url && <AvatarImage src={profile.avatar_url} />}
-                      <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
-                        {profile?.full_name ? getInitials(profile.full_name) : "U"}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Profile Info */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Profile Card */}
+              <div className="rounded-2xl bg-white border border-slate-200 p-8 shadow-sm">
+                <div className="flex items-start justify-between mb-8">
+                  <h2 className="text-2xl font-bold text-slate-900">Informasi Profile</h2>
+                  {!isEditing ? (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold transition-colors"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                      Edit Profile
+                    </button>
+                  ) : (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleSave}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold transition-colors"
+                      >
+                        <Save className="h-4 w-4" />
+                        Simpan
+                      </button>
+                      <button
+                        onClick={handleCancel}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                        Batal
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Avatar Section */}
+                <div className="flex items-center gap-6 mb-8">
+                  <div className="relative group">
+                    <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
+                      <AvatarImage src={avatarUrl} alt={user.full_name} />
+                      <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white text-2xl font-bold">
+                        {user.full_name.substring(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 p-2 bg-primary text-primary-foreground rounded-full cursor-pointer hover:bg-primary/90 transition-colors">
-                      <Upload className="h-4 w-4" />
-                      <input
-                        id="avatar-upload"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleAvatarUpload}
-                        disabled={uploading}
-                      />
-                    </label>
-                  </div>
-                  <div className="flex-1">
-                    {isEditing ? (
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="full_name">Nama Lengkap</Label>
-                          <Input
-                            id="full_name"
-                            value={editForm.full_name}
-                            onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="bio">Bio</Label>
-                          <Textarea
-                            id="bio"
-                            value={editForm.bio}
-                            onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                            placeholder="Ceritakan sedikit tentang dirimu..."
-                            rows={3}
-                          />
-                        </div>
-                        <div className="flex gap-2">
-                          <Button onClick={handleSaveProfile} size="sm">
-                            <Save className="h-4 w-4 mr-2" />
-                            Simpan
-                          </Button>
-                          <Button onClick={() => setIsEditing(false)} variant="outline" size="sm">
-                            <X className="h-4 w-4 mr-2" />
-                            Batal
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="flex items-center gap-2 mb-2">
-                          <h1 className="text-3xl font-bold text-foreground">
-                            {profile?.full_name || "User"}
-                          </h1>
-                          <Button onClick={() => setIsEditing(true)} variant="ghost" size="sm">
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        {profile?.bio && (
-                          <p className="text-muted-foreground mb-4">{profile.bio}</p>
-                        )}
-                        <div className="flex items-center gap-4 text-muted-foreground">
-                          <div className="flex items-center gap-2">
-                            <Trophy className="h-5 w-5 text-yellow-500" />
-                            <span className="font-semibold">{stats.totalPoints} Poin</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Award className="h-5 w-5 text-blue-500" />
-                            <span>{stats.totalBadges} Badge</span>
-                          </div>
-                        </div>
-                      </>
+                    {isEditing && (
+                      <button className="absolute bottom-0 right-0 p-2 rounded-full bg-emerald-500 text-white shadow-lg hover:bg-emerald-600 transition-colors">
+                        <Camera className="h-4 w-4" />
+                      </button>
                     )}
                   </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-1">{user.full_name}</h3>
+                    <p className="text-slate-600 mb-2">{user.email}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 text-white text-sm font-semibold">
+                        Level {stats.level}
+                      </span>
+                      <span className="px-4 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-white text-sm font-bold shadow-[0_6px_18px_-8px_rgba(249,168,37,0.9)]">
+                        Mashaallah
+                      </span>
+                      <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-sm font-semibold">
+                        Peringkat #{stats.rank}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* Level Display */}
-            <LevelDisplay totalPoints={stats.totalPoints} />
+                {/* Form Fields */}
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                        <User className="h-4 w-4" />
+                        Nama Lengkap
+                      </label>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={editedUser.full_name}
+                          onChange={(e) => setEditedUser({ ...editedUser, full_name: e.target.value })}
+                          className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                        />
+                      ) : (
+                        <p className="px-4 py-3 rounded-lg bg-slate-50 text-slate-900">{user.full_name}</p>
+                      )}
+                    </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <Target className="h-4 w-4 text-blue-500" />
-                    Total Quiz
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-foreground">{stats.totalQuizzes}</div>
-                </CardContent>
-              </Card>
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                        <Mail className="h-4 w-4" />
+                        Email
+                      </label>
+                      {isEditing ? (
+                        <input
+                          type="email"
+                          value={editedUser.email}
+                          onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
+                          className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                        />
+                      ) : (
+                        <p className="px-4 py-3 rounded-lg bg-slate-50 text-slate-900">{user.email}</p>
+                      )}
+                    </div>
 
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-green-500" />
-                    Rata-rata Skor
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-foreground">{stats.averageScore}%</div>
-                </CardContent>
-              </Card>
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                        <Phone className="h-4 w-4" />
+                        Nomor Telepon
+                      </label>
+                      {isEditing ? (
+                        <input
+                          type="tel"
+                          value={editedUser.phone}
+                          onChange={(e) => setEditedUser({ ...editedUser, phone: e.target.value })}
+                          className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                        />
+                      ) : (
+                        <p className="px-4 py-3 rounded-lg bg-slate-50 text-slate-900">{user.phone}</p>
+                      )}
+                    </div>
 
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <Trophy className="h-4 w-4 text-yellow-500" />
-                    Skor Terbaik
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-foreground">{stats.bestScore}%</div>
-                </CardContent>
-              </Card>
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                        <MapPin className="h-4 w-4" />
+                        Lokasi
+                      </label>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={editedUser.location}
+                          onChange={(e) => setEditedUser({ ...editedUser, location: e.target.value })}
+                          className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                        />
+                      ) : (
+                        <p className="px-4 py-3 rounded-lg bg-slate-50 text-slate-900">{user.location}</p>
+                      )}
+                    </div>
+                  </div>
 
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-purple-500" />
-                    Total Kehadiran
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-foreground">{stats.totalAttendance}</div>
-                </CardContent>
-              </Card>
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                      <User className="h-4 w-4" />
+                      Bio
+                    </label>
+                    {isEditing ? (
+                      <textarea
+                        value={editedUser.bio}
+                        onChange={(e) => setEditedUser({ ...editedUser, bio: e.target.value })}
+                        rows={4}
+                        className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all resize-none"
+                      />
+                    ) : (
+                      <p className="px-4 py-3 rounded-lg bg-slate-50 text-slate-900">{user.bio}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                      <Calendar className="h-4 w-4" />
+                      Bergabung Sejak
+                    </label>
+                    <p className="px-4 py-3 rounded-lg bg-slate-50 text-slate-900">{user.join_date}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Activity History */}
+              <div className="rounded-2xl bg-white border border-slate-200 p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-slate-900 mb-6">Aktivitas Terbaru</h2>
+                <div className="space-y-4">
+                  {activities.map((activity, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-4 p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
+                    >
+                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-slate-700">
+                        {getActivityIcon(activity.type)}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-slate-900">{activity.title}</p>
+                        <p className="text-sm text-slate-500">{activity.date}</p>
+                      </div>
+                      <span className="text-emerald-600 font-bold">{activity.points}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Badges Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Award className="h-6 w-6 text-primary" />
-                  Badge yang Diraih
-                </CardTitle>
-                <CardDescription>
-                  Koleksi badge dari pencapaianmu
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {badges.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-8">
-                    Belum ada badge yang diraih
-                  </p>
-                ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {badges.map((badge) => (
-                      <div
-                        key={badge.id}
-                        className="flex flex-col items-center gap-2 p-4 rounded-lg border bg-card hover:shadow-lg transition-shadow"
-                      >
-                        <div className="text-4xl">{badge.icon}</div>
-                        <p className="text-sm font-medium text-center">{badge.name}</p>
-                        <Badge variant="secondary" className="text-xs">
-                          +{badge.points} poin
-                        </Badge>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(badge.earned_at).toLocaleDateString("id-ID")}
-                        </p>
-                      </div>
-                    ))}
+            {/* Right Column - Stats & Badges */}
+            <div className="space-y-6">
+              {/* Stats Card */}
+              <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
+                <h2 className="text-xl font-bold text-slate-900 mb-6">Statistik</h2>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-amber-50 to-orange-50">
+                    <div className="flex items-center gap-3">
+                      <Trophy className="h-5 w-5 text-slate-700" />
+                      <span className="text-sm font-semibold text-slate-700">Total Poin</span>
+                    </div>
+                    <span className="text-lg font-bold text-slate-900">{stats.totalPoints}</span>
                   </div>
-                )}
-              </CardContent>
-            </Card>
 
-            {/* Attendance History */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-6 w-6 text-primary" />
-                  Riwayat Kehadiran
-                </CardTitle>
-                <CardDescription>
-                  10 kehadiran terakhir
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {attendance.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-8">
-                    Belum ada riwayat kehadiran
-                  </p>
-                ) : (
-                  <div className="space-y-4">
-                    {attendance.map((record) => (
-                      <div
-                        key={record.id}
-                        className="flex items-center justify-between p-4 rounded-lg border bg-card"
-                      >
-                        <div className="flex-1">
-                          <p className="font-medium text-foreground">{record.jadwal.title}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {new Date(record.jadwal.date).toLocaleDateString("id-ID", {
-                              weekday: "long",
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <Badge
-                            variant={record.status === "hadir" ? "default" : "secondary"}
-                          >
-                            {record.status}
-                          </Badge>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {new Date(record.waktu_absen).toLocaleTimeString("id-ID", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50">
+                    <div className="flex items-center gap-3">
+                      <Award className="h-5 w-5 text-slate-700" />
+                      <span className="text-sm font-semibold text-slate-700">Badge</span>
+                    </div>
+                    <span className="text-lg font-bold text-slate-900">{stats.totalBadges}</span>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50">
+                    <div className="flex items-center gap-3">
+                      <BarChart3 className="h-5 w-5 text-slate-700" />
+                      <span className="text-sm font-semibold text-slate-700">Quiz</span>
+                    </div>
+                    <span className="text-lg font-bold text-slate-900">{stats.totalQuizzes}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-red-50 to-pink-50">
+                    <div className="flex items-center gap-3">
+                      <Flame className="h-5 w-5 text-slate-700" />
+                      <span className="text-sm font-semibold text-slate-700">Streak</span>
+                    </div>
+                    <span className="text-lg font-bold text-slate-900">{stats.streak} Hari</span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50">
+                    <div className="flex items-center gap-3">
+                      <Target className="h-5 w-5 text-slate-700" />
+                      <span className="text-sm font-semibold text-slate-700">Rata-rata</span>
+                    </div>
+                    <span className="text-lg font-bold text-slate-900">{stats.averageScore}%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Programs Card */}
+              <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
+                <h2 className="text-xl font-bold text-slate-900 mb-6">Program Kurikulum yang saya tuntaskan</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {programs
+                    .filter((program) => program.status === "done")
+                    .map((program) => {
+                    return (
+                      <div
+                        key={program.id}
+                        className="relative rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm hover:shadow-md transition-all min-h-[190px]"
+                      >
+                        <div className="flex flex-col gap-4 pr-24">
+                          <p className="text-base font-semibold text-slate-900 leading-snug">{program.title}</p>
+                          <div className="flex flex-wrap items-center gap-4 text-sm text-slate-700">
+                            <span className="flex items-center gap-1">
+                              <Clock3 className="h-4 w-4 text-slate-700" />
+                              {program.duration}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <BookOpen className="h-4 w-4 text-slate-700" />
+                              {program.level}
+                            </span>
+                          </div>
+                        </div>
+
+                        <button className="mt-6 w-full py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-sm font-semibold flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-cyan-600 transition-colors">
+                          <span>Lihat Detail</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -68,7 +68,7 @@ const DashboardHeader = ({ user }: DashboardHeaderProps) => {
           {/* Profile Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 h-10 px-2 rounded-lg hover:bg-slate-100 transition-colors">
+              <button className="flex items-center gap-2 h-10 px-2 rounded-lg hover:bg-green-100 transition-colors">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={avatarUrl} alt={user.full_name} />
                   <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white text-sm font-semibold">
@@ -78,7 +78,7 @@ const DashboardHeader = ({ user }: DashboardHeaderProps) => {
                 <span className="hidden sm:inline text-sm font-semibold text-slate-900">{user.full_name}</span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56" style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}>
               <DropdownMenuLabel>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
@@ -93,7 +93,6 @@ const DashboardHeader = ({ user }: DashboardHeaderProps) => {
                   </div>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
                 <UserIcon className="mr-2 h-4 w-4" />
                 <span>Profile</span>
@@ -102,7 +101,6 @@ const DashboardHeader = ({ user }: DashboardHeaderProps) => {
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Pengaturan</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
                   localStorage.removeItem("sb-session");

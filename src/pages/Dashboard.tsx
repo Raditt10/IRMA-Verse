@@ -72,7 +72,7 @@ const Dashboard = () => {
       count: 3,
     },
     {
-      title: "Jadwal Kajian",
+      title: "Jadwal Kajian Kamu",
       description: "Cek jadwal minggu ini",
       icon: Calendar,
       link: "/schedule",
@@ -101,7 +101,7 @@ const Dashboard = () => {
       color: "indigo",
     },
     {
-      title: "Leaderboard",
+      title: "Peringkat Pengguna",
       description: "Lihat peringkat peserta",
       icon: TrendingUp,
       link: "/leaderboard",
