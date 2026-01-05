@@ -64,7 +64,7 @@ const Dashboard = () => {
 
   const quickActions = [
     {
-      title: "Pengumuman",
+      title: "Pengumuman umum",
       description: "Lihat informasi terbaru",
       icon: Bell,
       link: "/announcements",
@@ -94,7 +94,7 @@ const Dashboard = () => {
       count: 2,
     },
     {
-      title: "Diskusi",
+      title: "Diskusi IRMA",
       description: "Bergabung dalam diskusi",
       icon: MessageCircle,
       link: "/chat-rooms",
