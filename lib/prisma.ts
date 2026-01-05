@@ -1,11 +1,19 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaMariaDb } from '@prisma/adapter-mariadb'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+const adapter = new PrismaMariaDb({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'irmaverse',
+  port: 3306,
+  acquireTimeout: 30000,
+})
+
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({

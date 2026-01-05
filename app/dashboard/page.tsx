@@ -6,7 +6,7 @@ export default async function DashboardPage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/login");
+    redirect("/auth");
   }
 
   return (
@@ -21,7 +21,7 @@ export default async function DashboardPage() {
               <form
                 action={async () => {
                   "use server";
-                  await signOut({ redirectTo: "/login" });
+                  await signOut({ redirectTo: "/auth" });
                 }}
               >
                 <button

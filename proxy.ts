@@ -9,7 +9,7 @@ export async function proxy(request: NextRequest) {
                        request.cookies.get("__Secure-authjs.session-token")?.value;
   
   const isLoggedIn = !!sessionToken;
-  const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/register");
+  const isAuthPage = pathname.startsWith("/auth") || pathname.startsWith("/register");
   const isDashboard = pathname.startsWith("/dashboard");
   const isHomePage = pathname === "/";
   const isApiRoute = pathname.startsWith("/api");
@@ -26,7 +26,7 @@ export async function proxy(request: NextRequest) {
 
   // Redirect to login if accessing dashboard without session
   if (isDashboard && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/auth", request.url));
   }
 
   // Redirect to dashboard if accessing auth pages while logged in
