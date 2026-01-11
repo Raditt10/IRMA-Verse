@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import DashboardHeader from "@/components/ui/DashboardHeader";
 import Sidebar from "@/components/ui/Sidebar";
 import ChatbotButton from "@/components/ui/ChatbotButton";
@@ -43,6 +45,21 @@ interface SystemAlert {
 const AdminDashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect based on role
+    if (status === "authenticated" && session?.user?.role) {
+      if (session.user.role === "INSTRUCTOR") {
+        router.push("/instructor");
+      } else if (session.user.role === "USER") {
+        router.push("/overview");
+      }
+    } else if (status === "unauthenticated") {
+      router.push("/auth");
+    }
+  }, [status, session, router]);
 
   useEffect(() => {
     loadUser();
@@ -238,7 +255,7 @@ const AdminDashboard = () => {
       className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100"
       style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}
     >
-      <DashboardHeader user={user} />
+      <DashboardHeader />
       
       <div className="flex">
         <Sidebar />

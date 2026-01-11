@@ -67,6 +67,15 @@ const Dashboard = async () => {
     redirect("/auth");
   }
 
+  // Redirect based on role - dashboard is for all users but let's keep role-specific pages
+  if (user.role === "INSTRUCTOR") {
+    redirect("/instructor");
+  } else if (user.role === "USER") {
+    redirect("/overview");
+  } else if (user.role === "ADMIN") {
+    redirect("/admin");
+  }
+
   const stats = {
     totalPoints: 2450,
     totalBadges: 8,

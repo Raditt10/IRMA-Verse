@@ -107,8 +107,24 @@ const Auth = () => {
         setIsLoading(false);
       } else if (result?.ok) {
         setSuccess("Login berhasil! Mengalihkan...");
+        
+        // Fetch user data to get role
+        const response = await fetch("/api/users/profile");
+        const userData = await response.json();
+        
+        // Redirect based on role
+        let redirectUrl = "/dashboard"; // default
+        
+        if (userData.role === "ADMIN") {
+          redirectUrl = "/admin";
+        } else if (userData.role === "INSTRUCTOR") {
+          redirectUrl = "/instructor";
+        } else if (userData.role === "USER") {
+          redirectUrl = "/overview";
+        }
+        
         setTimeout(() => {
-          window.location.href = "/dashboard";
+          window.location.href = redirectUrl;
         }, 500);
       }
     } catch (error) {
