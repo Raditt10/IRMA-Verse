@@ -73,10 +73,10 @@ const Profile = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100"
+      className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100"
       style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}
     >
-      {session?.user && <DashboardHeader user={session.user} />}
+      {session?.user && <DashboardHeader />}
 
       <div className="flex">
         <Sidebar />
@@ -84,7 +84,7 @@ const Profile = () => {
         <div className="flex-1 px-6 lg:px-8 py-12">
           {/* Back Button */}
           <Link
-            href="/dashboard"
+            href="/overview"
             className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6 transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -103,10 +103,9 @@ const Profile = () => {
               <ProfileInformationForm stats={stats || 0} level={stats.level || 0} rank={stats.rank || 0} />
 
               {/* Activity History */}
-              { session?.user.role == "user" && (
-                <div className="rounded-2xl bg-white border border-slate-200 p-8 shadow-sm">
-                  <h2 className="text-2xl font-bold text-slate-900 mb-6">Aktivitas Terbaru</h2>
-                  <div className="space-y-4">
+              <div className="rounded-2xl bg-white border border-slate-200 p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-slate-900 mb-6">Aktivitas Terbaru</h2>
+                <div className="space-y-4">
                     {activities.map((activity, index) => (
                       <div
                       key={index}
@@ -124,17 +123,15 @@ const Profile = () => {
                     ))}
                   </div>
                 </div>
-              )}
             </div>
 
             {/* Right Column - Stats & Badges */}
-            { session?.user.role == "user" && (
-              <div className="space-y-6">
+            <div className="space-y-6">
                 {/* Stats Card */}
                 <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
                   <h2 className="text-xl font-bold text-slate-900 mb-6">Statistik</h2>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-amber-50 to-orange-50">
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-linear-to-br from-amber-50 to-orange-50">
                       <div className="flex items-center gap-3">
                         <Trophy className="h-5 w-5 text-slate-700" />
                         <span className="text-sm font-semibold text-slate-700">Total Poin</span>
@@ -142,7 +139,7 @@ const Profile = () => {
                       <span className="text-lg font-bold text-slate-900">{stats.totalPoints}</span>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50">
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-linear-to-br from-blue-50 to-cyan-50">
                       <div className="flex items-center gap-3">
                         <Award className="h-5 w-5 text-slate-700" />
                         <span className="text-sm font-semibold text-slate-700">Badge</span>
@@ -150,7 +147,7 @@ const Profile = () => {
                       <span className="text-lg font-bold text-slate-900">{stats.totalBadges}</span>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50">
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-linear-to-br from-purple-50 to-pink-50">
                       <div className="flex items-center gap-3">
                         <BarChart3 className="h-5 w-5 text-slate-700" />
                         <span className="text-sm font-semibold text-slate-700">Quiz</span>
@@ -158,7 +155,7 @@ const Profile = () => {
                       <span className="text-lg font-bold text-slate-900">{stats.totalQuizzes}</span>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-red-50 to-pink-50">
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-linear-to-br from-red-50 to-pink-50">
                       <div className="flex items-center gap-3">
                         <Flame className="h-5 w-5 text-slate-700" />
                         <span className="text-sm font-semibold text-slate-700">Streak</span>
@@ -166,7 +163,7 @@ const Profile = () => {
                       <span className="text-lg font-bold text-slate-900">{stats.streak} Hari</span>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50">
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-linear-to-br from-green-50 to-emerald-50">
                       <div className="flex items-center gap-3">
                         <Target className="h-5 w-5 text-slate-700" />
                         <span className="text-sm font-semibold text-slate-700">Rata-rata</span>
@@ -199,7 +196,7 @@ const Profile = () => {
                             </div>
                           </div>
 
-                          <button className="mt-6 w-full py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-sm font-semibold flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-cyan-600 transition-colors">
+                          <button className="mt-6 w-full py-2.5 rounded-lg bg-linear-to-r from-emerald-500 to-cyan-500 text-white text-sm font-semibold flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-cyan-600 transition-colors">
                             <span>Lihat Detail</span>
                             <ArrowRight className="h-4 w-4" />
                           </button>
@@ -209,7 +206,7 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-            )}
+
           </div>
         </div>
       </div>
