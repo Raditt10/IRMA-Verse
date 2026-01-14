@@ -108,14 +108,21 @@ const Sidebar = () => {
         <div className="lg:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px]"
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] animate-in fade-in duration-500 ease-in-out"
             onClick={() => setIsMobileOpen(false)}
           />
           {/* Panel */}
-          <div className="fixed z-50 top-0 left-0 h-screen w-1/2 bg-white dark:bg-white border-r border-slate-200 dark:border-slate-200 shadow-2xl">
+          <div className="fixed z-50 top-0 left-0 h-screen w-1/2 bg-white dark:bg-white border-r border-slate-200 dark:border-slate-200 shadow-2xl animate-in slide-in-from-left duration-500 ease-out rounded-r-3xl">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-200">
-              <span className="text-sm font-semibold text-slate-900 dark:text-slate-900">Navigasi</span>
+              <div className="flex items-center gap-2">
+                <img src="/logo.png" alt="IRMA Verse" className="h-8 w-8 object-contain" />
+                <div>
+                  <h2 className="text-xs font-black leading-tight text-white uppercase tracking-wide bg-linear-to-r from-teal-600 to-emerald-600 px-2 py-0.5 rounded-lg">
+                    IRMA VERSE
+                  </h2>
+                </div>
+              </div>
               <button
                 className="inline-flex items-center justify-center rounded-lg p-2 text-slate-700 hover:text-white bg-slate-100 hover:bg-gradient-to-r hover:from-emerald-500 hover:to-teal-500 transition-all duration-300"
                 onClick={() => setIsMobileOpen(false)}
