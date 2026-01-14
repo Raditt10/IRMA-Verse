@@ -194,10 +194,10 @@ export default function Home() {
       />
 
       <div className="relative w-full">
-        <div className="flex items-center justify-between py-4 text-sm text-white/80 max-w-7xl mx-auto">
+        <div className="flex items-center justify-between py-4 px-4 sm:px-6 lg:px-8 text-sm text-white/80 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
             <CalendarDays className="h-4 w-4" />
-            <span>{tanggalStr}</span>
+            <span className="text-xs sm:text-sm">{tanggalStr}</span>
           </div>
           <div className="hidden md:flex items-center gap-2 text-white/70">
             <MapPin className="h-4 w-4" />
@@ -206,20 +206,20 @@ export default function Home() {
         </div>
 
         <div className="flex flex-col gap-3.5 overflow-hidden">
-          <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto w-full">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 flex items-center justify-center">
+          <div className="flex items-center justify-between gap-2 sm:gap-4 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center">
                 <img
                   src="/logo.png"
                   alt="IRMA Verse"
-                  className="h-10 w-10 object-contain"
+                  className="h-8 w-8 sm:h-10 sm:w-10 object-contain"
                 />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-white/70">
+                <p className="text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/70">
                   Platform Rohis Digital
                 </p>
-                <h1 className="text-2xl font-black leading-tight">
+                <h1 className="text-lg sm:text-2xl font-black leading-tight">
                   IRMA Verse
                 </h1>
               </div>
@@ -258,7 +258,7 @@ export default function Home() {
               </Link>
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <div className="hidden sm:flex items-center gap-2 text-white/70">
                 <Instagram className="h-5 w-5" />
                 <Youtube className="h-5 w-5" />
@@ -266,9 +266,9 @@ export default function Home() {
               </div>
               <Link href="/auth">
                 <Button
-                  size="lg"
+                  size="sm"
                   variant="secondary"
-                  className="bg-white text-emerald-900 hover:bg-white/90 px-6 py-3 font-semibold shadow-lg"
+                  className="bg-white text-emerald-900 hover:bg-white/90 px-4 sm:px-6 py-2 sm:py-3 text-sm font-semibold shadow-lg"
                 >
                   Login
                 </Button>
@@ -276,9 +276,9 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end pt-4 pb-2 max-w-7xl mx-auto w-full">
-            <div className="space-y-5">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/15 text-white/90 text-sm font-semibold shadow-lg">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end pt-4 pb-2 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+            <div className="space-y-4 sm:space-y-5">
+              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs sm:text-sm font-semibold shadow-lg">
                 Official Website{" "}
                 <span className="bg-gradient-to-r from-emerald-300 via-white to-cyan-200 bg-clip-text text-transparent">
                   IRMA13
@@ -286,11 +286,11 @@ export default function Home() {
               </div>
 
               <div className="space-y-2">
-                <p className="text-lg text-white/80 font-medium">
+                <p className="text-sm sm:text-base md:text-lg text-white/80 font-medium">
                   ROHIS DIGITAL SEKOLAH
                 </p>
                 <div className="text-left">
-                  <span className="text-5xl sm:text-6xl md:text-7xl font-black leading-none tracking-tight drop-shadow-xl whitespace-nowrap align-top">
+                  <span className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-none tracking-tight drop-shadow-xl align-top">
                     IRMA{" "}
                     <span className="bg-gradient-to-r from-emerald-300 via-white to-cyan-200 bg-clip-text text-transparent align-top">
                       VERSE
@@ -299,44 +299,44 @@ export default function Home() {
                 </div>
               </div>
 
-              <p className="text-lg sm:text-xl text-white/80 max-w-2xl leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/80 max-w-2xl leading-relaxed">
                 Platform digital yang menghubungkan seluruh anggota IRMA dengan
                 sistem terorganisir, modern, dan efisien untuk pembelajaran
                 Islami yang lebih baik.
               </p>
 
-              <div className="flex flex-col sm:flex-row items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-3 shadow-inner">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center">
-                    <Search className="h-5 w-5 text-white/80" />
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-2 sm:p-3 shadow-inner">
+                <div className="flex items-center gap-2 sm:gap-3 w-full">
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-white/80" />
                   </div>
                   <input
-                    className="flex-1 bg-transparent focus:outline-none placeholder:text-white/60 text-white text-base"
-                    placeholder="Cari informasi yang anda inginkan di sini..."
+                    className="flex-1 bg-transparent focus:outline-none placeholder:text-white/60 text-white text-sm sm:text-base"
+                    placeholder="Cari informasi..."
                   />
                 </div>
-                <Button className="w-full sm:w-auto px-6 py-3 bg-white text-emerald-900 font-semibold hover:bg-white/90">
+                <Button className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 text-sm bg-white text-emerald-900 font-semibold hover:bg-white/90">
                   Cari
                 </Button>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4">
-                <Card className="bg-white/90 rounded-2xl shadow-lg border-0 flex flex-col items-center justify-center py-8 px-6 min-h-[260px]">
+                <Card className="bg-white/90 rounded-xl sm:rounded-2xl shadow-lg border-0 flex flex-col items-center justify-center py-6 sm:py-8 px-4 sm:px-6 min-h-[200px] sm:min-h-[260px]">
                   <div className="flex flex-col items-center w-full">
-                    <div className="flex items-center justify-center mb-4">
-                      <div className="rounded-xl bg-white shadow p-2 border border-gray-200">
+                    <div className="flex items-center justify-center mb-3 sm:mb-4">
+                      <div className="rounded-lg sm:rounded-xl bg-white shadow p-1.5 sm:p-2 border border-gray-200">
                         <img
                           src="/logo13.png"
                           alt="SMKN 13 Bandung"
-                          className="h-14 w-auto object-contain"
+                          className="h-10 sm:h-14 w-auto object-contain"
                         />
                       </div>
                     </div>
                     <div className="text-center w-full">
-                      <div className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-1">
+                      <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-widest text-gray-500 mb-1">
                         Platform Ekskul IRMA
                       </div>
-                      <div className="text-lg font-bold text-gray-700 mb-1">
+                      <div className="text-base sm:text-lg font-bold text-gray-700 mb-1">
                         SMKN 13 Bandung
                       </div>
                     </div>
@@ -345,9 +345,9 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="relative -mr-6 -mb-4 self-end">
+            <div className="relative -mr-0 lg:-mr-6 -mb-4 self-end overflow-hidden">
               <div className="absolute -inset-6 bg-gradient-to-br from-white/25 via-emerald-200/25 to-cyan-200/25 blur-3xl" />
-              <div className="relative h-[500px] sm:h-[600px] md:h-[700px] w-auto max-w-none flex items-end">
+              <div className="relative h-[350px] sm:h-[450px] md:h-[600px] lg:h-[700px] w-full flex items-end justify-center lg:justify-end">
                 <img
                   src="/model.png"
                   alt="Role model IRMA"
@@ -367,16 +367,16 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-4">Fitur Tersedia</h2>
             <p className="text-lg text-slate-600">Berbagai fitur yang memudahkan aktivitas IRMA Anda</p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 gap-4 sm:gap-6">
             {features.map((feature, index) => (
               <div
                 key={index}
                 className="flex flex-col items-center gap-3 group cursor-pointer"
               >
-                <div className="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300">
-                  <feature.icon className="h-9 w-9 text-slate-800 group-hover:text-slate-900 transition-colors duration-300" />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300">
+                  <feature.icon className="h-7 w-7 sm:h-9 sm:w-9 text-slate-800 group-hover:text-slate-900 transition-colors duration-300" />
                 </div>
-                <p className="text-sm font-semibold text-gray-800 text-center leading-tight">
+                <p className="text-xs sm:text-sm font-semibold text-gray-800 text-center leading-tight">
                   {feature.title}
                 </p>
               </div>
@@ -551,12 +551,12 @@ export default function Home() {
             Daftar sekarang dan dapatkan akses ke semua fitur untuk pengalaman yang lebih terorganisir, modern, dan menyenangkan
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth">
-              <button className="w-full sm:w-auto px-10 py-7 text-lg group shadow-2xl transition-all duration-300 hover:scale-110 font-bold bg-white/95 text-emerald-900 hover:bg-white rounded-lg flex items-center justify-center gap-2">
-                <Sparkles className="h-5 w-5" />
-                Daftar Sekarang - Gratis!
-                <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
+            <Link href="/auth" className="w-full sm:w-auto">
+              <button className="w-full sm:w-auto px-6 sm:px-10 py-4 sm:py-7 text-base sm:text-lg group shadow-2xl transition-all duration-300 hover:scale-105 sm:hover:scale-110 font-bold bg-white/95 text-emerald-900 hover:bg-white rounded-lg flex items-center justify-center gap-2">
+                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="text-sm sm:text-base">Daftar Sekarang - Gratis!</span>
+                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-2 transition-transform duration-300" />
               </button>
             </Link>
           </div>

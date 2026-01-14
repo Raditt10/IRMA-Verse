@@ -103,7 +103,7 @@ export default function DashboardHeader() {
               </DropdownMenuLabel>
               <DropdownMenuItem onClick={() => router.push("/profile")} className="cursor-pointer">
                 <UserIcon className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+                <span>Profile</span> 
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">
                 <Settings className="mr-2 h-4 w-4" />
