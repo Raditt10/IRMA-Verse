@@ -133,22 +133,22 @@ const ProfileInformationForm = ({ stats, level, rank }: any) => {
 
   return (
     <div className="rounded-2xl bg-white border border-slate-200 p-8 shadow-sm">
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <h2 className="text-2xl font-bold text-slate-900">Informasi Profile</h2>
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isLoading}
           >
             <Edit2 className="h-4 w-4" />
             Edit Profile
           </button>
         ) : (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSaving}
             >
               <Save className="h-4 w-4" />
@@ -156,7 +156,7 @@ const ProfileInformationForm = ({ stats, level, rank }: any) => {
             </button>
             <button
               onClick={handleCancel}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSaving}
             >
               <X className="h-4 w-4" />
@@ -173,8 +173,8 @@ const ProfileInformationForm = ({ stats, level, rank }: any) => {
       )}
 
       {/* Avatar Section */}
-      <div className="flex items-center gap-6 mb-8">
-        <div className="relative group">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-8">
+        <div className="relative inline-block group">
           <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
             <AvatarImage src={avatarUrl} alt={user.name} />
             <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white text-2xl font-bold">
@@ -182,15 +182,15 @@ const ProfileInformationForm = ({ stats, level, rank }: any) => {
             </AvatarFallback>
           </Avatar>
           {isEditing && (
-            <button className="absolute bottom-0 right-0 p-2 rounded-full bg-emerald-500 text-white shadow-lg hover:bg-emerald-600 transition-colors">
+            <button className="absolute bottom-1 left-1.5 p-2 rounded-full bg-emerald-500 text-white shadow-lg ring-4 ring-white hover:bg-emerald-600 transition-colors">
               <Camera className="h-4 w-4" />
             </button>
           )}
         </div>
-        <div>
-          <h3 className="text-2xl font-bold text-slate-900 mb-1">{user.name}</h3>
-          <p className="text-slate-600 mb-2">{user.email}</p>
-          <div className="flex items-center gap-2">
+        <div className="space-y-2">
+          <h3 className="text-2xl font-bold text-slate-900">{user.name}</h3>
+          <p className="text-slate-600">{user.email}</p>
+          <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 text-white text-sm font-semibold">
               Level {level}
             </span>

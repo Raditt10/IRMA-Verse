@@ -212,19 +212,19 @@ const ChatPage = () => {
 	return (
 		<div className="min-h-screen bg-gradient-subtle">
 			<DashboardHeader />
-			<div className="flex">
+			<div className="flex flex-col lg:flex-row">
 				<Sidebar />
-				<main className="flex-1 px-6 lg:px-8 py-10">
+				<main className="w-full flex-1 px-4 sm:px-6 lg:px-8 py-8 md:py-10">
 					<div className="max-w-7xl mx-auto space-y-6">
-						<section className="rounded-2xl bg-gradient-primary p-6 text-white shadow-glow">
+						<section className="rounded-2xl bg-gradient-primary p-5 sm:p-6 text-white shadow-glow">
 							<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 								<div>
 									<p className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.2em] text-white/80">
 										<Sparkles className="h-4 w-4" />
 										Chat Instruktur
 									</p>
-									<h1 className="text-3xl font-semibold mt-1">Sesi bimbingan yang rapi dan profesional</h1>
-									<p className="text-white/80 text-sm mt-1">
+									<h1 className="text-2xl sm:text-3xl font-semibold mt-1 leading-snug">Sesi bimbingan yang rapi dan profesional</h1>
+									<p className="text-white/80 text-sm sm:text-base mt-1">
 										Jaga komunikasi terarah, bagikan progres, dan jadwalkan sesi privat langsung bersama instruktur pilihan.
 									</p>
 								</div>
@@ -289,10 +289,10 @@ const ChatPage = () => {
 								</div>
 							</aside>
 
-							<div className="rounded-2xl border bg-white/90 shadow-lg backdrop-blur flex flex-col">
+							<div className="rounded-2xl border bg-white/90 shadow-lg backdrop-blur flex flex-col min-h-[60vh]">
 								{selectedThread ? (
 									<>
-										<div className="flex items-center justify-between border-b px-6 py-4">
+										<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b px-4 sm:px-6 py-4">
 											<div className="flex items-center gap-3">
 												<div className="relative">
 													<Avatar className="h-12 w-12 border border-white shadow-sm">
@@ -311,7 +311,7 @@ const ChatPage = () => {
 													<p className="text-sm text-slate-500">{selectedThread.instructor.expertise}</p>
 												</div>
 											</div>
-											<div className="flex items-center gap-2">
+											<div className="flex flex-wrap items-center gap-2">
 												<Button variant="outline" size="sm" className="gap-2">
 													<Phone className="h-4 w-4" />
 													Telepon
@@ -328,14 +328,14 @@ const ChatPage = () => {
 
 										<div
 											ref={messagesRef}
-											className="flex-1 space-y-4 overflow-y-auto px-6 py-4 bg-gradient-to-b from-slate-50 to-white"
+											className="flex-1 space-y-4 overflow-y-auto px-4 sm:px-6 py-4 bg-gradient-to-b from-slate-50 to-white"
 										>
 											{selectedThread.messages.map((message) => {
 												const isUser = message.sender === "user";
 												return (
 													<div key={message.id} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
 														<div
-															className={`max-w-xl rounded-2xl px-4 py-3 text-sm shadow-sm transition ${
+															className={`max-w-[86%] sm:max-w-xl rounded-2xl px-4 py-3 text-sm shadow-sm transition ${
 																isUser
 																	? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white"
 																	: "bg-white border text-slate-800"
@@ -358,7 +358,7 @@ const ChatPage = () => {
 										</div>
 
 										<div className="border-t px-4 py-4">
-											<div className="flex items-center gap-3 rounded-xl border bg-white px-4 py-3 shadow-sm">
+											<div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border bg-white px-4 py-3 shadow-sm">
 												<Button variant="ghost" size="icon" className="text-slate-500">
 													<Paperclip className="h-4 w-4" />
 												</Button>
@@ -367,9 +367,9 @@ const ChatPage = () => {
 													value={messageDraft}
 													onChange={(event) => setMessageDraft(event.target.value)}
 													onKeyDown={handleKeyDown}
-													className="min-h-12 flex-1 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0"
+													className="min-h-12 w-full flex-1 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0"
 												/>
-												<Button onClick={handleSendMessage} className="gap-2 px-4">
+												<Button onClick={handleSendMessage} className="gap-2 px-4 w-full sm:w-auto">
 													<Send className="h-4 w-4" />
 													Kirim
 												</Button>
