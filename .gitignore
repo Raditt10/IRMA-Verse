@@ -42,3 +42,7 @@ next-env.d.ts
 
 package-lock.json
 /lib/generated/prisma
+
+# uploads (ignore uploaded files but keep directory)
+/public/uploads/*
+!/public/uploads/.gitkeep

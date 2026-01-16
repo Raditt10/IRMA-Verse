@@ -31,5 +31,30 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Instruktur profile
+  bidangKeahlian String?  // Bidang keahlian (hanya untuk instruktur)
+  pengalaman     String?  // Pengalaman (hanya untuk instruktur)
+
+  // Relations
+  newsArticles   News[]   @relation("authorNews")
+
   @@map("users")
+}
+
+model News {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  category  String   // Prestasi, Kerjasama, Update, Event, Pengumuman
+  deskripsi String   @db.Text  // Deskripsi singkat dari content
+  content   String   @db.LongText  // Markdown content
+  image     String?  // URL gambar berita
+  authorId  String
+  author    User     @relation("authorNews", fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([authorId])
+  @@map("news")
 }
