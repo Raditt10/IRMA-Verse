@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import SearchBar from "@/components/ui/SearchBar";
 
 export default function DashboardHeader() {
   const router = useRouter();
@@ -46,23 +47,7 @@ export default function DashboardHeader() {
 
         {/* Search Bar - Center on desktop */}
         <div className="hidden md:flex flex-1 max-w-md">
-          <div className="w-full relative">
-            <input
-              type="text"
-              placeholder="Cari kajian, event, atau berita..."
-              className="w-full px-4 py-2 rounded-lg bg-slate-100 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
-            />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </div>
-          </div>
+          <SearchBar />
         </div>
 
         {/* Right Icons & Profile */}
@@ -125,23 +110,7 @@ export default function DashboardHeader() {
 
       {/* Mobile Search Bar - Below main header */}
       <div className="md:hidden px-4 pb-3 pt-1">
-        <div className="w-full relative">
-          <input
-            type="text"
-            placeholder="Cari kajian, event, atau berita..."
-            className="w-full px-4 py-2.5 rounded-lg bg-slate-100 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-sm"
-          />
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-        </div>
+        <SearchBar />
       </div>
     </div>
   );

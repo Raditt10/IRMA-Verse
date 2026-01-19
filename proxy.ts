@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Export `proxy` as required by Next.js proxy entry.
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
@@ -29,10 +30,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/auth", request.url));
   }
 
-  // Redirect to overview if accessing auth pages while logged in
-  if (isAuthPage && isLoggedIn) {
-    return NextResponse.redirect(new URL("/overview", request.url));
-  }
+  // Do NOT auto-redirect auth pages based on cookie alone.
+  // Let the auth page decide post-login where to go to prevent redirect loops
+  // caused by mismatched cookie vs server session state.
 
   return NextResponse.next();
 }

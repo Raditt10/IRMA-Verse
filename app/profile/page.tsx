@@ -82,14 +82,6 @@ const Profile = () => {
         <Sidebar />
 
         <div className="w-full flex-1 px-4 sm:px-6 lg:px-8 py-8 md:py-12 max-w-6xl mx-auto">
-          {/* Back Button */}
-          <Link
-            href="/overview"
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6 transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            <span className="font-semibold">Kembali ke Dashboard</span>
-          </Link>
 
           {/* Profile Header */}
           <div className="mb-8">

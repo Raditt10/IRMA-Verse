@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import heroImage from "@/public/hero-image.jpg";
 import { Button } from '@/components/ui/button';
 import { Card } from "@/components/ui/card";
+import SearchBar from "@/components/ui/SearchBar";
 import {
   ArrowRight,
   Award,
@@ -30,6 +31,9 @@ import {
 } from "lucide-react";
 
 export default function Home() {
+  const [latestNews, setLatestNews] = useState<Array<{ id: string; title: string; category: string | null; deskripsi?: string; slug: string; image?: string | null }>>([]);
+  const [newsLoading, setNewsLoading] = useState(false);
+
   const features = [
     {
       icon: Bell,
@@ -175,6 +179,25 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchNews = async () => {
+      setNewsLoading(true);
+      try {
+        const res = await fetch("/api/news");
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setLatestNews(data.slice(0, 4));
+        }
+      } catch (error) {
+        console.error("Failed to load news", error);
+      } finally {
+        setNewsLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-700 via-teal-600 to-cyan-500 text-white relative overflow-hidden" style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}>
       <div
@@ -305,20 +328,10 @@ export default function Home() {
                 Islami yang lebih baik.
               </p>
 
-              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-2 sm:p-3 shadow-inner">
-                <div className="flex items-center gap-2 sm:gap-3 w-full">
-                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-white/80" />
-                  </div>
-                  <input
-                    className="flex-1 bg-transparent focus:outline-none placeholder:text-white/60 text-white text-sm sm:text-base"
-                    placeholder="Cari informasi..."
-                  />
-                </div>
-                <Button className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 text-sm bg-white text-emerald-900 font-semibold hover:bg-white/90">
-                  Cari
-                </Button>
+              <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-inner w-full">
+                <SearchBar />
               </div>
+
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <Card className="bg-white/90 rounded-xl sm:rounded-2xl shadow-lg border-0 flex flex-col items-center justify-center py-6 sm:py-8 px-4 sm:px-6 min-h-[200px] sm:min-h-[260px]">

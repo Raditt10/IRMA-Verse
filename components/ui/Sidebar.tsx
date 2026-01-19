@@ -142,7 +142,7 @@ const Sidebar = () => {
                       router.push(item.path);
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 text-left ${
-                      isActive
+                      isActive 
                         ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg"
                         : "text-slate-700 dark:text-slate-700 hover:bg-gradient-to-r hover:from-emerald-100 hover:via-teal-50 hover:to-cyan-100 hover:text-emerald-700 dark:hover:text-emerald-700 hover:shadow-md"
                     }`}
