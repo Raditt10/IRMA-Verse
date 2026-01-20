@@ -8,11 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   ArrowLeft, 
   Calendar, 
-  Award, 
   MapPin,
   Users,
-  Clock
+  Clock,
+  Mail,
+  Phone
 } from "lucide-react";
+
+import Image from "next/image";
 
 interface Competition {
   id: string;
@@ -343,8 +346,8 @@ const CompetitionDetail = () => {
                         </div>
                       </div>
 
+                      {/* Ikon Award di info hadiah dihapus */}
                       <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50">
-                        <Award className="h-5 w-5 text-teal-600 mt-0.5 shrink-0" />
                         <div>
                           <p className="text-xs text-slate-500 font-medium mb-1">Hadiah Juara 1</p>
                           <p className="text-sm font-semibold text-slate-800">{competition.prize}</p>
@@ -421,7 +424,7 @@ const CompetitionDetail = () => {
                 {/* Registration CTA */}
                 <Card className="overflow-hidden border-teal-200 bg-linear-to-br from-teal-50 to-cyan-50">
                   <CardContent className="p-6 text-center">
-                    <Award className="h-12 w-12 text-teal-600 mx-auto mb-3" />
+                    {/* Ikon Award di CTA dihapus */}
                     <h3 className="text-lg font-bold text-slate-800 mb-2">Siap Membuktikan Kemampuanmu?</h3>
                     <p className="text-sm text-slate-600 mb-4">
                       Daftarkan diri kamu sekarang dan tunjukkan prestasi terbaik kamu!
@@ -455,9 +458,7 @@ const CompetitionDetail = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="absolute bottom-0 right-0 w-7 h-7 bg-teal-500 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
-                          <Award className="h-4 w-4 text-white" />
-                        </div>
+                        {/* Ikon Award di avatar panitia dihapus */}
                       </div>
                     </div>
 
@@ -485,7 +486,13 @@ const CompetitionDetail = () => {
                         className="flex items-center gap-3 p-3 rounded-lg border border-green-200 bg-green-50 hover:bg-green-100 transition-colors group"
                       >
                         <div className="p-2 bg-green-500 text-white rounded-lg shrink-0">
-                          <span className="text-sm font-bold">WA</span>
+                          <Image
+                            src="/WhatsApp.svg.webp"
+                            alt="WhatsApp"
+                            width={20}
+                            height={20}
+                            className="h-5 w-5 object-contain"
+                          />
                         </div>
                         <div className="flex-1 min-w-0 text-left">
                           <p className="text-xs text-slate-600 font-medium">WhatsApp</p>
@@ -499,7 +506,7 @@ const CompetitionDetail = () => {
                         className="flex items-center gap-3 p-3 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 transition-colors group"
                       >
                         <div className="p-2 bg-blue-500 text-white rounded-lg shrink-0">
-                          <span className="text-xs font-bold">@</span>
+                          <Mail className="h-4 w-4" />
                         </div>
                         <div className="flex-1 min-w-0 text-left">
                           <p className="text-xs text-slate-600 font-medium">Email</p>
@@ -513,7 +520,7 @@ const CompetitionDetail = () => {
                         className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors group"
                       >
                         <div className="p-2 bg-slate-600 text-white rounded-lg shrink-0">
-                          <span className="text-xs font-bold">☎</span>
+                          <Phone className="h-4 w-4" />
                         </div>
                         <div className="flex-1 min-w-0 text-left">
                           <p className="text-xs text-slate-600 font-medium">Telepon</p>

@@ -7,6 +7,9 @@ import ChatbotButton from "@/components/ui/ChatbotButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, MapPin, User, Clock, Users, ArrowLeft, Phone, Mail, MessageCircle, Award } from "lucide-react";
 
+// Import gambar WhatsApp
+import Image from "next/image";
+
 interface Schedule {
   id: string;
   title: string;
@@ -61,7 +64,7 @@ const ScheduleDetail = () => {
           location: "Aula Utama",
           pemateri: "Ustadz Ahmad Zaki",
           pemateriAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmad",
-          pemateriSpecialization: "Ahli Akhlak & Tasawuf",
+          pemateriSpecialization: "Alumni SMKN 13 Bandung",
           registeredCount: 45,
           maxParticipants: 100,
           status: "Acara telah dilaksanakan",
@@ -77,7 +80,7 @@ const ScheduleDetail = () => {
           location: "Musholla",
           pemateri: "Ustadzah Fatimah",
           pemateriAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatimah",
-          pemateriSpecialization: "Pakar Fiqih Wanita",
+          pemateriSpecialization: "Alumni SMKN 13 Bandung",
           registeredCount: 67,
           maxParticipants: 100,
           status: "Segera hadir",
@@ -93,7 +96,7 @@ const ScheduleDetail = () => {
           location: "Ruang Tahfidz",
           pemateri: "Ustadz Muhammad Rizki",
           pemateriAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rizki",
-          pemateriSpecialization: "Ahli Tafsir Al-Quran",
+          pemateriSpecialization: "Alumni SMKN 13 Bandung",
           registeredCount: 32,
           maxParticipants: 80,
           status: "Sedang berlangsung",
@@ -109,7 +112,7 @@ const ScheduleDetail = () => {
           location: "Aula Besar",
           pemateri: "Ustadz Abdullah Hakim",
           pemateriAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Abdullah",
-          pemateriSpecialization: "Sejarah Islam & Sirah",
+          pemateriSpecialization: "Alumni SMKN 13 Bandung",
           registeredCount: 89,
           maxParticipants: 150,
           status: "Acara telah dilaksanakan",
@@ -395,9 +398,6 @@ const ScheduleDetail = () => {
                             <User className="h-12 w-12 text-white" />
                           </div>
                         )}
-                        <div className="absolute bottom-0 right-0 w-7 h-7 bg-teal-500 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
-                          <Award className="h-4 w-4 text-white" />
-                        </div>
                       </div>
                     </div>
 
@@ -425,7 +425,13 @@ const ScheduleDetail = () => {
                         className="flex items-center gap-3 p-3 rounded-lg border border-green-200 bg-green-50 hover:bg-green-100 transition-colors group"
                       >
                         <div className="p-2 bg-green-500 text-white rounded-lg shrink-0">
-                          <MessageCircle className="h-4 w-4" />
+                          <Image
+                            src="/WhatsApp.svg.webp"
+                            alt="WhatsApp"
+                            width={20}
+                            height={20}
+                            className="h-5 w-5 object-contain"
+                          />
                         </div>
                         <div className="flex-1 min-w-0 text-left">
                           <p className="text-xs text-slate-600 font-medium">WhatsApp</p>

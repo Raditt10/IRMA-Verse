@@ -21,6 +21,9 @@ import {
   CheckCircle2
 } from "lucide-react";
 
+// Import gambar WhatsApp
+import Image from "next/image";
+
 interface Program {
   id: string;
   title: string;
@@ -526,7 +529,7 @@ const ProgramDetail = () => {
                       <ul className="space-y-2">
                         {program.benefits.map((item, index) => (
                           <li key={index} className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50">
-                            <Award className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                            {/* Ikon Award dihapus */}
                             <span className="text-sm text-slate-700">{item}</span>
                           </li>
                         ))}
@@ -546,9 +549,7 @@ const ProgramDetail = () => {
                         <div className="w-24 h-24 rounded-full bg-linear-to-br from-teal-500 to-cyan-600 p-0.5 flex items-center justify-center">
                           <User className="h-12 w-12 text-white" />
                         </div>
-                        <div className="absolute bottom-0 right-0 w-7 h-7 bg-teal-500 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
-                          <Award className="h-4 w-4 text-white" />
-                        </div>
+                        {/* Ikon Award di avatar dihapus */}
                       </div>
                     </div>
 
@@ -576,7 +577,13 @@ const ProgramDetail = () => {
                         className="flex items-center gap-3 p-3 rounded-lg border border-green-200 bg-green-50 hover:bg-green-100 transition-colors group"
                       >
                         <div className="p-2 bg-green-500 text-white rounded-lg shrink-0">
-                          <MessageCircle className="h-4 w-4" />
+                          <Image
+                            src="/WhatsApp.svg.webp"
+                            alt="WhatsApp"
+                            width={20}
+                            height={20}
+                            className="h-5 w-5 object-contain"
+                          />
                         </div>
                         <div className="flex-1 min-w-0 text-left">
                           <p className="text-xs text-slate-600 font-medium">WhatsApp</p>
@@ -620,7 +627,7 @@ const ProgramDetail = () => {
                 {program.status !== "done" && (
                   <Card className="overflow-hidden border-teal-200 bg-linear-to-br from-teal-50 to-cyan-50">
                     <CardContent className="p-6 text-center">
-                      <Award className="h-12 w-12 text-teal-600 mx-auto mb-3" />
+                      {/* Ikon Award di CTA dihapus */}
                       <h3 className="text-lg font-bold text-slate-800 mb-2">Tertarik Bergabung?</h3>
                       <p className="text-sm text-slate-600 mb-4">
                         Daftar sekarang dan tingkatkan kemampuan Anda bersama kami!
