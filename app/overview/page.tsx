@@ -10,55 +10,32 @@ import {
   Trophy,
   MessageCircle,
   TrendingUp,
-  Users,
   BarChart3,
   Sparkles,
-  ArrowRight,
-  Clock,
-  Target,
   Flame,
   Star,
-  LogOut,
-  User as UserIcon,
-  Settings,
-  ChevronDown,
   MessageSquare,
   Newspaper,
+  ArrowRight,
+  Zap,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Sidebar from "@/components/ui/Sidebar";
 import DashboardHeader from "@/components/ui/DashboardHeader";
 import ChatbotButton from "@/components/ui/ChatbotButton";
 
 const Dashboard = async () => {
-  // Get session from server side
   const session = await auth();
-  
-  // Redirect to auth if not authenticated
+
   if (!session?.user) {
     redirect("/auth");
   }
 
-  // Get user data from database
   const user = await prisma.user.findUnique({
-    where: {
-      id: session.user.id as string,
-    },
+    where: { id: session.user.id as string },
     select: {
       id: true,
       name: true,
       email: true,
-      notelp: true,
-      address: true,
-      bio: true,
       role: true,
     },
   });
@@ -76,331 +53,245 @@ const Dashboard = async () => {
   };
 
   const quickActions = [
-    {
-      title: "Pengumuman umum",
-      description: "Lihat informasi terbaru",
-      icon: Bell,
-      link: "/announcements",
-      color: "blue",
-      count: 3,
-    },
-    {
-      title: "Jadwal Kajian Kamu",
-      description: "Cek jadwal minggu ini",
-      icon: Calendar,
-      link: "/materials",
-      color: "purple",
-    },
-    {
-      title: "Materi Kajian",
-      description: "Akses materi pembelajaran",
-      icon: BookOpen,
-      link: "/archivesch",
-      color: "green",
-    },
-    {
-      title: "Quiz & Kuis",
-      description: "Uji pemahaman Anda",
-      icon: Trophy,
-      link: "/quiz",
-      color: "amber",
-      count: 2,
-    },
-    {
-      title: "Diskusi IRMA",
-      description: "Bergabung dalam diskusi",
-      icon: MessageCircle,
-      link: "/chat-rooms",
-      color: "indigo",
-    },
-    {
-      title: "Peringkat Pengguna",
-      description: "Lihat peringkat peserta",
-      icon: TrendingUp,
-      link: "/leaderboard",
-      color: "red",
-    },
+    { title: "Pengumuman", icon: Bell, link: "/announcements" },
+    { title: "Jadwal", icon: Calendar, link: "/materials" },
+    { title: "Materi", icon: BookOpen, link: "/archivesch" },
+    { title: "Kuis", icon: Trophy, link: "/quiz" },
+    { title: "Diskusi", icon: MessageCircle, link: "/chat-rooms" },
+    { title: "Peringkat", icon: TrendingUp, link: "/leaderboard" },
   ];
 
-  const colorMap = {
-    blue: "from-blue-500 to-cyan-500",
-    purple: "from-purple-500 to-pink-500",
-    green: "from-green-500 to-emerald-500",
-    amber: "from-amber-500 to-orange-500",
-    indigo: "from-indigo-500 to-blue-500",
-    red: "from-red-500 to-pink-500",
-  };
-
-  const colorMapBg = {
-    blue: "bg-blue-500/20 hover:bg-blue-500/30",
-    purple: "bg-purple-500/20 hover:bg-purple-500/30",
-    green: "bg-green-500/20 hover:bg-green-500/30",
-    amber: "bg-amber-500/20 hover:bg-amber-500/30",
-    indigo: "bg-indigo-500/20 hover:bg-indigo-500/30",
-    red: "bg-red-500/20 hover:bg-red-500/30",
-  };
-
-  const colorMapText = {
-    blue: "text-blue-600 dark:text-blue-400",
-    purple: "text-purple-600 dark:text-purple-400",
-    green: "text-green-600 dark:text-green-400",
-    amber: "text-amber-600 dark:text-amber-400",
-    indigo: "text-indigo-600 dark:text-indigo-400",
-    red: "text-red-600 dark:text-red-400",
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}>
-      {/* Header */}
+    <div 
+      className="min-h-screen bg-slate-50/50" 
+      style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}
+    >
       <DashboardHeader />
 
-      {/* Sidebar + Main Content */}
       <div className="flex">
-        {/* Sidebar */}
         <Sidebar />
 
-        {/* Main Content */}
-        <div className="flex-1 px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
-          {/* Welcome Section */}
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-2">          
-              ٱلسَّلَامُ عَلَيْكُمْ, {user.name}
-            </h1>
-            <p className="text-base md:text-lg text-slate-600">
-              Tingkatkan pengetahuan dan raih prestasi bersama IRMA Verse
-            </p>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto">
+          {/* Header Section */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-800">
+                ٱلسَّلَامُ عَلَيْكُمْ, <span className="text-teal-600">{user.name}</span>
+              </h1>
+              <p className="text-slate-500 mt-1">Siap menambah ilmu hari ini?</p>
+            </div>
+            <div className="hidden md:flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+              <Calendar className="w-4 h-4 text-slate-900" />
+              <span className="text-sm font-bold text-slate-600">
+                {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              </span>
+            </div>
           </div>
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-            {/* Left Column - Level Card and Stats */}
-            <div className="lg:col-span-3 space-y-6 md:space-y-8">
-              {/* Level Card */}
-              <div className="relative overflow-hidden rounded-2xl p-6 md:p-8 bg-white border border-slate-200 shadow-sm">
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-full blur-3xl" />
+          {/* MAIN GRID LAYOUT */}
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8">
+            
+            {/* LEFT COLUMN */}
+            <div className="xl:col-span-8 space-y-8">
+              
+              {/* Stats Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* Badge Stat */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="p-2 bg-white border border-slate-200 rounded-xl group-hover:border-slate-400 transition-colors shadow-sm">
+                      <Award className="w-6 h-6 text-slate-900" />
+                    </div>
+                    <span className="text-xs font-bold px-2 py-1 bg-slate-100 rounded-full text-slate-500">Total</span>
+                  </div>
+                  <div className="text-3xl font-bold text-slate-800 mb-1">{stats.totalBadges}</div>
+                  <div className="text-sm text-slate-500 font-bold">Badges Dikoleksi</div>
                 </div>
-                <div className="relative z-10">
-                  <p className="text-slate-600 text-sm font-medium mb-3">Tingkat Pencapaian</p>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
-                    <div className="px-6 py-3 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-500 shadow-[3px_3px_8px_rgba(20,184,166,0.4),-2px_-2px_6px_rgba(255,255,255,0.9)] border-2 border-white w-fit">
-                      <h3 className="text-3xl md:text-4xl font-black text-white drop-shadow-[2px_2px_4px_rgba(0,0,0,0.3)] tracking-wide">Level 5</h3>
+
+                {/* Quiz Stat */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="p-2 bg-white border border-slate-200 rounded-xl group-hover:border-slate-400 transition-colors shadow-sm">
+                      <BarChart3 className="w-6 h-6 text-slate-900" />
                     </div>
-                    <div className="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 shadow-[2px_2px_6px_rgba(251,191,36,0.3),-1px_-1px_4px rgba(255,255,255,0.8)] border border-amber-300 w-fit">
-                      <span className="text-sm font-bold text-white drop-shadow-md">Mashaallah</span>
-                    </div>
+                    <span className="text-xs font-bold px-2 py-1 bg-green-100 rounded-full text-green-600">Avg {stats.averageScore}</span>
                   </div>
-                  <p className="text-emerald-600 text-sm font-semibold mb-6">Pembelajar Aktif</p>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs text-slate-600 font-medium">Progres Level</span>
-                        <span className="text-xs text-slate-900 font-bold">75%</span>
-                      </div>
-                      <div className="h-3 rounded-full bg-slate-200 overflow-hidden shadow-[inset_2px_2px_4px rgba(0,0,0,0.1),inset_-2px_-2px_4px rgba(255,255,255,0.7)]">
-                        <div className="h-full w-3/4 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-[0_2px_4px_rgba(16,185,129,0.3)] relative">
-                          <div className="absolute inset-0 bg-gradient-to-t from-transparent to-white/20 rounded-full"></div>
-                        </div>
-                      </div>
+                  <div className="text-3xl font-bold text-slate-800 mb-1">{stats.totalQuizzes}</div>
+                  <div className="text-sm text-slate-500 font-bold">Kuis Selesai</div>
+                </div>
+
+                {/* Streak Stat */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="p-2 bg-white border border-slate-200 rounded-xl group-hover:border-slate-400 transition-colors shadow-sm">
+                      <Flame className="w-6 h-6 text-slate-900" />
                     </div>
-                    <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-200">
-                      <div className="text-center">
-                        <div className="text-xl md:text-2xl font-bold text-amber-400 mb-1">42</div>
-                        <p className="text-xs text-slate-500">Poin Bulan Ini</p>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-xl md:text-2xl font-bold text-emerald-400 mb-1">8</div>
-                        <p className="text-xs text-slate-500">Badge Baru</p>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-xl md:text-2xl font-bold text-blue-400 mb-1">7</div>
-                        <p className="text-xs text-slate-500">Hari Konsisten</p>
-                      </div>
-                    </div>
+                    <span className="text-xs font-bold px-2 py-1 bg-rose-100 rounded-full text-rose-600">Hot!</span>
                   </div>
+                  <div className="text-3xl font-bold text-slate-800 mb-1">{stats.streak} Hari</div>
+                  <div className="text-sm text-slate-500 font-bold">Konsistensi</div>
                 </div>
               </div>
 
-              {/* Stats Horizontal Scrollable */}
-              <div>
-                <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-4 px-4 md:mx-0 md:px-0">
-                  {/* Badges Stat */}
-                  <div className="min-w-[280px] md:min-w-[260px] snap-start group relative overflow-hidden rounded-2xl p-6 bg-white border border-slate-200 hover:border-slate-300 transition-all duration-300 hover:shadow-xl flex-shrink-0">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-cyan-500/0 group-hover:from-blue-500/5 group-hover:to-cyan-500/5 transition-colors duration-300" />
-                    <div className="relative z-10">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center shadow-[3px_3px_6px_rgba(0,0,0,0.1),-3px_-3px_6px_rgba(255,255,255,1)]">
-                          <Award className="h-6 w-6 text-slate-700" />
-                        </div>
-                        <span className="text-xs font-semibold text-blue-600 bg-blue-500/10 px-3 py-1 rounded-full">Lengkap</span>
-                      </div>
-                      <p className="text-slate-600 text-sm font-medium mb-1">Badge Terkumpul</p>
-                      <p className="text-3xl font-bold text-slate-900">{stats.totalBadges}</p>
-                      <div className="mt-4 pt-4 border-t border-slate-200 flex gap-1">
-                        {[...Array(Math.min(stats.totalBadges, 8))].map((_, i) => (
-                          <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  {/* Quiz Stat */}
-                  <div className="min-w-[280px] md:min-w-[260px] snap-start group relative overflow-hidden rounded-2xl p-6 bg-white border border-slate-200 hover:border-slate-300 transition-all duration-300 hover:shadow-xl flex-shrink-0">
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-pink-500/0 group-hover:from-purple-500/5 group-hover:to-pink-500/5 transition-colors duration-300" />
-                    <div className="relative z-10">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center shadow-[3px_3px_6px_rgba(0,0,0,0.1),-3px_-3px_6px_rgba(255,255,255,1)]">
-                          <BarChart3 className="h-6 w-6 text-slate-700" />
-                        </div>
-                        <span className="text-xs font-semibold text-purple-600 bg-purple-500/10 px-3 py-1 rounded-full">+3</span>
-                      </div>
-                      <p className="text-slate-600 text-sm font-medium mb-1">Quiz Dikerjakan</p>
-                      <p className="text-3xl font-bold text-slate-900">{stats.totalQuizzes}</p>
-                      <div className="mt-4 pt-4 border-t border-slate-200">
-                        <p className="text-xs text-slate-500">Rata-rata {stats.averageScore}%</p>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Streak Stat */}
-                  <div className="min-w-[280px] md:min-w-[260px] snap-start group relative overflow-hidden rounded-2xl p-6 bg-white border border-slate-200 hover:border-slate-300 transition-all duration-300 hover:shadow-xl flex-shrink-0">
-                    <div className="absolute inset-0 bg-gradient-to-br from-red-500/0 to-pink-500/0 group-hover:from-red-500/5 group-hover:to-pink-500/5 transition-colors duration-300" />
-                    <div className="relative z-10">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center shadow-[3px_3px_6px_rgba(0,0,0,0.1),-3px_-3px_6px_rgba(255,255,255,1)]">
-                          <Flame className="h-6 w-6 text-slate-700" />
-                        </div>
-                        <span className="text-xs font-semibold text-red-600 bg-red-500/10 px-3 py-1 rounded-full">Aktif</span>
-                      </div>
-                      <p className="text-slate-600 text-sm font-medium mb-1">Konsistensi Kajian Mingguan</p>
-                      <p className="text-3xl font-bold text-slate-900">{stats.streak} Hari</p>
-                      <div className="mt-4 pt-4 border-t border-slate-200">
-                        <p className="text-xs text-slate-500">Tetap Semangat! 🚀</p>
-                      </div>
-                    </div>
-                  </div>
+              {/* Quick Actions (Icon Hitam Putih) */}
+              <section>
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles className="w-5 h-5 text-slate-900" />
+                  <h2 className="text-lg font-bold text-slate-800">Akses Cepat</h2>
                 </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center shadow-[2px_2px_4px_rgba(0,0,0,0.1),-2px_-2px_4px_rgba(255,255,255,1)]">
-                    <Sparkles className="h-5 w-5 text-slate-700" />
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Fitur pintar</h2>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6">
-                  {quickActions.map((action, index) => {
-                    const IconComponent = action.icon;
-
-                    return (
-                      <Link
-                        key={index}
-                        href={action.link}
-                        className="group relative flex flex-col items-center gap-3 transition-all duration-300 hover:scale-105 active:scale-95"
-                      >
-                        <div className="relative">
-                          <div className="h-14 w-14 md:h-16 md:w-16 rounded-full bg-slate-100 flex items-center justify-center shadow-[4px_4px_8px_rgba(0,0,0,0.15),-4px_-4px_8px_rgba(255,255,255,0.9)] group-hover:shadow-[6px_6px_12px_rgba(0,0,0,0.2),-6px_-6px_12px_rgba(255,255,255,1)] transition-all duration-300">
-                            <IconComponent className="h-6 w-6 md:h-7 md:w-7 text-slate-700 group-hover:text-slate-900 transition-colors duration-300" />
-                          </div>
-                          {action.count && (
-                            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center h-5 w-5 rounded-full bg-red-500 text-white text-xs font-bold shadow-md">
-                              {action.count}
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-center">
-                          <p className="text-xs md:text-sm font-semibold text-slate-900 leading-tight">
-                            {action.title}
-                          </p>
-                        </div>
-                      </Link>
-                    );
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                  {quickActions.map((action, idx) => {
+                     const Icon = action.icon;
+                     return (
+                       <Link 
+                         key={idx} 
+                         href={action.link}
+                         className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 group"
+                       >
+                         <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center mb-3 group-hover:border-slate-800 group-hover:shadow-md transition-all">
+                           <Icon className="w-6 h-6 text-slate-900" strokeWidth={2.5} />
+                         </div>
+                         <span className="text-sm font-bold text-slate-700">{action.title}</span>
+                       </Link>
+                     )
                   })}
                 </div>
-              </div>
+              </section>
 
-              {/* Berita IRMA Section */}
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center shadow-[2px_2px_4px_rgba(0,0,0,0.1),-2px_-2px_4px_rgba(255,255,255,1)]">
-                    <Newspaper className="h-5 w-5 text-slate-700" />
+              {/* News Section */}
+              <section>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Newspaper className="w-5 h-5 text-slate-900" />
+                    <h2 className="text-lg font-bold text-slate-800">Kabar IRMA Terkini</h2>
                   </div>
-                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Liputan Berita IRMA Singkat</h2>
+                  <Link href="/news" className="text-sm font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1">
+                    Lihat Semua <ArrowRight className="w-4 h-4" />
+                  </Link>
                 </div>
-                <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-                  <div className="flex gap-4 min-w-max">
-                    {[
-                      { id: 1, title: "Lorem Ipsum Dolor Sit Amet", date: "2 Hari Lalu", category: "Event", image: "https://picsum.photos/500/300?random=1" },
-                      { id: 2, title: "Lorem Ipsum Dolor Sit Amet", date: "1 Minggu Lalu", category: "Pencapaian", image: "https://picsum.photos/500/300?random=2" },
-                      { id: 3, title: "Lorem Ipsum Dolor Sit Amet", date: "Hari Ini", category: "Tips", image: "https://picsum.photos/500/300?random=3" },
-                      { id: 4, title: "Lorem Ipsum Dolor Sit Amet", date: "3 Hari Lalu", category: "Update", image: "https://picsum.photos/500/300?random=4" },
-                    ].map((news) => (
-                      <div
-                        key={news.id}
-                        className="shrink-0 w-64 md:w-72 rounded-xl bg-white border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                      >
-                        <div className="h-32 w-full bg-slate-200 overflow-hidden">
-                          <img src={news.image} alt={news.title} className="h-full w-full object-cover hover:scale-105 transition-transform duration-300" />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   {[1, 2].map((item) => (
+                      <div key={item} className="flex gap-4 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group">
+                        <div className="w-24 h-24 rounded-xl bg-slate-200 overflow-hidden shrink-0">
+                           <img src={`https://picsum.photos/200/200?random=${item}`} alt="News" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                         </div>
-                        <div className="p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="inline-block px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
-                              {news.category}
-                            </span>
-                            <span className="text-xs text-slate-500">{news.date}</span>
-                          </div>
-                          <h3 className="font-bold text-slate-900 text-sm line-clamp-2">
-                            {news.title}
-                          </h3>
+                        <div className="flex flex-col justify-center">
+                          <span className="text-xs font-bold text-teal-600 mb-1">Kegiatan</span>
+                          <h3 className="font-bold text-slate-800 leading-tight mb-2 group-hover:text-teal-600 transition-colors">Workshop Kepemimpinan Remaja Masjid 2024</h3>
+                          <span className="text-xs text-slate-400 font-bold">2 hari yang lalu</span>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                   ))}
                 </div>
+              </section>
+            </div>
+
+            {/* RIGHT COLUMN */}
+            <div className="xl:col-span-4 space-y-6">
+              
+              {/* Level Card - MODIFIED */}
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white p-6 shadow-lg shadow-teal-500/20">
+                <div className="relative z-10">
+                   {/* Bagian Badges */}
+                   <div className="mb-6">
+                      <p className="text-teal-100 text-sm font-bold mb-3">Status Pencapaian</p>
+                      
+                      <div className="flex flex-wrap items-center gap-3">
+                         {/* Pill 1: Level (Teal) - DIBUAT JAUH LEBIH BESAR */}
+                         <div className="bg-[#00D1C6] text-white px-6 py-2.5 rounded-full shadow-md border-2 border-white/30 transform hover:scale-105 transition-transform cursor-default">
+                            <span className="font-black text-2xl md:text-3xl tracking-wide">Level 5</span>
+                         </div>
+
+                         {/* Container untuk badge kecil disebelahnya */}
+                         <div className="flex flex-wrap gap-2">
+                            {/* Pill 2: Mashaallah (Orange) */}
+                            <div className="bg-amber-400 text-white px-3 py-1 rounded-full shadow-sm border border-white/20 h-fit">
+                                <span className="font-bold text-xs md:text-sm">Mashaallah</span>
+                            </div>
+
+                            {/* Pill 3: Peringkat (Cream) */}
+                            <div className="bg-[#FFF8D6] text-amber-900 px-3 py-1 rounded-full shadow-sm h-fit">
+                                <span className="font-bold text-xs md:text-sm">Peringkat #12</span>
+                            </div>
+                         </div>
+                      </div>
+                   </div>
+                   
+                   <div className="space-y-2 mt-8">
+                     <div className="flex justify-between text-sm font-bold text-teal-50">
+                       <span>Progress Level</span>
+                       <span>75%</span>
+                     </div>
+                     <div className="h-3 bg-black/20 rounded-full overflow-hidden">
+                       <div className="h-full w-3/4 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] relative">
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/50" />
+                       </div>
+                     </div>
+                     <p className="text-xs text-teal-100 mt-2 font-bold">Dapatkan 50 poin lagi untuk naik ke Level 6</p>
+                   </div>
+                </div>
+                
+                {/* Dekorasi Background */}
+                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
+                <div className="absolute top-10 -left-10 w-32 h-32 bg-teal-400/20 rounded-full blur-xl" />
               </div>
 
-              {/* Features Section */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                {/* Chatbot AI Card */}
-                <div className="rounded-2xl border border-teal-200 bg-gradient-to-br from-teal-50 to-cyan-50 p-6 hover:shadow-lg transition-shadow duration-300">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-lg overflow-hidden shrink-0">
-                      <img src="/ci irma.jpg" alt="Ci Irma" className="h-full w-full object-cover" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-slate-900 mb-2">Chatbot AI Ci Irma</h3>
-                      <p className="text-sm text-slate-600">Tanya jawab seputar kegiatan IRMA, jadwal kajian, dan informasi lainnya dengan AI assistant</p>
-                    </div>
-                  </div>
-                  <button className="mt-4 px-6 py-2 rounded-full bg-teal-500 hover:bg-teal-600 text-white font-semibold text-sm transition-colors flex items-center gap-2 w-full justify-center md:w-auto">
-                    Mulai Chat
-                    <MessageSquare className="h-4 w-4" />
-                  </button>
+              {/* Feature Cards Stack */}
+              <div className="space-y-4">
+                <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                   <div className="w-12 h-12 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center shrink-0">
+                      <Zap className="w-6 h-6 text-slate-900" />
+                   </div>
+                   <div className="flex-1">
+                      <h4 className="font-bold text-slate-800">Tantangan Harian</h4>
+                      <p className="text-xs text-slate-500 font-bold">Selesaikan hafalan surat pendek</p>
+                   </div>
+                   <button className="px-3 py-1 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-700 transition-colors">Mulai</button>
                 </div>
 
-                {/* Konsultasi Instruktur Card */}
-                <div className="rounded-2xl border border-teal-200 bg-gradient-to-br from-teal-50 to-cyan-50 p-6 hover:shadow-lg transition-shadow duration-300">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-lg overflow-hidden shrink-0">
-                      <img src="/instruktur.jpg" alt="Instruktur" className="h-full w-full object-cover" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-slate-900 mb-2">Konsultasi Instruktur</h3>
-                      <p className="text-sm text-slate-600">Hubungi langsung instruktur pilihan untuk bimbingan spiritual dan pendampingan belajar</p>
-                    </div>
-                  </div>
-                  <button className="mt-4 px-6 py-2 rounded-full bg-teal-500 hover:bg-teal-600 text-white font-semibold text-sm transition-colors flex items-center gap-2 w-full justify-center md:w-auto">
-                    Mulai Konsultasi
-                    <MessageSquare className="h-4 w-4" />
-                  </button>
+                {/* Ci Irma Chatbot Promo */}
+                <div className="bg-gradient-to-br from-cyan-50 to-blue-50 p-5 rounded-2xl border border-cyan-100">
+                   <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                         <img src="/ci irma.jpg" alt="AI" className="w-full h-full object-cover" />
+                      </div>
+                      <div>
+                         <h4 className="font-bold text-slate-800 text-sm">Ci Irma AI</h4>
+                         <span className="text-xs text-emerald-600 flex items-center gap-1 font-bold">
+                           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Online
+                         </span>
+                      </div>
+                   </div>
+                   <p className="text-sm text-slate-600 mb-4 font-bold">Butuh teman diskusi atau tanya jadwal? Irma siap bantu!</p>
+                   <button className="w-full py-2.5 bg-white text-slate-700 font-bold text-sm rounded-xl shadow-sm border border-slate-200 hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
+                      <MessageSquare className="w-4 h-4" /> Chat Sekarang
+                   </button>
                 </div>
+
+                {/* Instruktur Promo */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                   <h4 className="font-bold text-slate-800 mb-3 text-sm">Instruktur Pilihan</h4>
+                   <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+                        <img src="/instruktur.jpg" alt="Instruktur" className="w-full h-full object-cover" />
+                      </div>
+                      <div>
+                         <p className="text-sm font-bold text-slate-900">Ust. Ahmad</p>
+                         <p className="text-xs text-slate-500 font-bold">Fiqih & Ibadah</p>
+                      </div>
+                   </div>
+                   <button className="w-full py-2 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-slate-800 transition-colors">
+                      Jadwalkan Konsultasi
+                   </button>
+                </div>
+
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
 
-      {/* Floating Chatbot Button */}
       <ChatbotButton />
     </div>
   );
