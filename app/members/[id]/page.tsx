@@ -405,7 +405,7 @@ const MemberDetail = () => {
                       <div
                         key={achievement.id}
                         className="bg-linear-to-br from-slate-50 to-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-300 hover:-translate-y-1"
-                      >
+                      > 
                         <div className="text-4xl mb-3">
                           {achievement.title === 'Top Contributor' && <Trophy className="h-8 w-8 text-amber-500" />}
                           {achievement.title === 'Perfect Attendance' && <CheckCircle2 className="h-8 w-8 text-yellow-500" />}

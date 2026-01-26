@@ -216,11 +216,11 @@ const Dashboard = () => {
                 </div>
 
                 <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group">
-                  <div className="flex justify-between items-start mb-3">
+                  <div className="flex items-center gap-2 mb-3">
                     <div className="p-2 bg-white border border-slate-200 rounded-xl group-hover:border-slate-400 transition-colors shadow-sm">
-                      <BarChart3 className="w-6 h-6 text-slate-900" />
+                      <Sparkles className="w-6 h-6 text-slate-900" />
                     </div>
-                    <span className="text-xs font-bold px-2 py-1 bg-green-100 rounded-full text-green-600">Rata-rata {stats.averageScore}</span>
+                    <span className="text-base font-bold text-slate-800">Fitur pintar</span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                     {quickActions.map((action, idx) => {
@@ -248,7 +248,6 @@ const Dashboard = () => {
                       <Newspaper className="w-5 h-5 text-slate-900" />
                       <h2 className="text-lg font-bold text-slate-800">Kabar IRMA Terkini</h2>
                     </div>
-                    <span className="text-xs font-bold px-2 py-1 bg-rose-100 rounded-full text-rose-600">Mantap!</span>
                   </div>
                   
                   {/* Updated Grid for News Items */}
