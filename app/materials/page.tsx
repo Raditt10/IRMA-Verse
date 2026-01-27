@@ -140,13 +140,19 @@ const Materials = () => {
     }
   };
 
-  const filteredMaterials = materials.filter((material) => {
+  let filteredMaterials = materials.filter((material) => {
     const matchesProgram = selectedProgram === "Semua" || material.category === selectedProgram;
     const matchesClass = selectedClass === "Semua" || material.classLevel === selectedClass;
     const matchesSearch = material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          material.pemateri?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesProgram && matchesClass && matchesSearch;
   });
+
+  // Card dengan badge 'Kajian telah diikuti' (id 3 dan 4) diurutkan ke paling bawah
+  filteredMaterials = [
+    ...filteredMaterials.filter(m => !["3","4"].includes(m.id)),
+    ...filteredMaterials.filter(m => ["3","4"].includes(m.id))
+  ];
 
   if (!user) {
     return (
@@ -246,6 +252,18 @@ const Materials = () => {
                       />
                       <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
 
+                      {/* Tanda Kajian telah diikuti di foto kajian */}
+                      {["3","4"].includes(material.id) && (
+                        <span className="absolute left-4 bottom-4 px-4 py-1.5 rounded-full bg-emerald-600 text-white text-xs font-bold shadow-md z-10">
+                          Kajian telah diikuti
+                        </span>
+                      )}
+
+                      {/* Tanda Merah buat kajian baru */}
+                      {["1","2"].includes(material.id) && (
+                        <span className="absolute top-4 right-4 w-4 h-4 rounded-full bg-red-600 shadow-lg animate-pulse z-10 border-2 border-white" />
+                      )}
+
                       {/* Category + Class Badges */}
                       <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
                         <span className="px-4 py-1.5 rounded-full bg-teal-500 text-white text-sm font-semibold shadow-lg">
@@ -260,7 +278,7 @@ const Materials = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="p-6">
+                    <div className="p-6 relative">
                       <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-teal-600 transition-colors">
                         {material.title}
                       </h3>
@@ -290,12 +308,22 @@ const Materials = () => {
                       </div>
 
                       {/* Button */}
-                      <button
-                        onClick={() => router.push("/absensi")}
-                        className="w-full py-3 rounded-xl bg-linear-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-300"
-                      >
-                        Aku ikut!
-                      </button>
+
+                      {(["3","4"].includes(material.id)) ? (
+                        <button
+                          onClick={() => router.push(`/rekapan/${material.id}`)}
+                          className="w-full py-3 rounded-xl bg-linear-to-r from-teal-700 to-cyan-800 text-white font-semibold hover:from-teal-800 hover:to-cyan-900 shadow-lg hover:shadow-xl transition-all duration-300"
+                        >
+                          Lihat Rekapan Materi
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => router.push("/absensi")}
+                          className="w-full py-3 rounded-xl bg-linear-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-300"
+                        >
+                          Aku ikut!
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

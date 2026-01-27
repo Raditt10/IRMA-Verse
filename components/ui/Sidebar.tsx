@@ -52,7 +52,7 @@ const Sidebar = () => {
 
   const menuItems = [
     { icon: LayoutGrid, label: "Dashboard", path: "/overview" },
-    { icon: BookOpen, label: "Kajian Mingguan", path: "/materials" },
+    { icon: BookOpen, label: "Kajian Mingguanku", path: "/materials" },
     { icon: Calendar, label: "Event", path: "/schedule" },
     { icon: Users, label: "Daftar Instruktur", path: "/instructors" },
     { icon: GraduationCap, label: "Program Kurikulum", path: "/programs" },
