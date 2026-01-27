@@ -197,7 +197,7 @@ const Dashboard = () => {
                       <div className="p-2 bg-white border border-slate-200 rounded-xl group-hover:border-slate-400 transition-colors shadow-sm">
                         <BarChart3 className="w-6 h-6 text-slate-900" />
                       </div>
-                      <span className="text-xs font-bold px-2 py-1 bg-green-100 rounded-full text-green-600">Avg {stats.averageScore}</span>
+                      <span className="text-xs font-bold px-2 py-1 bg-green-100 rounded-full text-green-600">Rata rata {stats.averageScore}%</span>
                     </div>
                     <div className="text-3xl font-bold text-slate-800 mb-1">{stats.totalQuizzes}</div>
                     <div className="text-sm text-slate-500 font-bold">Kuis Selesai</div>
@@ -208,7 +208,7 @@ const Dashboard = () => {
                       <div className="p-2 bg-white border border-slate-200 rounded-xl group-hover:border-slate-400 transition-colors shadow-sm">
                         <Flame className="w-6 h-6 text-slate-900" />
                       </div>
-                      <span className="text-xs font-bold px-2 py-1 bg-rose-100 rounded-full text-rose-600">Hot!</span>
+                      <span className="text-xs font-bold px-2 py-1 bg-rose-100 rounded-full text-rose-600">Mantap!</span>
                     </div>
                     <div className="text-3xl font-bold text-slate-800 mb-1">{stats.streak} Hari</div>
                     <div className="text-sm text-slate-500 font-bold">Konsistensi</div>
