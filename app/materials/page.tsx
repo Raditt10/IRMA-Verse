@@ -172,7 +172,7 @@ const Materials = () => {
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-4xl font-black text-slate-800 mb-2">
-                Kajian Mingguan
+                Kajian Mingguanku
               </h1>
               <p className="text-slate-600 text-lg">
                 Ikuti kajian mingguan bersama para pemateri berpengalaman
