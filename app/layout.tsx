@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SessionProvider } from 'next-auth/react';
+import { SocketProvider } from '@/lib/socket';
 
 import "./globals.css";
 
@@ -30,7 +31,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProvider>
-        {children}
+          <SocketProvider>
+            {children}
+          </SocketProvider>
         </SessionProvider>
       </body>
     </html>

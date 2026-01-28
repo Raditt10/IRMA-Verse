@@ -36,7 +36,10 @@ model User {
   pengalaman     String?  // Pengalaman (hanya untuk instruktur)
 
   // Relations
-  newsArticles   News[]   @relation("authorNews")
+  newsArticles              News[]   @relation("authorNews")
+  userConversations         ChatConversation[] @relation("userConversations")
+  instructorConversations   ChatConversation[] @relation("instructorConversations")
+  sentMessages              ChatMessage[] @relation("sentMessages")
 
   @@map("users")
 }
@@ -57,4 +60,39 @@ model News {
   @@index([slug])
   @@index([authorId])
   @@map("news")
+}
+
+// Chat Conversation between User and Instructor
+model ChatConversation {
+  id             String   @id @default(cuid())
+  userId         String   // User yang memulai chat
+  instructorId   String   // Instruktur yang di-chat
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user           User     @relation("userConversations", fields: [userId], references: [id], onDelete: Cascade)
+  instructor     User     @relation("instructorConversations", fields: [instructorId], references: [id], onDelete: Cascade)
+  messages       ChatMessage[]
+
+  @@unique([userId, instructorId])
+  @@index([userId])
+  @@index([instructorId])
+  @@map("chat_conversations")
+}
+
+// Chat Messages
+model ChatMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String   @db.Text
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User     @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@map("chat_messages")
 }

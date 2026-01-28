@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   LayoutGrid,
   BookOpen,
@@ -15,11 +16,13 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   X,
+  MessageCircle,
 } from "lucide-react";
 
 const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [isExpanded, setIsExpanded] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -50,7 +53,8 @@ const Sidebar = () => {
     };
   }, []);
 
-  const menuItems = [
+  // Base menu items for all users
+  const baseMenuItems = [
     { icon: LayoutGrid, label: "Dashboard", path: "/overview" },
     { icon: BookOpen, label: "Kajian Mingguanku", path: "/materials" },
     { icon: Calendar, label: "Event", path: "/schedule" },
@@ -60,6 +64,19 @@ const Sidebar = () => {
     { icon: Users, label: "Daftar Anggota", path: "/members" },
     { icon: Newspaper, label: "Berita IRMA", path: "/news" },
   ];
+
+  // Add chat menu item based on role
+  const menuItems = session?.user?.role === "instruktur"
+    ? [
+        ...baseMenuItems.slice(0, 4),
+        { icon: MessageCircle, label: "Pesan Masuk", path: "/overview/academy/chat" },
+        ...baseMenuItems.slice(4),
+      ]
+    : [
+        ...baseMenuItems.slice(0, 4),
+        { icon: MessageCircle, label: "Chat Instruktur", path: "/instructors/chat" },
+        ...baseMenuItems.slice(4),
+      ];
 
   return (
     <>

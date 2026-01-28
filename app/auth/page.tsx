@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -328,4 +328,14 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+      </div>
+    }>
+      <Auth />
+    </Suspense>
+  );
+}
