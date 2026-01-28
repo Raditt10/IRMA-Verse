@@ -28,6 +28,7 @@ model User {
   address   String?  // Alamat (opsional) 
   bio       String?  // Bio (opsional)
   role      Role     @default(user) // Role: user, admin, instruktur
+  lastSeen  DateTime @default(now()) // Last active timestamp
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -87,6 +88,13 @@ model ChatMessage {
   senderId       String
   content        String   @db.Text
   isRead         Boolean  @default(false)
+  readAt         DateTime? // When message was read
+  attachmentUrl  String?  // URL for uploaded files/images
+  attachmentType String?  // Type: image, file, etc
+  isEdited       Boolean  @default(false)
+  editedAt       DateTime?
+  isDeleted      Boolean  @default(false)
+  deletedAt      DateTime?
   createdAt      DateTime @default(now())
 
   conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)

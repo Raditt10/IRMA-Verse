@@ -32,12 +32,14 @@ interface SocketContextType {
   isConnected: boolean;
   onlineUsers: Map<string, PresenceData>;
   typingUsers: Map<string, { userId: string; userName: string }[]>;
+  lastSeenMap: Map<string, string>;
   joinConversation: (conversationId: string) => void;
   leaveConversation: (conversationId: string) => void;
   sendMessage: (data: Omit<MessageData, "messageId" | "createdAt">) => void;
   startTyping: (conversationId: string) => void;
   stopTyping: (conversationId: string) => void;
   markAsRead: (conversationId: string, messageIds: string[]) => void;
+  updateLastSeen: () => void;
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);
@@ -60,6 +62,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<Map<string, PresenceData>>(new Map());
   const [typingUsers, setTypingUsers] = useState<Map<string, { userId: string; userName: string }[]>>(new Map());
+  const [lastSeenMap, setLastSeenMap] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     if (!session?.user?.id) return;
@@ -130,6 +133,15 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       });
     });
 
+    // Handle last seen updates
+    socketInstance.on("user:last-seen-updated", (data: { userId: string; lastSeen: string }) => {
+      setLastSeenMap((prev) => {
+        const newMap = new Map(prev);
+        newMap.set(data.userId, data.lastSeen);
+        return newMap;
+      });
+    });
+
     setSocket(socketInstance);
 
     return () => {
@@ -189,6 +201,25 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     }
   }, [socket, session?.user]);
 
+  const updateLastSeen = useCallback(() => {
+    if (socket && session?.user) {
+      socket.emit("user:update-last-seen", session.user.id);
+    }
+  }, [socket, session?.user]);
+
+  // Update last seen every minute
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    
+    const interval = setInterval(() => {
+      updateLastSeen();
+      // Also update in database
+      fetch('/api/users/last-seen', { method: 'POST' }).catch(console.error);
+    }, 60000); // Every minute
+
+    return () => clearInterval(interval);
+  }, [session?.user?.id, updateLastSeen]);
+
   return (
     <SocketContext.Provider
       value={{
@@ -196,12 +227,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         isConnected,
         onlineUsers,
         typingUsers,
+        lastSeenMap,
         joinConversation,
         leaveConversation,
         sendMessage,
         startTyping,
         stopTyping,
         markAsRead,
+        updateLastSeen,
       }}
     >
       {children}

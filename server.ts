@@ -135,6 +135,34 @@ app.prepare().then(() => {
       io.to(`conversation:${data.conversationId}`).emit('message:read:update', data);
     });
 
+    // Handle message edit
+    socket.on('message:edit', (data: {
+      messageId: string;
+      conversationId: string;
+      newContent: string;
+      editedAt: string;
+    }) => {
+      io.to(`conversation:${data.conversationId}`).emit('message:edited', data);
+    });
+
+    // Handle message delete
+    socket.on('message:delete', (data: {
+      messageId: string;
+      conversationId: string;
+      deletedAt: string;
+    }) => {
+      io.to(`conversation:${data.conversationId}`).emit('message:deleted', data);
+    });
+
+    // Handle last seen update
+    socket.on('user:update-last-seen', async (userId: string) => {
+      // Broadcast to all connected clients
+      io.emit('user:last-seen-updated', {
+        userId,
+        lastSeen: new Date().toISOString()
+      });
+    });
+
     // Handle disconnect
     socket.on('disconnect', () => {
       // Find and remove the disconnected user

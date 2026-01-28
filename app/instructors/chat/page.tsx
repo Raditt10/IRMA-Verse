@@ -10,6 +10,15 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useSocket } from "@/lib/socket";
 import {
+  formatRelativeTime,
+  formatMessageDate,
+  formatTimeOnly,
+  canEditOrDelete,
+  playNotificationSound,
+  isImageFile,
+  formatFileSize,
+} from "@/lib/chat-utils";
+import {
   MoreHorizontal,
   Paperclip,
   Send,
@@ -19,6 +28,12 @@ import {
   ArrowLeft,
   Loader2,
   X,
+  Edit2,
+  Trash2,
+  Check,
+  CheckCheck,
+  Image as ImageIcon,
+  File,
 } from "lucide-react";
 
 interface Instructor {
@@ -51,6 +66,13 @@ interface ChatMessage {
   content: string;
   createdAt: string;
   isRead: boolean;
+  readAt?: string;
+  attachmentUrl?: string;
+  attachmentType?: string;
+  isEdited: boolean;
+  editedAt?: string;
+  isDeleted: boolean;
+  deletedAt?: string;
   sender: {
     id: string;
     name: string;
@@ -71,10 +93,12 @@ const ChatPage = () => {
     isConnected, 
     onlineUsers, 
     typingUsers, 
+    lastSeenMap,
     joinConversation, 
     leaveConversation,
     startTyping,
-    stopTyping 
+    stopTyping,
+    updateLastSeen 
   } = useSocket();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -87,9 +111,18 @@ const ChatPage = () => {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [isMobileViewingChat, setIsMobileViewingChat] = useState(false);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [editingContent, setEditingContent] = useState("");
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showFilePreview, setShowFilePreview] = useState(false);
+  const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
+  const [fileCaption, setFileCaption] = useState("");
   
   const messagesRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const searchParams = useSearchParams();
 
   // Fetch conversations
@@ -181,24 +214,69 @@ const ChatPage = () => {
             content: data.content,
             createdAt: data.createdAt,
             isRead: false,
+            isEdited: false,
+            isDeleted: false,
+            attachmentUrl: data.attachmentUrl,
+            attachmentType: data.attachmentType,
             sender: {
               id: data.senderId,
               name: data.senderName,
             },
           },
         ]);
+
+        // Play notification sound if message from someone else
+        if (data.senderId !== session?.user?.id) {
+          playNotificationSound();
+        }
       }
       
       // Update conversation list
       fetchConversations();
     };
 
+    const handleMessageEdited = (data: any) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === data.messageId
+            ? { ...msg, content: data.newContent, isEdited: true, editedAt: data.editedAt }
+            : msg
+        )
+      );
+    };
+
+    const handleMessageDeleted = (data: any) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === data.messageId
+            ? { ...msg, content: "Pesan telah dihapus", isDeleted: true, deletedAt: data.deletedAt }
+            : msg
+        )
+      );
+    };
+
+    const handleMessageReadUpdate = (data: any) => {
+      if (data.userId !== session?.user?.id) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            data.messageIds.includes(msg.id) ? { ...msg, isRead: true, readAt: new Date().toISOString() } : msg
+          )
+        );
+      }
+    };
+
     socket.on("message:receive", handleNewMessage);
+    socket.on("message:edited", handleMessageEdited);
+    socket.on("message:deleted", handleMessageDeleted);
+    socket.on("message:read:update", handleMessageReadUpdate);
 
     return () => {
       socket.off("message:receive", handleNewMessage);
+      socket.off("message:edited", handleMessageEdited);
+      socket.off("message:deleted", handleMessageDeleted);
+      socket.off("message:read:update", handleMessageReadUpdate);
     };
-  }, [socket, selectedConversationId, fetchConversations]);
+  }, [socket, selectedConversationId, fetchConversations, session?.user?.id]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -206,6 +284,59 @@ const ChatPage = () => {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Auto mark messages as read when visible
+  useEffect(() => {
+    if (!selectedConversationId || !session?.user?.id) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const unreadMessageIds = entries
+          .filter((entry) => entry.isIntersecting)
+          .map((entry) => entry.target.getAttribute("data-message-id"))
+          .filter((id): id is string => {
+            if (!id) return false;
+            const message = messages.find((m) => m.id === id);
+            return message ? !message.isRead && message.senderId !== session.user!.id : false;
+          });
+
+        if (unreadMessageIds.length > 0) {
+          // Mark as read in database
+          fetch("/api/chat/messages/read", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messageIds: unreadMessageIds }),
+          }).catch(console.error);
+
+          // Emit socket event
+          socket?.emit("message:read", {
+            conversationId: selectedConversationId,
+            userId: session.user!.id,
+            messageIds: unreadMessageIds,
+          });
+
+          // Update local state
+          setMessages((prev) =>
+            prev.map((msg) =>
+              unreadMessageIds.includes(msg.id)
+                ? { ...msg, isRead: true, readAt: new Date().toISOString() }
+                : msg
+            )
+          );
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    // Observe all message elements
+    messageRefs.current.forEach((element) => {
+      observer.observe(element);
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [messages, selectedConversationId, session?.user?.id, socket]);
 
   // Get selected conversation details
   const selectedConversation = useMemo(
@@ -247,6 +378,160 @@ const ChatPage = () => {
       stopTyping(selectedConversationId);
     }, 2000);
   }, [selectedConversationId, startTyping, stopTyping]);
+
+  // File upload handler
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert("File terlalu besar! Maksimal 10MB");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    // Set file and show preview
+    setSelectedFile(file);
+    setFilePreviewUrl(URL.createObjectURL(file));
+    setFileCaption(messageDraft); // Use current draft as initial caption
+    setShowFilePreview(true);
+    
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  // Send file after preview confirmation
+  const handleSendFile = async () => {
+    if (!selectedFile || !selectedConversation || !session?.user) return;
+
+    setUploadingFile(true);
+    setShowFilePreview(false);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!uploadRes.ok) throw new Error("Upload failed");
+
+      const { url } = await uploadRes.json();
+
+      // Send message with attachment
+      const res = await fetch(
+        `/api/chat/conversations/${selectedConversationId}/messages`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: fileCaption.trim(),
+            attachmentUrl: url,
+            attachmentType: isImageFile(selectedFile.name) ? "image" : "file",
+          }),
+        }
+      );
+
+      if (res.ok) {
+        const newMessage = await res.json();
+
+        socket?.emit("message:send", {
+          conversationId: selectedConversationId,
+          senderId: session.user.id,
+          recipientId: selectedConversation.participant.id,
+          content: newMessage.content,
+          messageId: newMessage.id,
+          senderName: session.user.name,
+          createdAt: newMessage.createdAt,
+          attachmentUrl: url,
+          attachmentType: newMessage.attachmentType,
+        });
+
+        setFileCaption("");
+        setSelectedFile(null);
+        setFilePreviewUrl(null);
+        fetchConversations();
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("Gagal mengupload file");
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
+  // Cancel file preview
+  const handleCancelFilePreview = () => {
+    setShowFilePreview(false);
+    setSelectedFile(null);
+    setFileCaption("");
+    if (filePreviewUrl) {
+      URL.revokeObjectURL(filePreviewUrl);
+      setFilePreviewUrl(null);
+    }
+  };
+
+  // Edit message handler
+  const handleEditMessage = async (messageId: string) => {
+    if (!editingContent.trim()) return;
+
+    try {
+      const res = await fetch(`/api/chat/messages/${messageId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: editingContent.trim() }),
+      });
+
+      if (res.ok) {
+        const updatedMessage = await res.json();
+
+        socket?.emit("message:edit", {
+          messageId,
+          conversationId: selectedConversationId,
+          newContent: updatedMessage.content,
+          editedAt: updatedMessage.editedAt,
+        });
+
+        setEditingMessageId(null);
+        setEditingContent("");
+      } else {
+        const error = await res.json();
+        alert(error.error || "Gagal mengedit pesan");
+      }
+    } catch (error) {
+      console.error("Error editing message:", error);
+      alert("Gagal mengedit pesan");
+    }
+  };
+
+  // Delete message handler
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!confirm("Hapus pesan ini?")) return;
+
+    try {
+      const res = await fetch(`/api/chat/messages/${messageId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        const deletedMessage = await res.json();
+
+        socket?.emit("message:delete", {
+          messageId,
+          conversationId: selectedConversationId,
+          deletedAt: deletedMessage.deletedAt,
+        });
+      } else {
+        const error = await res.json();
+        alert(error.error || "Gagal menghapus pesan");
+      }
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      alert("Gagal menghapus pesan");
+    }
+  };
 
   // Send message
   const handleSendMessage = async () => {
@@ -319,34 +604,6 @@ const ChatPage = () => {
     } catch (error) {
       console.error("Error starting conversation:", error);
     }
-  };
-
-  // Format time
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("id-ID", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  // Format date for message groups
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    if (date.toDateString() === today.toDateString()) {
-      return "Hari ini";
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return "Kemarin";
-    }
-    return date.toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
   };
 
   if (status === "loading" || loading) {
@@ -467,7 +724,7 @@ const ChatPage = () => {
                             </p>
                             {conv.lastMessage && (
                               <span className="text-xs text-slate-400">
-                                {formatTime(conv.lastMessage.createdAt)}
+                                {formatRelativeTime(conv.lastMessage.createdAt)}
                               </span>
                             )}
                           </div>
@@ -529,9 +786,15 @@ const ChatPage = () => {
                             {selectedConversation.participant.name}
                           </p>
                           <p className="text-xs text-slate-500">
-                            {isParticipantOnline(selectedConversation.participant.id)
-                              ? "Online"
-                              : "Offline"}
+                            {isParticipantOnline(selectedConversation.participant.id) ? (
+                              "Online"
+                            ) : (
+                              lastSeenMap.get(selectedConversation.participant.id) ? (
+                                `Terakhir dilihat ${formatRelativeTime(lastSeenMap.get(selectedConversation.participant.id)!)}`
+                              ) : (
+                                "Offline"
+                              )
+                            )}
                             {currentTypingUsers.length > 0 && (
                               <span className="text-emerald-500 ml-1">
                                 • Sedang mengetik...
@@ -576,34 +839,140 @@ const ChatPage = () => {
                                 {showDate && (
                                   <div className="flex items-center justify-center my-4">
                                     <span className="text-xs text-slate-400 bg-white px-3 py-1 rounded-full border border-slate-200">
-                                      {formatDate(message.createdAt)}
+                                      {formatMessageDate(message.createdAt)}
                                     </span>
                                   </div>
                                 )}
                                 <div
+                                  ref={(el) => {
+                                    if (el) {
+                                      messageRefs.current.set(message.id, el);
+                                    } else {
+                                      messageRefs.current.delete(message.id);
+                                    }
+                                  }}
+                                  data-message-id={message.id}
                                   className={`flex ${
                                     isCurrentUser ? "justify-end" : "justify-start"
-                                  }`}
+                                  } group`}
                                 >
-                                  <div
-                                    className={`max-w-[80%] sm:max-w-md rounded-2xl px-4 py-3 ${
-                                      isCurrentUser
-                                        ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white"
-                                        : "bg-white border border-slate-200 text-slate-800"
-                                    }`}
-                                  >
-                                    <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                                      {message.content}
-                                    </p>
-                                    <p
-                                      className={`text-[11px] mt-1 ${
+                                  <div className="flex items-end gap-2">
+                                    {isCurrentUser && canEditOrDelete(message.createdAt) && !message.isDeleted && (
+                                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                        <Button
+                                          size="icon"
+                                          variant="ghost"
+                                          className="h-7 w-7 text-slate-400 hover:text-emerald-600"
+                                          onClick={() => {
+                                            setEditingMessageId(message.id);
+                                            setEditingContent(message.content);
+                                          }}
+                                        >
+                                          <Edit2 className="h-3.5 w-3.5" />
+                                        </Button>
+                                        <Button
+                                          size="icon"
+                                          variant="ghost"
+                                          className="h-7 w-7 text-slate-400 hover:text-red-600"
+                                          onClick={() => handleDeleteMessage(message.id)}
+                                        >
+                                          <Trash2 className="h-3.5 w-3.5" />
+                                        </Button>
+                                      </div>
+                                    )}
+                                    
+                                    <div
+                                      className={`max-w-[80%] sm:max-w-md rounded-2xl px-4 py-3 ${
                                         isCurrentUser
-                                          ? "text-white/70"
-                                          : "text-slate-400"
+                                          ? message.isDeleted
+                                            ? "bg-slate-300 text-slate-600 italic"
+                                            : "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white"
+                                          : message.isDeleted
+                                          ? "bg-slate-100 border border-slate-200 text-slate-500 italic"
+                                          : "bg-white border border-slate-200 text-slate-800"
                                       }`}
                                     >
-                                      {formatTime(message.createdAt)}
-                                    </p>
+                                      {editingMessageId === message.id ? (
+                                        <div className="space-y-2">
+                                          <Textarea
+                                            value={editingContent}
+                                            onChange={(e) => setEditingContent(e.target.value)}
+                                            className="text-sm bg-white/10 border-white/20"
+                                            rows={2}
+                                          />
+                                          <div className="flex gap-2">
+                                            <Button
+                                              size="sm"
+                                              onClick={() => handleEditMessage(message.id)}
+                                              className="h-7 text-xs"
+                                            >
+                                              Simpan
+                                            </Button>
+                                            <Button
+                                              size="sm"
+                                              variant="ghost"
+                                              onClick={() => {
+                                                setEditingMessageId(null);
+                                                setEditingContent("");
+                                              }}
+                                              className="h-7 text-xs"
+                                            >
+                                              Batal
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <>
+                                          {message.attachmentUrl && (
+                                            <div className="mb-2">
+                                              {message.attachmentType === "image" ? (
+                                                <img
+                                                  src={message.attachmentUrl}
+                                                  alt="Attachment"
+                                                  className="rounded-lg max-w-full max-h-64 object-cover"
+                                                />
+                                              ) : (
+                                                <a
+                                                  href={message.attachmentUrl}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="flex items-center gap-2 p-2 bg-white/10 rounded-lg hover:bg-white/20"
+                                                >
+                                                  <File className="h-4 w-4" />
+                                                  <span className="text-sm">File attachment</span>
+                                                </a>
+                                              )}
+                                            </div>
+                                          )}
+                                          {message.content && (
+                                            <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                                              {message.content}
+                                            </p>
+                                          )}
+                                          <div className="flex items-center gap-2 mt-1">
+                                            <p
+                                              className={`text-[11px] ${
+                                                isCurrentUser
+                                                  ? "text-white/70"
+                                                  : "text-slate-400"
+                                              }`}
+                                            >
+                                              {formatTimeOnly(message.createdAt)}
+                                              {message.isEdited && " (diedit)"}
+                                            </p>
+                                            {isCurrentUser && (
+                                              <span className="text-white/70">
+                                                {message.isRead ? (
+                                                  <CheckCheck className="h-3.5 w-3.5" />
+                                                ) : (
+                                                  <Check className="h-3.5 w-3.5" />
+                                                )}
+                                              </span>
+                                            )}
+                                          </div>
+                                        </>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
                               </React.Fragment>
@@ -632,6 +1001,13 @@ const ChatPage = () => {
 
                     {/* Message Input */}
                     <div className="border-t border-slate-200 p-4 bg-white">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileSelect}
+                        accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                      />
                       <form
                         onSubmit={(e) => {
                           e.preventDefault();
@@ -644,8 +1020,14 @@ const ChatPage = () => {
                           variant="ghost"
                           size="icon"
                           className="shrink-0 text-slate-400 hover:text-slate-600"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={uploadingFile}
                         >
-                          <Paperclip className="h-5 w-5" />
+                          {uploadingFile ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                          ) : (
+                            <Paperclip className="h-5 w-5" />
+                          )}
                         </Button>
                         <Textarea
                           placeholder="Tulis pesan..."
@@ -694,6 +1076,82 @@ const ChatPage = () => {
           </div>
         </main>
       </div>
+
+      {/* File Preview Modal */}
+      {showFilePreview && selectedFile && filePreviewUrl && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-slate-800">
+                Preview File
+              </h3>
+              <button
+                onClick={handleCancelFilePreview}
+                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                disabled={uploadingFile}
+              >
+                <X className="h-5 w-5 text-slate-500" />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-4">
+              {isImageFile(selectedFile.name) ? (
+                <img
+                  src={filePreviewUrl}
+                  alt="Preview"
+                  className="w-full h-auto rounded-lg"
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center p-8 bg-slate-50 rounded-lg">
+                  <File className="h-16 w-16 text-slate-400 mb-4" />
+                  <p className="text-slate-700 font-medium">{selectedFile.name}</p>
+                  <p className="text-slate-500 text-sm mt-1">
+                    {formatFileSize(selectedFile.size)}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 border-t border-slate-200">
+              <Textarea
+                placeholder="Tambahkan caption (opsional)..."
+                value={fileCaption}
+                onChange={(e) => setFileCaption(e.target.value)}
+                className="mb-3 rounded-xl border-slate-200 focus:border-emerald-300 focus:ring-emerald-200"
+                rows={2}
+                disabled={uploadingFile}
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSendFile}
+                  disabled={uploadingFile}
+                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl"
+                >
+                  {uploadingFile ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Mengirim...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      Kirim
+                    </>
+                  )}
+                </Button>
+                <Button
+                  onClick={handleCancelFilePreview}
+                  disabled={uploadingFile}
+                  variant="outline"
+                  className="rounded-xl"
+                >
+                  Batal
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* New Chat Modal */}
       {showNewChatModal && (

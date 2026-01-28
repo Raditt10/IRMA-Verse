@@ -64,7 +64,10 @@ export async function GET(
         isRead: false,
         senderId: { not: session.user.id },
       },
-      data: { isRead: true },
+      data: { 
+        isRead: true,
+        readAt: new Date(),
+      },
     });
 
     return NextResponse.json({
@@ -93,11 +96,11 @@ export async function POST(
 
     const { conversationId } = await params;
     const body = await request.json();
-    const { content } = body;
+    const { content, attachmentUrl, attachmentType } = body;
 
-    if (!content || !content.trim()) {
+    if ((!content || !content.trim()) && !attachmentUrl) {
       return NextResponse.json(
-        { error: "Message content is required" },
+        { error: "Message content or attachment is required" },
         { status: 400 }
       );
     }
@@ -125,7 +128,9 @@ export async function POST(
       data: {
         conversationId,
         senderId: session.user.id,
-        content: content.trim(),
+        content: content?.trim() || "",
+        attachmentUrl,
+        attachmentType,
       },
       include: {
         sender: {
