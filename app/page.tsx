@@ -430,10 +430,10 @@ export default function Home() {
               <span className="text-sm font-extrabold text-white uppercase tracking-wider">Dokumentasi</span>
             </div>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 leading-tight drop-shadow-[3px_3px_0px_rgba(0,0,0,0.15)]">
-              Galeri <span className="bg-gradient-to-r from-yellow-200 to-amber-300 bg-clip-text text-transparent" style={{ textShadow: "2px 2px 0px rgba(0,0,0,0.2)" }}>Keseruan</span> Kami
+               <span className="bg-gradient-to-r from-yellow-200 to-amber-300 bg-clip-text text-transparent" style={{ textShadow: "2px 2px 0px rgba(0,0,0,0.2)" }}>Kegiatan</span> Kami
             </h2>
             <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed font-bold">
-              Intip momen-momen seru kegiatan IRMA yang penuh warna dan keceriaan!
+               Lihat kegiatan IRMA yang penuh warna dan bersemangat!
             </p>
           </div>
 
@@ -520,7 +520,7 @@ export default function Home() {
             <Link href="/auth" className="w-full sm:w-auto">
               <button className="w-full sm:w-auto px-8 sm:px-12 py-5 sm:py-6 text-lg group font-extrabold bg-white text-emerald-800 rounded-2xl border-b-[8px] border-emerald-900 active:border-b-0 active:translate-y-2 transition-all duration-150 flex items-center justify-center gap-3 hover:brightness-105 shadow-2xl">
                 <Sparkles className="h-6 w-6 stroke-[3px]" />
-                <span>Daftar Sekarang - Gratis!</span>
+                <span>Daftar Sekarang Gratis!</span>
                 <ArrowRight className="h-6 w-6 stroke-[3px] group-hover:translate-x-2 transition-transform duration-300" />
               </button>
             </Link>
