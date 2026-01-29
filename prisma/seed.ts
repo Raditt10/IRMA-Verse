@@ -7,6 +7,7 @@ async function main() {
   console.log('🌱 Starting seeding data...');
 
   // Clear existing data
+  await prisma.schedule.deleteMany();
   await prisma.news.deleteMany();
   await prisma.user.deleteMany();
 
@@ -168,10 +169,56 @@ Hadis dibagi menjadi beberapa tingkatan berdasarkan kualitasnya...`,
     },
   });
 
+  // Create schedules
+  const schedule1 = await prisma.schedule.create({
+    data: {
+      title: 'Seminar Akhlak Pemuda',
+      description: 'Membangun karakter islami generasi muda',
+      fullDescription: 'Generasi muda adalah pilar masa depan umat Islam. Seminar ini menghadirkan diskusi mendalam tentang pembangunan karakter Islami yang kuat di tengah tantangan zaman modern.',
+      date: new Date('2026-02-15T09:00:00'),
+      time: '09:00 WIB',
+      location: 'Aula Utama',
+      pemateri: 'Ustadz Ahmad Zaki',
+      status: 'segera_hadir',
+      instructorId: user1.id,
+      thumbnailUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=500',
+    },
+  });
+
+  const schedule2 = await prisma.schedule.create({
+    data: {
+      title: 'Workshop Tahfidz Al-Quran',
+      description: 'Meningkatkan kemampuan menghafal Al-Quran',
+      fullDescription: 'Tahfidz Al-Quran adalah pencapaian spiritual tertinggi yang dapat diraih seorang Muslim. Program intensif ini dirancang untuk membantu peserta mengembangkan kemampuan menghafal Al-Quran dengan metode yang telah terbukti efektif.',
+      date: new Date('2026-02-20T14:00:00'),
+      time: '14:00 WIB',
+      location: 'Ruang Tahfidz',
+      pemateri: 'Ustadzah Fatimah',
+      status: 'segera_hadir',
+      instructorId: user2.id,
+      thumbnailUrl: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?w=500',
+    },
+  });
+
+  const schedule3 = await prisma.schedule.create({
+    data: {
+      title: 'Kajian Tafsir Surat Al-Baqarah',
+      description: 'Memahami makna mendalam surat Al-Baqarah',
+      fullDescription: 'Surat Al-Baqarah adalah surat terpanjang dalam Al-Quran yang penuh dengan hikmah dan petunjuk. Kajian ini akan membahas ayat demi ayat dengan pendekatan komprehensif.',
+      date: new Date('2026-03-01T16:00:00'),
+      time: '16:00 WIB',
+      location: 'Musholla Al-Ikhlas',
+      pemateri: 'Ustadzah Fatimah',
+      status: 'segera_hadir',
+      instructorId: user2.id,
+    },
+  });
+
   console.log('✅ Data seeding completed!');
   console.log('📊 Summary:');
   console.log(`   - Users: 3`);
   console.log(`   - News: 5`);
+  console.log(`   - Schedules: 3`);
   console.log(`   - Instructors: 2`);
   console.log('\n💡 Test the search with these keywords:');
   console.log('   - "kedudukan" (untuk mencari berita tentang akal dan wahyu)');

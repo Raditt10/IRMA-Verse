@@ -7,6 +7,7 @@ import ChatbotButton from "@/components/ui/ChatbotButton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, MapPin, User, Clock, Users, Search, Filter, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useSession } from "next-auth/react";
 
 interface Schedule {
   id: string;
@@ -26,128 +27,39 @@ const Schedule = () => {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [filteredSchedules, setFilteredSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"upcoming" | "finished">("upcoming");
   const router = useRouter();
 
   useEffect(() => {
-    loadUser();
     fetchSchedules();
   }, []);
 
   useEffect(() => {
     filterSchedules();
   }, [schedules, searchQuery, activeTab]);
-
-  const loadUser = async () => {
-    setUser({
-      id: "user-123",
-      full_name: "Rafaditya Syahputra",
-      email: "rafaditya@irmaverse.local",
-      avatar: "RS"
-    });
-  };
-
+  
   const fetchSchedules = async () => {
     try {
-      // Mock data untuk demo
-      const mockSchedules: Schedule[] = [
-        {
-          id: "1",
-          title: "Semesta 1",
-          description: "Belajar strategi dakwah di era digital",
-          date: "2024-11-25",
-          time: "13:00 WIB",
-          location: "Aula Utama",
-          pemateri: "Ustadz Ahmad Zaki",
-          registeredCount: 45,
-          status: "Acara telah dilaksanakan"
-        },
-        {
-          id: "2",
-          title: "Semesta 2",
-          description: "Persiapan menyambut bulan suci",
-          date: "2024-11-28",
-          time: "14:00 WIB",
-          location: "Musholla",
-          pemateri: "Ustadzah Fatimah",
-          registeredCount: 67,
-          status: "Segera hadir"
-        },
-        {
-          id: "3",
-          title: "Buka Puasa Bersama",
-          description: "Meningkatkan kemampuan menghafal Al-Quran",
-          date: "2024-12-01",
-          time: "15:00 WIB",
-          location: "Ruang Tahfidz",
-          pemateri: "Ustadz Muhammad Rizki",
-          registeredCount: 32,
-          status: "Sedang berlangsung"
-        },
-        {
-          id: "4",
-          title: "Seminar Akhlak Pemuda",
-          description: "Membangun karakter islami generasi muda",
-          date: "2024-12-05",
-          time: "09:00 WIB",
-          location: "Aula Besar",
-          pemateri: "Ustadz Abdullah Hakim",
-          registeredCount: 89,
-          status: "Acara telah dilaksanakan"
-        },
-        {
-          id: "5",
-          title: "Mentoring Calon Hafidz",
-          description: "Program intensif bimbingan hafalan Al-Quran personal",
-          date: "2024-12-08",
-          time: "16:00 WIB",
-          location: "Ruang Belajar Privat",
-          pemateri: "Ustadz Qur'ani Ibrahim",
-          registeredCount: 20,
-          status: "Segera hadir"
-        },
-        {
-          id: "6",
-          title: "Workshop Parenting Islami",
-          description: "Memahami pola asuh anak menurut perspektif Islam",
-          date: "2024-12-12",
-          time: "10:00 WIB",
-          location: "Aula Keluarga",
-          pemateri: "Ustadzah Dr. Nurfitrianti, M.Psi",
-          registeredCount: 54,
-          status: "Segera hadir"
-        },
-        {
-          id: "7",
-          title: "Fikih Muamalah Praktis",
-          description: "Pemahaman hukum Islam dalam transaksi bisnis modern",
-          date: "2024-12-15",
-          time: "14:00 WIB",
-          location: "Aula Utama",
-          pemateri: "Ustadz Dr. Didi Junaedi, M.A",
-          registeredCount: 38,
-          status: "Segera hadir"
-        },
-        {
-          id: "8",
-          title: "Qira'at Al-Quran 7 Metode",
-          description: "Pembelajaran variasi bacaan Al-Quran dari berbagai qira'at",
-          date: "2024-12-18",
-          time: "17:00 WIB",
-          location: "Ruang Tajwid Premium",
-          pemateri: "Qari Mahmud Al-Banawi",
-          registeredCount: 25,
-          status: "Segera hadir"
-        }
-      ];
-      // Add thumbnail images to each schedule
-      mockSchedules.forEach((schedule, index) => {
-        (schedule as any).thumbnail = `https://picsum.photos/seed/event${index + 1}/200/200`;
-      });
-      setSchedules(mockSchedules);
-      setFilteredSchedules(mockSchedules);
+      const response = await fetch("/api/schedules");
+      if (!response.ok) {
+        throw new Error("Failed to fetch schedules");
+      }
+      const data = await response.json();
+      
+      // Map status from database to display format
+      const mappedSchedules = data.map((schedule: any) => ({
+        ...schedule,
+        status: schedule.status === "segera_hadir" 
+          ? "Segera hadir" 
+          : schedule.status === "ongoing" 
+          ? "Sedang berlangsung" 
+          : "Acara telah dilaksanakan",
+        thumbnail: schedule.thumbnailUrl || `https://picsum.photos/seed/event${schedule.id}/200/200`,
+      }));
+      
+      setSchedules(mappedSchedules);
+      setFilteredSchedules(mappedSchedules);
     } catch (error: any) {
       console.error("Error loading schedules:", error);
     } finally {
@@ -176,13 +88,13 @@ const Schedule = () => {
     setFilteredSchedules(filtered);
   };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
-        <p className="text-slate-500">Memuat...</p>
-      </div>
-    );
-  }
+  const { data: session } = useSession({
+    required: false,
+    onUnauthenticated() {
+      window.location.href = "/auth";
+    }
+   });
+
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100" style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}>
@@ -193,12 +105,24 @@ const Schedule = () => {
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-4xl font-black text-slate-800 mb-2">
-                Event & Kegiatan
-              </h1>
-              <p className="text-slate-600 text-lg">
-                Daftar event dan kegiatan rohani yang akan datang
-              </p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <h1 className="text-4xl font-black text-slate-800 mb-2">
+                    Event & Kegiatan
+                  </h1>
+                  <p className="text-slate-600 text-lg">
+                    Daftar event dan kegiatan rohani yang akan datang
+                  </p>
+                </div>
+                {session?.user?.role === "instruktur" && (
+                  <button
+                    onClick={() => router.push("/schedule/create")}
+                    className="px-6 py-3 rounded-xl bg-linear-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all"
+                  >
+                    + Buat Jadwal
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Search Bar */}

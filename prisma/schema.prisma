@@ -41,6 +41,7 @@ model User {
   userConversations         ChatConversation[] @relation("userConversations")
   instructorConversations   ChatConversation[] @relation("instructorConversations")
   sentMessages              ChatMessage[] @relation("sentMessages")
+  schedules                 Schedule[] @relation("instructorSchedules")
 
   @@map("users")
 }
@@ -103,4 +104,30 @@ model ChatMessage {
   @@index([conversationId])
   @@index([senderId])
   @@map("chat_messages")
+enum ScheduleStatus {
+  segera_hadir
+  ongoing
+  completed
+}
+
+model Schedule {
+  id               String         @id @default(cuid())
+  title            String
+  description      String         @db.Text
+  fullDescription  String?        @db.LongText
+  date             DateTime
+  time             String
+  location         String
+  pemateri         String
+  thumbnailUrl     String?
+  status           ScheduleStatus @default(segera_hadir)
+  instructorId     String
+  instructor       User           @relation("instructorSchedules", fields: [instructorId], references: [id], onDelete: Cascade)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([instructorId])
+  @@index([date])
+  @@index([status])
+  @@map("schedules")
 }
