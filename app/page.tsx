@@ -242,7 +242,7 @@ export default function Home() {
           <div className="flex items-center justify-between gap-2 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-2 sm:gap-3 hover:scale-105 transition-transform duration-300">
               
-              {/* LOGO TANPA CARD */}
+              {/* LOGO CARD */}
               <img 
                 src="/logo.png" 
                 alt="IRMA Verse" 
@@ -529,11 +529,11 @@ export default function Home() {
           <div className="mt-16 flex flex-wrap justify-center items-center gap-8 text-white/90 font-bold">
             <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl border-2 border-white/10">
               <Shield className="h-6 w-6 stroke-[2.5px]" />
-              <span className="text-base">100% Aman</span>
+              <span className="text-base">100% Data Aman</span>
             </div>
             <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl border-2 border-white/10">
               <Users className="h-6 w-6 stroke-[2.5px]" />
-              <span className="text-base">150+ Anggota Aktif</span>
+              <span className="text-base">70+ Anggota Aktif</span>
             </div>
             <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl border-2 border-white/10">
               <Star className="h-6 w-6 fill-yellow-400 text-yellow-400 stroke-[2.5px]" />
