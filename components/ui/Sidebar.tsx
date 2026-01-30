@@ -17,7 +17,9 @@ import {
   PanelLeftOpen,
   X,
   MessageCircle,
+  User,
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Sidebar = () => {
   const router = useRouter();
@@ -26,6 +28,25 @@ const Sidebar = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  // Fetch user profile data including avatar
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (session?.user?.email) {
+        try {
+          const response = await fetch("/api/users/profile");
+          if (response.ok) {
+            const data = await response.json();
+            setUserProfile(data.user);
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      }
+    };
+    fetchUserProfile();
+  }, [session?.user?.email]);
 
   useEffect(() => {
     const saved = localStorage.getItem('sidebar-expanded');
@@ -83,6 +104,36 @@ const Sidebar = () => {
       {/* Desktop Sidebar */}
       <div className={`hidden lg:block flex-shrink-0 sticky top-20 h-[calc(100vh-5rem)] px-6 py-8 overflow-y-auto transition-all duration-300 ${isExpanded ? 'w-64' : 'w-20'}`}>
         <div className="space-y-2">
+          {/* User Profile Section */}
+          {userProfile && (
+            <div 
+              onClick={() => router.push('/profile')}
+              className={`mb-6 p-3 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all cursor-pointer ${!isExpanded && 'flex justify-center'}`}
+            >
+              {isExpanded ? (
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
+                    <AvatarImage src={userProfile.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userProfile.name}`} alt={userProfile.name} />
+                    <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white text-sm font-bold">
+                      {userProfile.name?.substring(0, 2).toUpperCase() || "??"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-slate-900 truncate">{userProfile.name}</p>
+                    <p className="text-xs text-slate-500 truncate">{userProfile.email}</p>
+                  </div>
+                </div>
+              ) : (
+                <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
+                  <AvatarImage src={userProfile.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userProfile.name}`} alt={userProfile.name} />
+                  <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white text-sm font-bold">
+                    {userProfile.name?.substring(0, 2).toUpperCase() || "??"}
+                  </AvatarFallback>
+                </Avatar>
+              )}
+            </div>
+          )}
+          
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="flex items-center justify-center p-2 text-slate-700 hover:text-slate-900 transition-colors duration-300 mb-4"
@@ -147,6 +198,30 @@ const Sidebar = () => {
             </div>
             {/* Items */}
             <div className="px-4 py-4 space-y-2 overflow-y-auto h-[calc(100%-64px)]">
+              {/* User Profile Section Mobile */}
+              {userProfile && (
+                <div 
+                  onClick={() => {
+                    setIsMobileOpen(false);
+                    router.push('/profile');
+                  }}
+                  className="mb-4 p-4 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 hover:shadow-md transition-all cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                      <AvatarImage src={userProfile.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userProfile.name}`} alt={userProfile.name} />
+                      <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white text-sm font-bold">
+                        {userProfile.name?.substring(0, 2).toUpperCase() || "??"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-900 truncate">{userProfile.name}</p>
+                      <p className="text-xs text-slate-500 truncate">{userProfile.email}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               {menuItems.map((item, idx) => {
                 const IconComponent = item.icon;
                 const isActive = pathname === item.path;

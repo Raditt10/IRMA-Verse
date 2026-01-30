@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { Bell, LogOut, Settings, User as UserIcon, Menu } from "lucide-react";
@@ -21,7 +22,28 @@ export default function DashboardHeader() {
       window.location.href = "/auth";
     }
   });
-  const avatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatimah";
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  // Fetch user profile data including avatar
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (session?.user?.email) {
+        try {
+          const response = await fetch("/api/users/profile");
+          if (response.ok) {
+            const data = await response.json();
+            setUserProfile(data.user);
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      }
+    };
+    fetchUserProfile();
+  }, [session?.user?.email]);
+
+  const avatarUrl = userProfile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.name || session?.user?.email}`;
+  const displayName = session?.user?.name ?? session?.user?.email;
   
   return (
     <div className="border-b border-slate-200 bg-white sticky top-0 z-40 shadow-sm">
@@ -63,25 +85,25 @@ export default function DashboardHeader() {
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 h-10 px-2 rounded-lg hover:bg-green-100 transition-colors">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={avatarUrl} alt={session?.user.name ?? session?.user.email} />
+                  <AvatarImage src={avatarUrl} alt={displayName} />
                   <AvatarFallback className="bg-linear-to-br from-emerald-500 to-cyan-500 text-white text-sm font-semibold">
-                    {(session?.user.name ?? session?.user.email)?.substring(0, 2).toUpperCase()}
+                    {displayName?.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <span className="hidden sm:inline text-sm font-semibold text-slate-900">{session?.user.name ?? session?.user.email}</span>
+                <span className="hidden sm:inline text-sm font-semibold text-slate-900">{displayName}</span>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56" style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}>
               <DropdownMenuLabel>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={avatarUrl} alt={session?.user.name ?? session?.user.email} />
+                    <AvatarImage src={avatarUrl} alt={displayName} />
                     <AvatarFallback className="bg-linear-to-br from-emerald-500 to-cyan-500 text-white font-semibold">
-                      {(session?.user.name ?? session?.user.email)?.substring(0, 2).toUpperCase()}
+                      {displayName?.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-slate-900">{session?.user.name ?? session?.user.email}</span>
+                    <span className="text-sm font-semibold text-slate-900">{displayName}</span>
                     <span className="text-xs text-slate-500">{session?.user.email}</span>
                   </div>
                 </div>

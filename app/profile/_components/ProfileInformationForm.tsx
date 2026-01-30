@@ -38,7 +38,6 @@ const ProfileInformationForm = ({ stats, level, rank }: any) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const avatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatimah";
 
   // Fetch user data
   useEffect(() => {
@@ -264,7 +263,7 @@ const ProfileInformationForm = ({ stats, level, rank }: any) => {
         <div className="relative inline-block group">
           <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
             <AvatarImage 
-              src={user.avatar || avatarUrl} 
+              src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} 
               alt={user.name} 
             />
             <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white text-2xl font-bold">

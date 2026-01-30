@@ -680,7 +680,7 @@ const InstructorChatDashboard = () => {
                         <div className="relative">
                           <Avatar className="h-12 w-12">
                             <AvatarImage
-                              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${conv.participant.name}`}
+                              src={conv.participant.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${conv.participant.name}`}
                               alt={conv.participant.name || ""}
                             />
                             <AvatarFallback>
@@ -744,7 +744,7 @@ const InstructorChatDashboard = () => {
                         <div className="relative">
                           <Avatar className="h-10 w-10">
                             <AvatarImage
-                              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedConversation.participant.name}`}
+                              src={selectedConversation.participant.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedConversation.participant.name}`}
                               alt={selectedConversation.participant.name || ""}
                             />
                             <AvatarFallback>

@@ -28,12 +28,17 @@ export async function POST(req: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Generate default avatar using dicebear with user's name as seed
+    const avatarSeed = name || email.split('@')[0];
+    const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(avatarSeed)}`;
+
     // Buat user baru
     const user = await prisma.user.create({
       data: {
         email,
         name,
         password: hashedPassword,
+        avatar: defaultAvatar,
         role: "user",
       },
     });
