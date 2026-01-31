@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import DashboardHeader from "@/components/ui/DashboardHeader";
 import Sidebar from "@/components/ui/Sidebar";
 import ChatbotButton from "@/components/ui/ChatbotButton";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Calendar, User, Users, Clock, Play, Search } from "lucide-react";
+import { Calendar, Clock, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 interface Material {
@@ -23,35 +23,28 @@ interface Material {
 }
 
 const Materials = () => {
+  const { data: session } = useSession();
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProgram, setSelectedProgram] = useState("Semua");
   const [selectedClass, setSelectedClass] = useState("Semua");
   const [searchQuery, setSearchQuery] = useState("");
-  const [user, setUser] = useState<any>(null);
+  // const [user, setUser] = useState<any>(null); // Tidak perlu state user manual jika sudah pakai session
   const router = useRouter();
+
+  // Cek Role: Apakah Admin atau Instruktur?
+  const isPrivileged = session?.user?.role === "instruktur" || session?.user?.role === "admin";
 
   const programCategories = ["Semua", "Program Wajib", "Program Ekstra", "Program Next Level"];
   const classCategories = ["Semua", "Kelas 10", "Kelas 11", "Kelas 12"];
 
   useEffect(() => {
-    loadUser();
     fetchMaterials();
   }, []);
 
-  const loadUser = async () => {
-    // Gunakan data yang sama dengan Dashboard
-    setUser({
-      id: "user-123",
-      full_name: "Rafaditya Syahputra",
-      email: "rafaditya@irmaverse.local",
-      avatar: "RS"
-    });
-  };
-
   const fetchMaterials = async () => {
     try {
-      // Mock data untuk demo
+      // Mock data
       const mockMaterials: Material[] = [
         {
           id: "1",
@@ -144,17 +137,18 @@ const Materials = () => {
     const matchesProgram = selectedProgram === "Semua" || material.category === selectedProgram;
     const matchesClass = selectedClass === "Semua" || material.classLevel === selectedClass;
     const matchesSearch = material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         material.pemateri?.toLowerCase().includes(searchQuery.toLowerCase());
+                          material.pemateri?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesProgram && matchesClass && matchesSearch;
   });
 
-  // Card dengan badge 'Kajian telah diikuti' (id 3 dan 4) diurutkan ke paling bawah
+  // Sort: Kajian yang sudah lewat/diikuti ditaruh bawah
   filteredMaterials = [
     ...filteredMaterials.filter(m => !["3","4"].includes(m.id)),
     ...filteredMaterials.filter(m => ["3","4"].includes(m.id))
   ];
 
-  if (!user) {
+  // Optional: Loading state sementara menunggu session
+  if (!session) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <p className="text-slate-500">Memuat...</p>
@@ -163,19 +157,23 @@ const Materials = () => {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100" style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}>
       <DashboardHeader />
       <div className="flex">
         <Sidebar />
         <div className="flex-1 px-6 lg:px-8 py-12">
           <div className="max-w-7xl mx-auto">
-            {/* Header */}
+            
+            {/* --- HEADER DINAMIS SESUAI ROLE --- */}
             <div className="mb-8">
               <h1 className="text-4xl font-black text-slate-800 mb-2">
-                Kajian Mingguanku
+                {isPrivileged ? "Kelola Kajian" : "Kajian Mingguanku"}
               </h1>
               <p className="text-slate-600 text-lg">
-                Ikuti kajian mingguan bersama para pemateri berpengalaman
+                {isPrivileged 
+                  ? "Atur jadwal, materi, dan pemateri kajian untuk anggota IRMA"
+                  : "Ikuti kajian mingguan bersama para pemateri berpengalaman"
+                }
               </p>
             </div>
 
@@ -188,7 +186,7 @@ const Materials = () => {
                     onClick={() => setSelectedProgram(category)}
                     className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 ${
                       selectedProgram === category
-                        ? "bg-linear-to-r from-teal-500 to-cyan-500 text-white shadow-lg scale-105"
+                        ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg scale-105"
                         : "bg-white text-slate-700 hover:bg-slate-100 shadow-sm"
                     }`}
                   >
@@ -204,7 +202,7 @@ const Materials = () => {
                     onClick={() => setSelectedClass(kelas)}
                     className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 ${
                       selectedClass === kelas
-                        ? "bg-linear-to-r from-emerald-500 to-lime-400 text-white shadow-lg scale-105"
+                        ? "bg-gradient-to-r from-emerald-500 to-lime-400 text-white shadow-lg scale-105"
                         : "bg-white text-slate-700 hover:bg-slate-100 shadow-sm"
                     }`}
                   >
@@ -228,6 +226,7 @@ const Materials = () => {
               </div>
             </div>
 
+            {/* Content Grid */}
             {loading ? (
               <div className="text-center py-12">
                 <p className="text-slate-500">Memuat kajian...</p>
@@ -250,16 +249,16 @@ const Materials = () => {
                         alt={material.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-                      {/* Tanda Kajian telah diikuti di foto kajian */}
-                      {["3","4"].includes(material.id) && (
+                      {/* Badge: Kajian telah diikuti (Hanya user biasa) */}
+                      {!isPrivileged && ["3","4"].includes(material.id) && (
                         <span className="absolute left-4 bottom-4 px-4 py-1.5 rounded-full bg-emerald-600 text-white text-xs font-bold shadow-md z-10">
                           Kajian telah diikuti
                         </span>
                       )}
 
-                      {/* Tanda Merah buat kajian baru */}
+                      {/* Badge: Baru */}
                       {["1","2"].includes(material.id) && (
                         <span className="absolute top-4 right-4 w-4 h-4 rounded-full bg-red-600 shadow-lg animate-pulse z-10 border-2 border-white" />
                       )}
@@ -302,27 +301,35 @@ const Materials = () => {
                             <span>{material.time}</span>
                           </div>
                         )}
-                        {material.participants && (
-                          <div className="h-0" aria-hidden="true"></div>
-                        )}
                       </div>
 
-                      {/* Button */}
-
-                      {(["3","4"].includes(material.id)) ? (
-                        <button
-                          onClick={() => router.push(`/rekapan/${material.id}`)}
-                          className="w-full py-3 rounded-xl bg-linear-to-r from-teal-700 to-cyan-800 text-white font-semibold hover:from-teal-800 hover:to-cyan-900 shadow-lg hover:shadow-xl transition-all duration-300"
-                        >
-                          Lihat Rekapan Materi
-                        </button>
+                      {/* --- BUTTON ACTION DINAMIS --- */}
+                      
+                      {isPrivileged ? (
+                        // Tombol untuk Instruktur/Admin (Hijau Profesional)
+                         <button
+                           onClick={() => router.push(`/materials/edit/${material.id}`)}
+                           className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold hover:from-emerald-700 hover:to-teal-700 shadow-lg hover:shadow-xl transition-all duration-300"
+                         >
+                           Edit Kajian
+                         </button>
                       ) : (
-                        <button
-                          onClick={() => router.push("/absensi")}
-                          className="w-full py-3 rounded-xl bg-linear-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-300"
-                        >
-                          Aku ikut!
-                        </button>
+                        // Tombol untuk User Biasa
+                        ["3","4"].includes(material.id) ? (
+                          <button
+                            onClick={() => router.push(`/rekapan/${material.id}`)}
+                            className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-700 to-cyan-800 text-white font-semibold hover:from-teal-800 hover:to-cyan-900 shadow-lg hover:shadow-xl transition-all duration-300"
+                          >
+                            Lihat Rekapan Materi
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => router.push("/absensi")}
+                            className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-300"
+                          >
+                            Aku ikut!
+                          </button>
+                        )
                       )}
                     </div>
                   </div>
