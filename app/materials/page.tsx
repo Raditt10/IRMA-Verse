@@ -324,7 +324,7 @@ const Materials = () => {
                           </button>
                         ) : (
                           <button
-                            onClick={() => router.push("/absensi")}
+                            onClick={() => router.push("/materials/absensi ")}
                             className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-300"
                           >
                             Aku ikut!
