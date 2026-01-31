@@ -56,9 +56,6 @@ interface MemberDetail {
   };
 }
 
-// ...existing code...
-// ...existing code...
-
 const MemberDetail = () => {
   const [member, setMember] = useState<MemberDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,84 +70,28 @@ const MemberDetail = () => {
 
   const fetchMemberDetail = async (id: string) => {
     try {
-      const mockMember: MemberDetail = {
-        id,
-        name: "Ahmad Syarif",
-        role: "Ketua IRMA",
-        class: "XII IPA 1",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmad",
-        points: 850,
-        status: "Aktif",
-        email: "ahmad.syarif@irmaverse.local",
-        phone: "+62 812-3456-7890",
-        joinDate: "2023-08-01",
-        totalEvents: 15,
-        totalKajian: 22,
-        stats: {
-          eventsAttended: 15,
-          kajianAttended: 22,
-          tasksCompleted: 34,
-          contributionRank: 1,
-        },
-        achievements: [
-          {
-            id: "1",
-            title: "Top Contributor",
-            description: "Kontribusi terbanyak bulan ini",
-            date: "2024-01-15",
-          },
-          {
-            id: "2",
-            title: "Perfect Attendance",
-            description: "Hadir di semua kajian bulan lalu",
-            date: "2023-12-31",
-          },
-          {
-            id: "3",
-            title: "Event Master",
-            description: "Mengikuti 10+ event",
-            date: "2023-11-20",
-          },
-        ],
-        recentActivities: [
-          {
-            id: "1",
-            type: "kajian",
-            title: "Kajian Tafsir Al-Quran",
-            date: "2024-01-20",
-            points: 50,
-          },
-          {
-            id: "2",
-            type: "event",
-            title: "Bakti Sosial Ramadhan",
-            date: "2024-01-18",
-            points: 100,
-          },
-          {
-            id: "3",
-            type: "task",
-            title: "Menyusun Laporan Kegiatan",
-            date: "2024-01-15",
-            points: 30,
-          },
-          {
-            id: "4",
-            type: "kajian",
-            title: "Kajian Fiqih",
-            date: "2024-01-13",
-            points: 50,
-          },
-          {
-            id: "5",
-            type: "event",
-            title: "Mentoring Adik Kelas",
-            date: "2024-01-10",
-            points: 40,
-          },
-        ],
+      const res = await fetch(`/api/members/${id}`);
+      if (!res.ok) throw new Error("Gagal mengambil detail anggota");
+      const data = await res.json();
+      // Mapping ke struktur MemberDetail (tambahkan mapping sesuai field yang tersedia di DB)
+      const memberDetail: MemberDetail = {
+        id: data.id,
+        name: data.name || "-",
+        role: data.role || "-",
+        class: data.class || "-",
+        avatar: data.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.name || "user"}`,
+        points: data.points || 0,
+        status: data.status || "Aktif",
+        email: data.email || "-",
+        phone: data.notelp || "-",
+        joinDate: data.createdAt ? data.createdAt.split("T")[0] : "-",
+        totalEvents: data.totalEvents || 0,
+        totalKajian: data.totalKajian || 0,
+        stats: data.stats || { eventsAttended: 0, kajianAttended: 0, tasksCompleted: 0, contributionRank: 0 },
+        achievements: data.achievements || [],
+        recentActivities: data.recentActivities || [],
       };
-      setMember(mockMember);
+      setMember(memberDetail);
     } catch (error: any) {
       console.error("Error fetching member:", error);
     } finally {

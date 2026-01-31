@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import {
   User,
@@ -174,6 +175,8 @@ const ProfileInformationForm = ({ stats, level, rank }: any) => {
 
       setShowCropDialog(false);
       setSelectedImage(null);
+      // Paksa reload halaman agar header update avatar
+      window.location.reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       console.error("Error uploading avatar:", err);

@@ -1,4 +1,5 @@
 "use client"
+import React from "react";
 import Link from "next/link";
 import {
   BookOpen,
@@ -21,11 +22,13 @@ import Sidebar from "@/components/ui/Sidebar";
 import DashboardHeader from "@/components/ui/DashboardHeader";
 import ChatbotButton from "@/components/ui/ChatbotButton";
 import AdminDashboard from "./admin/page";
-import InstructorAcademy from "./academy/page";
+import InstructorAcademy from "../academy/page";
 import { useSession } from "next-auth/react";
 
+import { useRouter } from "next/navigation";
+
 const Dashboard = () => {
-  const { data: session } = useSession({
+  const { data: session, status } = useSession({
       required: true,
       onUnauthenticated() {
           if (typeof window !== "undefined") {
@@ -33,6 +36,14 @@ const Dashboard = () => {
           }
       }
   });
+  const router = useRouter();
+
+  // Redirect instruktur ke /academy jika akses ke /overview
+  React.useEffect(() => {
+    if (status === "authenticated" && session?.user?.role === "instruktur") {
+      router.replace("/academy");
+    }
+  }, [status, session, router]);
 
     
   const stats = {

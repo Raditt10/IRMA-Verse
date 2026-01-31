@@ -56,20 +56,20 @@ const Sidebar = () => {
   // Base menu items for all users
   const baseMenuItems = [
     { icon: LayoutGrid, label: "Dashboard", path: "/overview" },
-    { icon: BookOpen, label: "Kajian Mingguanku", path: "/materials" },
+    { icon: BookOpen, label: session?.user?.role === "instruktur" ? "Kelola Kajian" : "Kajian Mingguanku", path: session?.user?.role === "instruktur" ? "/academy" : "/materials" },
     { icon: Calendar, label: "Event", path: "/schedule" },
     { icon: Users, label: "Daftar Instruktur", path: "/instructors" },
     { icon: GraduationCap, label: "Program Kurikulum", path: "/programs" },
     { icon: Trophy, label: "Info Perlombaan", path: "/competitions" },
     { icon: Users, label: "Daftar Anggota", path: "/members" },
-    { icon: Newspaper, label: "Berita IRMA", path: "/news" },
+    { icon: Newspaper, label: session?.user?.role === "instruktur" ? "Kelola Berita" : "Berita IRMA", path: session?.user?.role === "instruktur" ? "/news" : "/news" },
   ];
 
   // Add chat menu item based on role
   const menuItems = session?.user?.role === "instruktur"
     ? [
         ...baseMenuItems.slice(0, 4),
-        { icon: MessageCircle, label: "Pesan Masuk", path: "/overview/academy/chat" },
+        { icon: MessageCircle, label: "Chat Anggota", path: "/academy/chat" },
         ...baseMenuItems.slice(4),
       ]
     : [
@@ -96,8 +96,14 @@ const Sidebar = () => {
           </button>
           {menuItems.map((item, idx) => {
             const IconComponent = item.icon;
-            const isActive = pathname === item.path;
-
+            let isActive = pathname === item.path;
+            // Jika instruktur dan di /academy, hanya Dashboard yang aktif
+            if (
+              session?.user?.role === "instruktur" &&
+              pathname === "/academy"
+            ) {
+              isActive = item.label === "Dashboard";
+            }
             return (
               <button
                 key={idx}
