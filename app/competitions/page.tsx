@@ -5,6 +5,7 @@ import DashboardHeader from "@/components/ui/DashboardHeader";
 import Sidebar from "@/components/ui/Sidebar";
 import ChatbotButton from "@/components/ui/ChatbotButton";
 import { ArrowRight } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 interface CompetitionItem {
   id: string;
@@ -52,6 +53,7 @@ const badgeStyles: Record<CompetitionItem["category"], string> = {
 const Competitions = () => {
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
     setUser({
@@ -84,13 +86,28 @@ const Competitions = () => {
       <DashboardHeader/>
       <div className="flex">
         <Sidebar />
-        <div className="flex-1 px-6 lg:px-10 py-12">
+        <div className="flex-1 px-6 lg:px-8 py-12 lg:ml-0">
           <div className="max-w-7xl mx-auto">
-            <div className="mb-10">
-              <h1 className="text-4xl font-black text-slate-800 mb-3">Info Perlombaan</h1>
-              <p className="text-slate-600 text-lg">
-                Informasi lomba keagamaan tingkat daerah hingga nasional
-              </p>
+            {/* Header */}
+            <div className="mb-8">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h1 className="text-4xl font-black text-slate-800 mb-2">
+                    Info Perlombaan
+                  </h1>
+                  <p className="text-slate-600 text-lg">
+                    Informasi lomba keagamaan tingkat daerah hingga nasional
+                  </p>
+                </div>
+                {session?.user?.role === "instruktur" && (
+                  <button
+                    onClick={() => router.push("/competitions/create")}
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all"
+                  >
+                    + Tambahkan Info Perlombaan
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">

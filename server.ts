@@ -35,7 +35,7 @@ app.prepare().then(() => {
     transports: ['websocket', 'polling']
   });
 
-  io.on('connection', (socket) => {
+  io.on('connection', (socket: import('socket.io').Socket) => {
     console.log('User connected:', socket.id);
 
     // User joins with their info

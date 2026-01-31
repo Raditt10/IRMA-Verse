@@ -22,28 +22,7 @@ export default function DashboardHeader() {
       window.location.href = "/auth";
     }
   });
-  const [userProfile, setUserProfile] = useState<any>(null);
-
-  // Fetch user profile data including avatar
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (session?.user?.email) {
-        try {
-          const response = await fetch("/api/users/profile");
-          if (response.ok) {
-            const data = await response.json();
-            setUserProfile(data.user);
-          }
-        } catch (error) {
-          console.error("Error fetching user profile:", error);
-        }
-      }
-    };
-    fetchUserProfile();
-  }, [session?.user?.email]);
-
-  const avatarUrl = userProfile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.name || session?.user?.email}`;
-  const displayName = session?.user?.name ?? session?.user?.email;
+  const defaultAvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatimah";
   
   return (
     <div className="border-b border-slate-200 bg-white sticky top-0 z-40 shadow-sm">
@@ -85,7 +64,7 @@ export default function DashboardHeader() {
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 h-10 px-2 rounded-lg hover:bg-green-100 transition-colors">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={avatarUrl} alt={displayName} />
+                  <AvatarImage src={session?.user.avatar || defaultAvatarUrl} alt={session?.user.name ?? session?.user.email} />
                   <AvatarFallback className="bg-linear-to-br from-emerald-500 to-cyan-500 text-white text-sm font-semibold">
                     {displayName?.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
@@ -97,7 +76,7 @@ export default function DashboardHeader() {
               <DropdownMenuLabel>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={avatarUrl} alt={displayName} />
+                    <AvatarImage src={session?.user.avatar || defaultAvatarUrl} alt={session?.user.name ?? session?.user.email} />
                     <AvatarFallback className="bg-linear-to-br from-emerald-500 to-cyan-500 text-white font-semibold">
                       {displayName?.substring(0, 2).toUpperCase()}
                     </AvatarFallback>

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import {
   User,
@@ -22,7 +23,6 @@ interface UserProfile {
   notelp: string;
   address: string;
   bio: string;
-  avatar: string | null;
   createdAt: string;
 }
 
@@ -165,8 +165,7 @@ const ProfileInformationForm = ({ stats, level, rank }: any) => {
       }
 
       const data = await response.json();
-      
-      // Update local user state
+      // Update local user state with new avatar
       if (user) {
         const updatedUser = { ...user, avatar: data.avatarUrl };
         setUser(updatedUser);
@@ -175,6 +174,8 @@ const ProfileInformationForm = ({ stats, level, rank }: any) => {
 
       setShowCropDialog(false);
       setSelectedImage(null);
+      // Paksa reload halaman agar header update avatar
+      window.location.reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       console.error("Error uploading avatar:", err);
@@ -266,7 +267,7 @@ const ProfileInformationForm = ({ stats, level, rank }: any) => {
               src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} 
               alt={user.name} 
             />
-            <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white text-2xl font-bold">
+            <AvatarFallback className="bg-linear-to-br from-emerald-500 to-cyan-500 text-white text-2xl font-bold">
               {user.name?.substring(0, 2).toUpperCase() || "??"}
             </AvatarFallback>
           </Avatar>
@@ -293,10 +294,10 @@ const ProfileInformationForm = ({ stats, level, rank }: any) => {
           <h3 className="text-2xl font-bold text-slate-900">{user.name}</h3>
           <p className="text-slate-600">{user.email}</p>
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 text-white text-sm font-semibold">
+            <span className="px-3 py-1 rounded-full bg-linear-to-r from-emerald-400 to-cyan-500 text-white text-sm font-semibold">
               Level {level}
             </span>
-            <span className="px-4 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-white text-sm font-bold shadow-[0_6px_18px_-8px_rgba(249,168,37,0.9)]">
+            <span className="px-4 py-1 rounded-full bg-linear-to-r from-amber-400 to-amber-500 text-white text-sm font-bold shadow-[0_6px_18px_-8px_rgba(249,168,37,0.9)]">
               Mashaallah
             </span>
             <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-sm font-semibold">

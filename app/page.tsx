@@ -1,6 +1,8 @@
 "use client"
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Button } from '@/components/ui/button';
 import { Card } from "@/components/ui/card";
 import SearchBar from "@/components/ui/SearchBar";
@@ -31,12 +33,20 @@ import {
 } from "lucide-react";
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [galleryLoading, setGalleryLoading] = useState(true);
   const [latestNews, setLatestNews] = useState<Array<{ id: string; title: string; category: string | null; deskripsi?: string; slug: string; image?: string | null }>>([]);
   const [newsLoading, setNewsLoading] = useState(false);
-  
   // State untuk Galeri
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Redirect instruktur ke /academy
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.role === "instruktur") {
+      router.replace("/academy");
+    }
+  }, [status, session, router]);
 
   // Data Gambar Galeri
   const galleryItems = [

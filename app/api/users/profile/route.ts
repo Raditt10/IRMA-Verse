@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma"; // <--- PERBAIKAN: Tanpa kurung kurawal
 import { NextRequest, NextResponse } from "next/server";
 
 /**
@@ -8,7 +8,6 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Get session from auth
     const session = await auth();
 
     if (!session?.user?.email) {
@@ -18,17 +17,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch user from database
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       select: {
         id: true,
         name: true,
         email: true,
+        avatar: true,    // Pastikan ini avatar
         notelp: true,
         address: true,
         bio: true,
-        avatar: true,
         createdAt: true,
       },
     });
@@ -44,8 +42,8 @@ export async function GET(request: NextRequest) {
       user,
       message: "Data pengguna berhasil diambil",
     });
-  } catch (error) {
-    console.error("Error in GET /api/users/profile:", error);
+  } catch (error: any) {
+    console.error("🔥 Error in GET /api/users/profile:", error.message);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -56,11 +54,9 @@ export async function GET(request: NextRequest) {
 /**
  * PATCH /api/users/profile
  * Update current logged-in user's profile
- * Body: { name?, notelp?, address?, bio? }
  */
 export async function PATCH(request: NextRequest) {
   try {
-    // Get session from auth
     const session = await auth();
 
     if (!session?.user?.email) {
@@ -70,45 +66,21 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // Parse request body
     const body = await request.json();
     const { name, notelp, address, bio } = body;
 
-    // Validate input (optional - can add more validation)
-    if (
-      typeof name !== "undefined" && typeof name !== "string"
-    ) {
-      return NextResponse.json(
-        { error: "Name harus berupa string" },
-        { status: 400 }
-      );
+    // Validate input types
+    if (typeof name !== "undefined" && typeof name !== "string") {
+      return NextResponse.json({ error: "Name harus string" }, { status: 400 });
     }
-
-    if (
-      typeof notelp !== "undefined" && typeof notelp !== "string"
-    ) {
-      return NextResponse.json(
-        { error: "Nomor telepon harus berupa string" },
-        { status: 400 }
-      );
+    if (typeof notelp !== "undefined" && typeof notelp !== "string") {
+      return NextResponse.json({ error: "No. Telp harus string" }, { status: 400 });
     }
-
-    if (
-      typeof address !== "undefined" && typeof address !== "string"
-    ) {
-      return NextResponse.json(
-        { error: "Alamat harus berupa string" },
-        { status: 400 }
-      );
+    if (typeof address !== "undefined" && typeof address !== "string") {
+      return NextResponse.json({ error: "Alamat harus string" }, { status: 400 });
     }
-
-    if (
-      typeof bio !== "undefined" && typeof bio !== "string"
-    ) {
-      return NextResponse.json(
-        { error: "Bio harus berupa string" },
-        { status: 400 }
-      );
+    if (typeof bio !== "undefined" && typeof bio !== "string") {
+      return NextResponse.json({ error: "Bio harus string" }, { status: 400 });
     }
 
     // Update user data
@@ -127,7 +99,7 @@ export async function PATCH(request: NextRequest) {
         notelp: true,
         address: true,
         bio: true,
-        avatar: true,
+        avatar: true,    // Pastikan ini avatar
         createdAt: true,
       },
     });
@@ -136,10 +108,11 @@ export async function PATCH(request: NextRequest) {
       user: updatedUser,
       message: "Data pengguna berhasil diperbarui",
     });
-  } catch (error) {
-    console.error("Error in PATCH /api/users/profile:", error);
+
+  } catch (error: any) {
+    console.error("🔥 Error in PATCH /api/users/profile:", error.message);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: error.message || "Internal server error" },
       { status: 500 }
     );
   }
