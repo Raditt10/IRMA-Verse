@@ -1,15 +1,25 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Grade, CourseCategory } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting seeding data...');
-
   // Clear existing data
-  await prisma.schedule.deleteMany();
+  console.log("🧹 Clearing existing data...");
+  await prisma.chatMessage.deleteMany();
+  await prisma.chatConversation.deleteMany();
+
+  await prisma.materialInvite.deleteMany();
+  await prisma.courseEnrollment.deleteMany();
+
+  await prisma.material.deleteMany();
   await prisma.news.deleteMany();
+  await prisma.schedule.deleteMany();
+
   await prisma.user.deleteMany();
+
+console.log("🧹 Database cleared");
 
   // Create test users
   const hashedPassword = await bcrypt.hash('password123', 10);
@@ -214,17 +224,116 @@ Hadis dibagi menjadi beberapa tingkatan berdasarkan kualitasnya...`,
     },
   });
 
+  // Create materials & instructors
+  const instructors = [
+    { id: "1", conID: "inst-ahmad", name: "Ustadz Ahmad Zaki" },
+    { id: "2", conID: "inst-fatimah", name: "Ustadzah Fatimah" },
+    { id: "3", conID: "inst-rizki", name: "Ustadz Muhammad Rizki" },
+    { id: "4", conID: "inst-abdullah", name: "Ustadz Abdullah" },
+    { id: "5", conID: "inst-ali", name: "Ustadz Ali Hasan" },
+    { id: "6", conID: "inst-khadijah", name: "Ustadzah Khadijah" }
+  ];
+
+  for (const inst of instructors) {
+    await prisma.user.create({
+        data: {
+          id: (parseInt(inst.id)+100).toString(),
+          name: inst.name,
+          email: `${inst.conID}@irma.com`,
+          password: hashedPassword,
+          role: "instruktur"
+        },
+    });
+  }
+
+  const materialsData = [
+    {
+      title: "Kedudukan Akal dan Wahyu",              description: "Materi tentang adab dalam Islam",
+      grade: "X", category: "Wajib",                 thumbnailUrl: "https://picsum.photos/seed/kajian1/400/300",
+      instructorId: 101,                              date: "2024-11-25",
+      startedAt: "15:00 - 17:00",                     participants: 45
+    },
+    {
+      title: "Fiqih Ibadah Sehari-hari",              description: "Materi tentang fiqih ibadah",
+      grade: "XI", category: "Wajib",                 thumbnailUrl: "https://picsum.photos/seed/kajian2/400/300",
+      instructorId: 102,                              date: "2024-11-28",
+      startedAt: "14:00 - 16:00",                     participants: 38
+      
+    },
+    {
+      title: "Tafsir Al-Quran: Surah Al-Baqarah",     description: "Materi tentang tafsir Al-Quran",
+      grade: "XII", category: "Next Level",            thumbnailUrl: "https://picsum.photos/seed/kajian3/400/300", 
+      instructorId: 103,                              date: "2024-12-01",
+      startedAt: "15:00 - 17:00",                     participants: 52,
+    },
+    {
+      title: "Sejarah Khulafaur Rasyidin",            description: "Materi tentang sejarah Khulafaur Rasyidin",
+      grade: "X", category: "Ekstra",                thumbnailUrl: "https://picsum.photos/seed/kajian4/400/300",
+      instructorId: 104,                              date: "2024-12-05",
+      startedAt: "13:00 - 15:00",                     participants: 41
+    },
+    {
+      title: "Rukun Iman dan Implementasinya",        description: "Materi tentang rukun iman dan implementasinya",
+      grade: "XI", category: "Ekstra",                thumbnailUrl: "https://picsum.photos/seed/kajian5/400/300",
+      instructorId: 105,                              date: "2024-12-08",
+      startedAt: "14:00 - 16:00",                     participants: 47,
+    },
+    {
+      title: "Akhlak kepada Orang Tua",               description: "Materi tentang akhlak kepada orang tua",
+      grade: "XII", category: "Next Level",           thumbnailUrl: "https://picsum.photos/seed/kajian6/400/300",
+      instructorId: 106,                              date: "2024-12-10",
+      startedAt: "15:00 - 17:00",                     participants: 55,
+    }
+  ];
+
+  for (const mt of materialsData) {
+    await prisma.material.create({
+      data: {
+        title: mt.title,
+        description: mt.description,
+        grade: mapGrade(mt.grade),
+        category: mapCourseCategory(mt.category),
+        thumbnailUrl: mt.thumbnailUrl,
+        instructorId: mt.instructorId.toString(),
+        date: new Date(mt.date),
+        startedAt: mt.startedAt,
+        participants: mt.participants.toString(),
+      },
+    });
+  }
+
   console.log('✅ Data seeding completed!');
   console.log('📊 Summary:');
   console.log(`   - Users: 3`);
   console.log(`   - News: 5`);
   console.log(`   - Schedules: 3`);
   console.log(`   - Instructors: 2`);
+  console.log(`   - Materials: 6`);
   console.log('\n💡 Test the search with these keywords:');
   console.log('   - "kedudukan" (untuk mencari berita tentang akal dan wahyu)');
   console.log('   - "ahmad" (untuk mencari instruktur)');
   console.log('   - "tafsir" (untuk mencari artikel tafsir)');
   console.log('   - "rafa" (untuk mencari pengguna)');
+}
+
+function mapGrade(value: string): Grade {
+  switch (value) {
+    case "X": return Grade.X;
+    case "XI": return Grade.XI;
+    case "XII": return Grade.XII;
+    default:
+      throw new Error(`Invalid grade: ${value}`);
+  }
+}
+function mapCourseCategory(value: string): CourseCategory {
+  switch (value) {
+    case "Wajib": return CourseCategory.Wajib;
+    case "Ekstra": return CourseCategory.Extra;
+    case "Next Level": return CourseCategory.NextLevel;
+    case "Susulan": return CourseCategory.Susulan;
+    default:
+      throw new Error(`Invalid course category: ${value}`);
+  }
 }
 
 main()

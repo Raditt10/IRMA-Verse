@@ -6,6 +6,7 @@ import DashboardHeader from "@/components/ui/DashboardHeader";
 import Sidebar from "@/components/ui/Sidebar";
 import ChatbotButton from "@/components/ui/ChatbotButton";
 import { Input } from "@/components/ui/input";
+import { useSession } from "next-auth/react";
 
 type AttendanceForm = {
 	session: string;

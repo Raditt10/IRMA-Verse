@@ -11,6 +11,7 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 enum Role {
@@ -24,24 +25,27 @@ model User {
   email     String   @unique
   name      String?
   password  String
-  notelp    String?  // Nomor telepon (opsional)
-  address   String?  // Alamat (opsional) 
-  bio       String?  // Bio (opsional)
+  notelp    String? // Nomor telepon (opsional)
+  address   String? // Alamat (opsional) 
+  bio       String? // Bio (opsional)
   role      Role     @default(user) // Role: user, admin, instruktur
   lastSeen  DateTime @default(now()) // Last active timestamp
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Instruktur profile
-  bidangKeahlian String?  // Bidang keahlian (hanya untuk instruktur)
-  pengalaman     String?  // Pengalaman (hanya untuk instruktur)
+  bidangKeahlian String? // Bidang keahlian (hanya untuk instruktur)
+  pengalaman     String? // Pengalaman (hanya untuk instruktur)
 
   // Relations
-  newsArticles              News[]   @relation("authorNews")
-  userConversations         ChatConversation[] @relation("userConversations")
-  instructorConversations   ChatConversation[] @relation("instructorConversations")
-  sentMessages              ChatMessage[] @relation("sentMessages")
-  schedules                 Schedule[] @relation("instructorSchedules")
+  newsArticles            News[]             @relation("authorNews")
+  userConversations       ChatConversation[] @relation("userConversations")
+  instructorConversations ChatConversation[] @relation("instructorConversations")
+  sentMessages            ChatMessage[]      @relation("sentMessages")
+  schedules               Schedule[]         @relation("instructorSchedules")
+  materials               Material[]
+  materialInvites         MaterialInvite[]
+  courseEnrollments       CourseEnrollment[]
 
   @@map("users")
 }
@@ -50,10 +54,10 @@ model News {
   id        String   @id @default(cuid())
   title     String
   slug      String   @unique
-  category  String   // Prestasi, Kerjasama, Update, Event, Pengumuman
-  deskripsi String   @db.Text  // Deskripsi singkat dari content
-  content   String   @db.LongText  // Markdown content
-  image     String?  // URL gambar berita
+  category  String // Prestasi, Kerjasama, Update, Event, Pengumuman
+  deskripsi String   @db.Text // Deskripsi singkat dari content
+  content   String   @db.LongText // Markdown content
+  image     String? // URL gambar berita
   authorId  String
   author    User     @relation("authorNews", fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
@@ -66,15 +70,15 @@ model News {
 
 // Chat Conversation between User and Instructor
 model ChatConversation {
-  id             String   @id @default(cuid())
-  userId         String   // User yang memulai chat
-  instructorId   String   // Instruktur yang di-chat
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id           String   @id @default(cuid())
+  userId       String // User yang memulai chat
+  instructorId String // Instruktur yang di-chat
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  user           User     @relation("userConversations", fields: [userId], references: [id], onDelete: Cascade)
-  instructor     User     @relation("instructorConversations", fields: [instructorId], references: [id], onDelete: Cascade)
-  messages       ChatMessage[]
+  user         User          @relation("userConversations", fields: [userId], references: [id], onDelete: Cascade)
+  instructor   User          @relation("instructorConversations", fields: [instructorId], references: [id], onDelete: Cascade)
+  messages     ChatMessage[]
 
   @@unique([userId, instructorId])
   @@index([userId])
@@ -84,22 +88,22 @@ model ChatConversation {
 
 // Chat Messages
 model ChatMessage {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   conversationId String
   senderId       String
-  content        String   @db.Text
-  isRead         Boolean  @default(false)
+  content        String    @db.Text
+  isRead         Boolean   @default(false)
   readAt         DateTime? // When message was read
-  attachmentUrl  String?  // URL for uploaded files/images
-  attachmentType String?  // Type: image, file, etc
-  isEdited       Boolean  @default(false)
+  attachmentUrl  String? // URL for uploaded files/images
+  attachmentType String? // Type: image, file, etc
+  isEdited       Boolean   @default(false)
   editedAt       DateTime?
-  isDeleted      Boolean  @default(false)
+  isDeleted      Boolean   @default(false)
   deletedAt      DateTime?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime  @default(now())
 
-  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  sender         User     @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  conversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User             @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
   @@index([senderId])
@@ -113,23 +117,105 @@ enum ScheduleStatus {
 }
 
 model Schedule {
-  id               String         @id @default(cuid())
-  title            String
-  description      String         @db.Text
-  fullDescription  String?        @db.LongText
-  date             DateTime
-  time             String
-  location         String
-  pemateri         String
-  thumbnailUrl     String?
-  status           ScheduleStatus @default(segera_hadir)
-  instructorId     String
-  instructor       User           @relation("instructorSchedules", fields: [instructorId], references: [id], onDelete: Cascade)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  id              String         @id @default(cuid())
+  title           String
+  description     String         @db.Text
+  fullDescription String?        @db.LongText
+  date            DateTime
+  time            String
+  location        String
+  pemateri        String
+  thumbnailUrl    String?
+  status          ScheduleStatus @default(segera_hadir)
+  instructorId    String
+  instructor      User           @relation("instructorSchedules", fields: [instructorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([instructorId])
   @@index([date])
   @@index([status])
   @@map("schedules")
+}
+
+// materials & features required for inviting users
+enum InviteStatus {
+  pending
+  accepted
+  rejected
+  expired
+}
+
+enum Grade {
+  X
+  XI
+  XII
+}
+
+enum CourseCategory {
+  Wajib
+  Extra
+  NextLevel
+  Susulan
+}
+
+enum CourseRole {
+  user
+  instructor
+  assistant
+}
+
+model Material {
+  id           String  @id @default(cuid())
+  title        String
+  description  String?
+  grade        Grade
+  category     CourseCategory
+  thumbnailUrl String?
+  instructorId String
+  nextCourseId String?
+  participants String?
+  date         DateTime   @default(now())
+  startedAt    String?
+
+  instructor   User       @relation(fields: [instructorId], references: [id])
+  nextCourse   Material?  @relation("CourseChain", fields: [nextCourseId], references: [id])
+  prevCourses  Material[] @relation("CourseChain")
+
+  enrollments  CourseEnrollment[]
+  invites      MaterialInvite[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MaterialInvite {
+  id           String       @id @default(cuid())
+  materialId   String
+  instructorId String
+  token        String       @unique
+  status       InviteStatus @default(pending)
+
+  material   Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  instructor User     @relation(fields: [instructorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([materialId])
+}
+
+model CourseEnrollment {
+  id         String     @id @default(cuid())
+  materialId String
+  userId     String
+  role       CourseRole
+  enrolledAt DateTime   @default(now())
+
+  material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([materialId, userId])
+  @@index([userId])
 }

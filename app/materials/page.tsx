@@ -7,160 +7,83 @@ import ChatbotButton from "@/components/ui/ChatbotButton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Calendar, User, Users, Clock, Play, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useSession } from "next-auth/react"; 
 
 interface Material {
   id: string;
   title: string;
-  summary: string;
-  content: string | null;
-  date: string;
-  pemateri: string | null;
+  description: string;
+  instructor: string;
   category?: string;
-  classLevel?: string;
-  time?: string;
+  grade?: string;
+  startedAt?: string;
+  date: string;
   participants?: number;
-  thumbnail?: string;
+  thumbnailUrl?: string;
+  isJoined: boolean;
 }
+
 
 const Materials = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filteredMaterials, setFilteredMaterials] = useState<Material[]>([]);
   const [selectedProgram, setSelectedProgram] = useState("Semua");
-  const [selectedClass, setSelectedClass] = useState("Semua");
+  const [selectedGrade, setSelectedGrade] = useState("Semua");
   const [searchQuery, setSearchQuery] = useState("");
-  const [user, setUser] = useState<any>(null);
   const router = useRouter();
-
+  
   const programCategories = ["Semua", "Program Wajib", "Program Ekstra", "Program Next Level"];
   const classCategories = ["Semua", "Kelas 10", "Kelas 11", "Kelas 12"];
 
+  const { data: session } = useSession({
+      required: true,
+      onUnauthenticated() {
+          if (typeof window !== "undefined") {
+              window.location.href = "/auth";
+          }
+      }
+  });
+
   useEffect(() => {
-    loadUser();
     fetchMaterials();
   }, []);
 
-  const loadUser = async () => {
-    // Gunakan data yang sama dengan Dashboard
-    setUser({
-      id: "user-123",
-      full_name: "Rafaditya Syahputra",
-      email: "rafaditya@irmaverse.local",
-      avatar: "RS"
+  useEffect(() => {
+    filterMaterials();
+  }, [materials, selectedProgram, selectedGrade, searchQuery]);
+
+  const filterMaterials = async () => {
+    const filtered = materials.filter((material) => {
+      const matchesProgram =
+        selectedProgram === "Semua" || material.category === selectedProgram;
+      const matchesGrade =
+        selectedGrade === "Semua" || material.grade === selectedGrade;
+      const matchesSearch =
+        material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        material.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesProgram && matchesGrade && matchesSearch;
     });
+
+    setFilteredMaterials(filtered);
   };
 
   const fetchMaterials = async () => {
     try {
-      // Mock data untuk demo
-      const mockMaterials: Material[] = [
-        {
-          id: "1",
-          title: "Kedudukan Akal dan Wahyu",
-          summary: "Ustadz Ahmad Zaki",
-          content: "Materi tentang adab dalam Islam",
-          date: "2024-11-25",
-          time: "13:00 - 15:00",
-          pemateri: "Ustadz Ahmad Zaki",
-          category: "Program Wajib",
-          classLevel: "Kelas 10",
-          participants: 45,
-          thumbnail: "https://picsum.photos/seed/kajian1/400/300"
-        },
-        {
-          id: "2",
-          title: "Fiqih Ibadah Sehari-hari",
-          summary: "Ustadzah Fatimah",
-          content: "Materi tentang fiqih ibadah",
-          date: "2024-11-28",
-          time: "14:00 - 16:00",
-          pemateri: "Ustadzah Fatimah",
-          category: "Program Wajib",
-          classLevel: "Kelas 11",
-          participants: 38,
-          thumbnail: "https://picsum.photos/seed/kajian2/400/300"
-        },
-        {
-          id: "3",
-          title: "Tafsir Al-Quran: Surah Al-Baqarah",
-          summary: "Ustadz Muhammad Rizki",
-          content: "Materi tentang tafsir Al-Quran",
-          date: "2024-12-01",
-          time: "15:00 - 17:00",
-          pemateri: "Ustadz Muhammad Rizki",
-          category: "Program Next Level",
-          classLevel: "Kelas 12",
-          participants: 52,
-          thumbnail: "https://picsum.photos/seed/kajian3/400/300"
-        },
-        {
-          id: "4",
-          title: "Sejarah Khulafaur Rasyidin",
-          summary: "Ustadz Abdullah",
-          content: "Materi tentang sejarah Islam",
-          date: "2024-12-05",
-          time: "13:00 - 15:00",
-          pemateri: "Ustadz Abdullah",
-          category: "Program Ekstra",
-          classLevel: "Kelas 10",
-          participants: 41,
-          thumbnail: "https://picsum.photos/seed/kajian4/400/300"
-        },
-        {
-          id: "5",
-          title: "Rukun Iman dan Implementasinya",
-          summary: "Ustadz Ali Hasan",
-          content: "Materi tentang aqidah",
-          date: "2024-12-08",
-          time: "14:00 - 16:00",
-          pemateri: "Ustadz Ali Hasan",
-          category: "Program Ekstra",
-          classLevel: "Kelas 11",
-          participants: 47,
-          thumbnail: "https://picsum.photos/seed/kajian5/400/300"
-        },
-        {
-          id: "6",
-          title: "Akhlak kepada Orang Tua",
-          summary: "Ustadzah Khadijah",
-          content: "Materi tentang akhlak",
-          date: "2024-12-10",
-          time: "15:00 - 17:00",
-          pemateri: "Ustadzah Khadijah",
-          category: "Program Next Level",
-          classLevel: "Kelas 12",
-          participants: 55,
-          thumbnail: "https://picsum.photos/seed/kajian6/400/300"
-        }
-      ];
-      setMaterials(mockMaterials);
+      const res = await fetch("/api/materials");
+      if (!res.ok) throw new Error("Failed fetch materials");
+
+      const data = await res.json()
+
+      setMaterials(data);
+      setFilteredMaterials(data);
     } catch (error: any) {
-      console.error("Error loading materials:", error);
+      console.error("Error fetching materials:", error);
     } finally {
       setLoading(false);
     }
   };
-
-  let filteredMaterials = materials.filter((material) => {
-    const matchesProgram = selectedProgram === "Semua" || material.category === selectedProgram;
-    const matchesClass = selectedClass === "Semua" || material.classLevel === selectedClass;
-    const matchesSearch = material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         material.pemateri?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesProgram && matchesClass && matchesSearch;
-  });
-
-  // Card dengan badge 'Kajian telah diikuti' (id 3 dan 4) diurutkan ke paling bawah
-  filteredMaterials = [
-    ...filteredMaterials.filter(m => !["3","4"].includes(m.id)),
-    ...filteredMaterials.filter(m => ["3","4"].includes(m.id))
-  ];
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p className="text-slate-500">Memuat...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100" style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}>
@@ -198,17 +121,17 @@ const Materials = () => {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                {classCategories.map((kelas) => (
+                {classCategories.map((grade) => (
                   <button
-                    key={kelas}
-                    onClick={() => setSelectedClass(kelas)}
+                    key={grade}
+                    onClick={() => setSelectedGrade(grade)}
                     className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 ${
-                      selectedClass === kelas
+                      selectedGrade === grade
                         ? "bg-linear-to-r from-emerald-500 to-lime-400 text-white shadow-lg scale-105"
                         : "bg-white text-slate-700 hover:bg-slate-100 shadow-sm"
                     }`}
                   >
-                    {kelas}
+                    {grade}
                   </button>
                 ))}
               </div>
@@ -246,21 +169,21 @@ const Materials = () => {
                     {/* Thumbnail */}
                     <div className="relative h-48 overflow-hidden bg-slate-200">
                       <img
-                        src={material.thumbnail}
+                        src={material.thumbnailUrl}
                         alt={material.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
 
                       {/* Tanda Kajian telah diikuti di foto kajian */}
-                      {["3","4"].includes(material.id) && (
+                      {material.isJoined && (
                         <span className="absolute left-4 bottom-4 px-4 py-1.5 rounded-full bg-emerald-600 text-white text-xs font-bold shadow-md z-10">
                           Kajian telah diikuti
                         </span>
                       )}
 
                       {/* Tanda Merah buat kajian baru */}
-                      {["1","2"].includes(material.id) && (
+                      {!material.isJoined && (
                         <span className="absolute top-4 right-4 w-4 h-4 rounded-full bg-red-600 shadow-lg animate-pulse z-10 border-2 border-white" />
                       )}
 
@@ -269,9 +192,9 @@ const Materials = () => {
                         <span className="px-4 py-1.5 rounded-full bg-teal-500 text-white text-sm font-semibold shadow-lg">
                           {material.category}
                         </span>
-                        {material.classLevel && (
+                        {material.grade && (
                           <span className="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold border border-emerald-200 shadow-md">
-                            {material.classLevel}
+                            {material.grade}
                           </span>
                         )}
                       </div>
@@ -282,7 +205,7 @@ const Materials = () => {
                       <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-teal-600 transition-colors">
                         {material.title}
                       </h3>
-                      <p className="text-slate-600 mb-4">{material.summary}</p>
+                      <p className="text-slate-600 mb-4">{material.description}</p>
 
                       {/* Info */}
                       <div className="space-y-2 mb-6">
@@ -296,10 +219,10 @@ const Materials = () => {
                             })}
                           </span>
                         </div>
-                        {material.time && (
+                        {material.startedAt && (
                           <div className="flex items-center gap-2 text-sm text-slate-600">
                             <Clock className="h-4 w-4" />
-                            <span>{material.time}</span>
+                            <span>{material.startedAt}</span>
                           </div>
                         )}
                         {material.participants && (
@@ -309,21 +232,29 @@ const Materials = () => {
 
                       {/* Button */}
 
-                      {(["3","4"].includes(material.id)) ? (
+                      {(material.isJoined) ? (
                         <button
-                          onClick={() => router.push(`/rekapan/${material.id}`)}
+                          onClick={() => router.push(`/materials/${material.id}/rekapan`)}
                           className="w-full py-3 rounded-xl bg-linear-to-r from-teal-700 to-cyan-800 text-white font-semibold hover:from-teal-800 hover:to-cyan-900 shadow-lg hover:shadow-xl transition-all duration-300"
                         >
                           Lihat Rekapan Materi
                         </button>
                       ) : (
                         <button
-                          onClick={() => router.push("/absensi")}
+                          onClick={() => router.push(`/materials/${material.id}/absensi`)}
                           className="w-full py-3 rounded-xl bg-linear-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-300"
                         >
                           Aku ikut!
                         </button>
                       )}
+                      {/* {(session?.user?.role === "admin" || session?.user?.role === "instruktur") && (
+                        <button
+                          onClick={() => router.push(`/materials/${material.id}/invite`)}
+                          className="w-full py-3 rounded-xl bg-linear-to-r from-amber-500 to-orange-500 text-white font-semibold hover:from-amber-600 hover:to-orange-600 shadow-lg hover:shadow-xl transition-all duration-300 mt-2"
+                        >
+                          Undang Peserta
+                        </button>          //experiment
+                      )} */}
                     </div>
                   </div>
                 ))}
