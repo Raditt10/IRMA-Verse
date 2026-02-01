@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import DashboardHeader from "@/components/ui/DashboardHeader";
 import Sidebar from "@/components/ui/Sidebar";
 import ChatbotButton from "@/components/ui/ChatbotButton";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Trophy, Calendar, Sparkles } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 interface CompetitionItem {
@@ -44,10 +44,10 @@ const competitions: CompetitionItem[] = [
 ];
 
 const badgeStyles: Record<CompetitionItem["category"], string> = {
-  Tahfidz: "bg-emerald-100 text-emerald-700",
-  Seni: "bg-teal-100 text-teal-700",
-  Bahasa: "bg-cyan-100 text-cyan-700",
-  Lainnya: "bg-slate-100 text-slate-700"
+  Tahfidz: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  Seni: "bg-purple-100 text-purple-700 border-purple-200",
+  Bahasa: "bg-cyan-100 text-cyan-700 border-cyan-200",
+  Lainnya: "bg-slate-100 text-slate-700 border-slate-200"
 };
 
 const Competitions = () => {
@@ -56,6 +56,7 @@ const Competitions = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
+    // Simulasi fetch user
     setUser({
       id: "user-123",
       full_name: "Rafaditya Syahputra",
@@ -66,13 +67,10 @@ const Competitions = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="flex items-center gap-3">
-            <span className="inline-block w-6 h-6 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin"></span>
-            <p className="text-slate-500 text-lg font-medium">Memuat...</p>
-          </div>
-          <p className="text-xs text-slate-400">Mohon tunggu, data sedang diproses</p>
+          <Sparkles className="h-10 w-10 text-teal-400 animate-spin" />
+          <p className="text-slate-500 font-bold animate-pulse">Memuat data lomba...</p>
         </div>
       </div>
     );
@@ -80,7 +78,7 @@ const Competitions = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100"
+      className="min-h-screen bg-[#FDFBF7]"
       style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}
     >
       <DashboardHeader/>
@@ -88,67 +86,85 @@ const Competitions = () => {
         <Sidebar />
         <div className="flex-1 px-6 lg:px-8 py-12 lg:ml-0">
           <div className="max-w-7xl mx-auto">
+            
             {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h1 className="text-4xl font-black text-slate-800 mb-2">
-                    Info Perlombaan
-                  </h1>
-                  <p className="text-slate-600 text-lg">
-                    Informasi lomba keagamaan tingkat daerah hingga nasional
-                  </p>
-                </div>
-                {session?.user?.role === "instruktur" && (
-                  <button
-                    onClick={() => router.push("/competitions/create")}
-                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all"
-                  >
-                    + Tambahkan Info Perlombaan
-                  </button>
-                )}
+            <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div>
+                <h1 className="text-4xl font-black text-slate-800 tracking-tight mb-2">
+                  Info Perlombaan
+                </h1>
+                <p className="text-slate-500 text-lg font-medium">
+                  Tunjukkan bakatmu di ajang bergengsi ini! 🏆
+                </p>
               </div>
+              {session?.user?.role === "instruktur" && (
+                <button
+                  onClick={() => router.push("/competitions/create")}
+                  className="px-6 py-3 rounded-2xl bg-teal-400 text-white font-black border-2 border-teal-600 border-b-4 hover:bg-teal-500 active:border-b-2 active:translate-y-[2px] transition-all shadow-lg hover:shadow-teal-200"
+                >
+                  + Tambah Lomba
+                </button>
+              )}
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {/* Grid */}
+            <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
               {competitions.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+                  className="bg-white rounded-[2.5rem] border-2 border-slate-200 shadow-[0_8px_0_0_#cbd5e1] hover:border-teal-400 hover:shadow-[0_8px_0_0_#34d399] transition-all duration-300 overflow-hidden group hover:-translate-y-2 flex flex-col"
                 >
-                  <div className="relative h-64">
+                  {/* Image Section */}
+                  <div className="relative h-60 border-b-2 border-slate-100 overflow-hidden">
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    
+                    {/* Badge Category */}
                     <span
-                      className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold ${badgeStyles[item.category]}`}
+                      className={`absolute top-4 left-4 px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wide border-2 shadow-sm ${badgeStyles[item.category]}`}
                     >
                       {item.category}
                     </span>
                   </div>
 
-                  <div className="p-6 space-y-4">
-                    <h3 className="text-xl font-bold text-slate-800 leading-tight">
+                  {/* Content Section */}
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="text-xl font-black text-slate-800 leading-tight mb-4 group-hover:text-teal-600 transition-colors line-clamp-2">
                       {item.title}
                     </h3>
-                    <div className="flex flex-col gap-2 text-slate-600 text-base">
-                      <div className="flex items-center justify-between">
-                        <span>Tanggal</span>
-                        <span className="text-slate-900 font-semibold">{item.date}</span>
+
+                    <div className="space-y-3 mb-6 bg-slate-50 p-4 rounded-2xl border-2 border-slate-100">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2 text-slate-500 font-bold">
+                          <Calendar className="w-4 h-4 text-teal-400" />
+                          <span>Tanggal</span>
+                        </div>
+                        <span className="text-slate-800 font-black">{item.date}</span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span>Hadiah</span>
-                        <span className="text-emerald-600 font-semibold">{item.prize}</span>
+                      
+                      <div className="w-full h-px bg-slate-200 dashed"></div>
+
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2 text-slate-500 font-bold">
+                          <Trophy className="w-4 h-4 text-amber-400" />
+                          <span>Hadiah</span>
+                        </div>
+                        <span className="text-emerald-600 font-black bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                          {item.prize}
+                        </span>
                       </div>
                     </div>
+
                     <button 
                       onClick={() => router.push(`/competitions/${item.id}`)}
-                      className="w-full rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold py-3 transition-all duration-300 shadow-md hover:shadow-lg hover:from-teal-600 hover:to-cyan-600 flex items-center justify-center gap-2"
+                      className="w-full mt-auto py-3 rounded-2xl bg-teal-400 text-white font-black border-2 border-teal-600 border-b-4 hover:bg-teal-500 active:border-b-2 active:translate-y-[2px] transition-all flex items-center justify-center gap-2 group/btn shadow-md hover:shadow-teal-100"
                     >
-                      <span>Lihat Detail</span>
-                      <ArrowRight className="h-5 w-5" />
+                      <span>Lihat Detail Lomba</span>
+                      <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" strokeWidth={3} />
                     </button>
                   </div>
                 </div>

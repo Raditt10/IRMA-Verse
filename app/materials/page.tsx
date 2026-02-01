@@ -171,12 +171,9 @@ const Materials = () => {
                 <p className="text-slate-500 text-lg font-medium">
                   {isPrivileged 
                     ? "Atur jadwal dan materi kajian untuk anggota 📝"
-                    : "Ikuti kajian seru bareng teman-teman! 🚀"
+                    : "Ikuti kajian seru bareng teman-teman!"
                   }
                 </p>
-              </div>
-              <div className="bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-[0_4px_0_0_#cbd5e1] rotate-2 hidden md:block">
-                <BookOpen className="w-8 h-8 text-teal-500" strokeWidth={2.5} />
               </div>
             </div>
 

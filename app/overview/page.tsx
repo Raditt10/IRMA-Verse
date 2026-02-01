@@ -136,7 +136,7 @@ const Dashboard = () => {
               <h1 className="text-2xl md:text-4xl font-black text-slate-800 tracking-tight">
                 ٱلسَّلَامُ عَلَيْكُمْ, <span className="text-teal-500 underline decoration-wavy decoration-2 underline-offset-4">{session?.user?.name}</span>
               </h1>
-              <p className="text-slate-500 mt-2 font-bold text-lg">Siap menambah ilmu hari ini? 🚀</p>
+              <p className="text-slate-500 mt-2 font-bold text-lg">Siap menambah ilmu hari ini?</p>
               
               {/* --- [MOBILE] CARD LEVEL --- */}
               <div className="mt-6 xl:hidden block w-full">
@@ -317,7 +317,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <p className="text-sm text-slate-600 mb-4 font-bold relative z-10 leading-relaxed">
-                    "Ada PR yang susah? Atau mau curhat? Irma siap bantu kamu! 🤖✨"
+                    "Ada PR yang susah? Atau mau curhat? Irma siap bantu kamu!"
                   </p>
                   <button className="w-full py-3 bg-white text-slate-800 font-black text-sm rounded-2xl shadow-[0_4px_0_0_#cbd5e1] border-2 border-slate-200 hover:shadow-[0_2px_0_0_#cbd5e1] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all flex items-center justify-center gap-2 relative z-10">
                     <MessageSquare className="w-5 h-5 text-cyan-500" strokeWidth={3} /> Chat Sekarang
