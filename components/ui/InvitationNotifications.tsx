@@ -5,9 +5,26 @@ import { Check, X, Bell, BookOpen, Calendar, Sparkles } from "lucide-react";
 import { useSocket } from "@/lib/socket";
 import { useSession } from "next-auth/react";
 
-interface Material { id: string; title: string; date: string; instructorId: string; }
-interface Instructor { id: string; name: string; email: string; }
-interface Invitation { id: string; token: string; materialId: string; material: Material; instructor: Instructor; status: string; createdAt: string; }
+interface Material {
+  id: string;
+  title: string;
+  date: string;
+  instructorId: string;
+}
+interface Instructor {
+  id: string;
+  name: string;
+  email: string;
+}
+interface Invitation {
+  id: string;
+  token: string;
+  materialId: string;
+  material: Material;
+  instructor: Instructor;
+  status: string;
+  createdAt: string;
+}
 
 export default function InvitationNotifications() {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
@@ -22,13 +39,16 @@ export default function InvitationNotifications() {
       console.log("[InviteNotif] Session not authenticated, waiting...");
       return;
     }
-    
-    console.log("[InviteNotif] Session authenticated, starting polling");
+
+    console.log(
+      "[InviteNotif] Session authenticated, fetching initial invitations",
+    );
     fetchInvitations();
-    
-    // Poll every 3 seconds for faster updates
-    const interval = setInterval(fetchInvitations, 3000);
-    
+
+    // Reduced polling interval to 30 seconds (only as fallback)
+    // Main updates should come from socket events
+    const interval = setInterval(fetchInvitations, 30000);
+
     return () => {
       clearInterval(interval);
     };
@@ -37,13 +57,13 @@ export default function InvitationNotifications() {
   // Separate effect for socket listener
   useEffect(() => {
     if (!socket) return;
-    
+
     console.log("[InviteNotif] Setting up socket listener");
     socket.on("invitation:new", (data: any) => {
       console.log("[InviteNotif] Received new invitation via socket:", data);
       fetchInvitations();
     });
-    
+
     return () => {
       socket.off("invitation:new");
     };
@@ -55,31 +75,43 @@ export default function InvitationNotifications() {
       console.log("[InviteNotif] Session still loading, skipping fetch");
       return;
     }
-    
+
     if (status === "unauthenticated") {
       console.log("[InviteNotif] Not authenticated, skipping fetch");
       return;
     }
-    
+
     try {
       console.log("[InviteNotif] Starting fetch...");
       const res = await fetch("/api/materials/invitations");
       console.log("[InviteNotif] Response status:", res.status);
-      
+
       if (res.ok) {
         const data = await res.json();
-        console.log("[InviteNotif] Success! Got", data.invitations?.length || 0, "invitations");
+        console.log(
+          "[InviteNotif] Success! Got",
+          data.invitations?.length || 0,
+          "invitations",
+        );
         console.log("[InviteNotif] Data:", data);
         setInvitations(data.invitations);
-        
+
         if (typeof window !== "undefined") {
           (window as any).invitationCount = data.invitations.length;
-          console.log("[InviteNotif] Updating count to:", data.invitations.length);
+          console.log(
+            "[InviteNotif] Updating count to:",
+            data.invitations.length,
+          );
           window.dispatchEvent(new Event("invitationCountUpdate"));
         }
       } else {
         const errorData = await res.json().catch(() => ({}));
-        console.error("[InviteNotif] API error - Status:", res.status, "Error:", errorData);
+        console.error(
+          "[InviteNotif] API error - Status:",
+          res.status,
+          "Error:",
+          errorData,
+        );
         if (res.status !== 401) {
           setInvitations([]);
         }
@@ -92,7 +124,10 @@ export default function InvitationNotifications() {
     }
   };
 
-  const handleResponse = async (token: string, status: "accepted" | "rejected") => {
+  const handleResponse = async (
+    token: string,
+    status: "accepted" | "rejected",
+  ) => {
     setResponding(token);
     try {
       const res = await fetch("/api/materials/invitations", {
@@ -135,7 +170,9 @@ export default function InvitationNotifications() {
                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">
                   Undangan Baru
                 </span>
-                <h3 className="font-black text-emerald-950 text-base leading-tight mt-1">Undangan Kajian</h3>
+                <h3 className="font-black text-emerald-950 text-base leading-tight mt-1">
+                  Undangan Kajian
+                </h3>
               </div>
             </div>
 
@@ -146,14 +183,21 @@ export default function InvitationNotifications() {
                   <BookOpen className="h-4 w-4 text-emerald-600" />
                 </div>
                 <p className="text-slate-700 text-sm font-bold leading-relaxed">
-                  {invitation.instructor.name} <span className="font-medium text-slate-500 italic">mengajak anda ke</span> {invitation.material.title}
+                  {invitation.instructor.name}{" "}
+                  <span className="font-medium text-slate-500 italic">
+                    mengajak anda ke
+                  </span>{" "}
+                  {invitation.material.title}
                 </p>
               </div>
-              
+
               <div className="mt-3 flex items-center gap-4">
                 <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 bg-white px-2 py-1 rounded-md border border-emerald-100">
                   <Calendar className="h-3 w-3 text-emerald-500" />
-                  {new Date(invitation.material.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}
+                  {new Date(invitation.material.date).toLocaleDateString(
+                    "id-ID",
+                    { day: "numeric", month: "short" },
+                  )}
                 </div>
               </div>
             </div>
@@ -169,7 +213,7 @@ export default function InvitationNotifications() {
                 <Check className="h-5 w-5 group-hover/btn:scale-125 transition-transform" />
                 Terima
               </button>
-              
+
               {/* Tombol Nanti (Putih dengan Border Hijau Tipis) */}
               <button
                 onClick={() => handleResponse(invitation.token, "rejected")}
@@ -186,12 +230,24 @@ export default function InvitationNotifications() {
 
       <style jsx>{`
         @keyframes ring {
-          0% { transform: rotate(0); }
-          10% { transform: rotate(15deg); }
-          20% { transform: rotate(-15deg); }
-          30% { transform: rotate(10deg); }
-          40% { transform: rotate(-10deg); }
-          100% { transform: rotate(0); }
+          0% {
+            transform: rotate(0);
+          }
+          10% {
+            transform: rotate(15deg);
+          }
+          20% {
+            transform: rotate(-15deg);
+          }
+          30% {
+            transform: rotate(10deg);
+          }
+          40% {
+            transform: rotate(-10deg);
+          }
+          100% {
+            transform: rotate(0);
+          }
         }
         .animate-ring {
           animation: ring 1.5s ease-in-out infinite;
