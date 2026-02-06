@@ -54,7 +54,7 @@ model User {
   schedules               Schedule[]         @relation("instructorSchedules")
   materials               Material[]
   materialInvites         MaterialInvite[]
-  courseEnrollments       CourseEnrollment[]
+  courseEnrollments       CourseEnrollments[]
 
   @@map("users")
 }
@@ -194,7 +194,7 @@ model Material {
   nextCourse   Material?  @relation("CourseChain", fields: [nextCourseId], references: [id])
   prevCourses  Material[] @relation("CourseChain")
 
-  enrollments  CourseEnrollment[]
+  enrollments  CourseEnrollments[]
   invites      MaterialInvite[]
 
   createdAt DateTime @default(now())
@@ -218,7 +218,7 @@ model MaterialInvite {
   @@index([materialId])
 }
 
-model CourseEnrollment {
+model CourseEnrollments {
   id                String     @id @default(cuid())
   materialId        String
   userId            String
@@ -231,7 +231,7 @@ model CourseEnrollment {
   enrolledAt        DateTime   @default(now())
 
   material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id])
 
   @@unique([materialId, userId])
   @@index([userId])
@@ -246,14 +246,16 @@ model CourseSurvey {
   clarity        String
   feedback       String?
 
-  user       User              @relation(fields: [userId], references: [id], onDelete: cascade)
-  course     CourseEnrollments @relation(fields: [courseEnrollId], references: [id], onDelete: cascade)
+  user       User              @relation(fields: [userId], references: [id])
+  course     CourseEnrollments @relation(fields: [courseEnrollId], references: [id])
 }
 
-model Friendship {
+model Friendships {
   id       String        @id @default(cuid())
   user1    String
   user2    String
+
+  user     User  @relation("Friendships", fields: [user1, user2], references: [id])
 
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
