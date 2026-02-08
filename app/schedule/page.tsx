@@ -1,13 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import DashboardHeader from "@/components/ui/Header";
 import Sidebar from "@/components/ui/Sidebar";
 import ChatbotButton from "@/components/ui/Chatbot";
 import SearchInput from "@/components/ui/SearchInput";
 import EmptyState from "@/components/ui/EmptyState";
 import Loading from "@/components/ui/Loading";
-import ScheduleDetailButton from "@/components/ui/ScheduleDetailButton";
-import ScheduleEditButton from "@/components/ui/ScheduleEditButton";
+import DetailButton from "@/components/ui/DetailButton";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import CartoonNotification from "@/components/ui/Notification";
 import { 
   Calendar, 
   MapPin, 
@@ -16,7 +19,6 @@ import {
   CalendarX
 } from "lucide-react";
 import AddButton from "@/components/ui/AddButton";
-import { useSession } from "next-auth/react";
 
 interface Schedule {
   id: string;
@@ -33,9 +35,18 @@ interface Schedule {
 }
 
 const Schedule = () => {
+  const router = useRouter();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [filteredSchedules, setFilteredSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [scheduleToDelete, setScheduleToDelete] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    type: "success" | "error" | "warning" | "info";
+    title: string;
+    message: string;
+  } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("Semua");
 
@@ -93,6 +104,44 @@ const Schedule = () => {
     }
 
     setFilteredSchedules(filtered);
+  };
+
+  const handleDeleteSchedule = async (scheduleId: string) => {
+    setScheduleToDelete(scheduleId);
+    setShowConfirmDelete(true);
+  };
+
+  const confirmDeleteSchedule = async () => {
+    if (!scheduleToDelete) return;
+
+    setDeletingId(scheduleToDelete);
+    try {
+      const response = await fetch(`/api/schedules/${scheduleToDelete}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal menghapus jadwal");
+      }
+
+      setNotification({
+        type: "success",
+        title: "Berhasil!",
+        message: "Jadwal berhasil dihapus",
+      });
+      setSchedules(schedules.filter(s => s.id !== scheduleToDelete));
+      setShowConfirmDelete(false);
+      setScheduleToDelete(null);
+    } catch (error: any) {
+      console.error("Error deleting schedule:", error);
+      setNotification({
+        type: "error",
+        title: "Gagal!",
+        message: error.message || "Terjadi kesalahan saat menghapus jadwal",
+      });
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const { data: session } = useSession({
@@ -255,11 +304,15 @@ const Schedule = () => {
                       </div>
 
                       {/* Button */}
-                      {session?.user?.role === "instruktur" ? (
-                        <ScheduleEditButton scheduleId={schedule.id} />
-                      ) : (
-                        <ScheduleDetailButton scheduleId={schedule.id} />
-                      )}
+                      <DetailButton
+                        role={session?.user?.role as any}
+                        onClick={() => router.push(`/schedule/${schedule.id}`)}
+                        onEdit={() => router.push(`/schedule/${schedule.id}/edit`)}
+                        onDelete={() => handleDeleteSchedule(schedule.id)}
+                        label="Lihat Detail"
+                        editLabel="Edit"
+                        deleteLabel={deletingId === schedule.id ? "Menghapus..." : "Hapus"}
+                      />
                     </div>
                   </div>
                 ))}
@@ -269,6 +322,32 @@ const Schedule = () => {
         </div>
       </div>
       <ChatbotButton />
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        type="warning"
+        title="Hapus Data?"
+        message="Apakah Anda yakin ingin menghapus jadwal ini?"
+        confirmText="Ya, Hapus"
+        cancelText="Batal"
+        isOpen={showConfirmDelete}
+        onConfirm={confirmDeleteSchedule}
+        onCancel={() => {
+          setShowConfirmDelete(false);
+          setScheduleToDelete(null);
+        }}
+      />
+
+      {/* Notification */}
+      {notification && (
+        <CartoonNotification
+          type={notification.type}
+          title={notification.title}
+          message={notification.message}
+          duration={3000}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </div>
   );
 };

@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import DashboardHeader from "@/components/ui/Header";
 import Sidebar from "@/components/ui/Sidebar";
 import ChatbotButton from "@/components/ui/Chatbot";
-import CartoonNotification from "@/components/ui/CartoonNotification";
+import CartoonNotification from "@/components/ui/Notification";
 import EmptyState from "@/components/ui/EmptyState";
 import CategoryFilter from "@/components/ui/CategoryFilter";
 import SearchInput from "@/components/ui/SearchInput";

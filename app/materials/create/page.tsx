@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/InputText";
 import { Textarea } from "@/components/ui/textarea";
 import CategoryFilter from "@/components/ui/CategoryFilter";
 import SearchInput from "@/components/ui/SearchInput";
-import CartoonNotification from "@/components/ui/CartoonNotification";
+import CartoonNotification from "@/components/ui/Notification";
 import CartoonConfirmDialog from "@/components/ui/ConfirmDialog";
 import {
   Upload,

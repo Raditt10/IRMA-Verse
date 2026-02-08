@@ -7,7 +7,7 @@ import ChatbotButton from "@/components/ui/Chatbot";
 import DatePicker from "@/components/ui/DatePicker";
 import TimePicker from "@/components/ui/TimePicker";
 import CategoryFilter from "@/components/ui/CategoryFilter";
-import CartoonNotification from "@/components/ui/CartoonNotification";
+import CartoonNotification from "@/components/ui/Notification";
 import {
   Upload,
   X,
