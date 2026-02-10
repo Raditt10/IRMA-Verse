@@ -139,11 +139,3 @@ Ingin berkontribusi? Silakan ikuti langkah standar GitHub Flow:
 ## 📄 Lisensi
 
 Hak cipta sepenuhnya milik pengembang.
-
----
-
-*Dikembangkan oleh [Raditt10]*
-
-```
-
-```
