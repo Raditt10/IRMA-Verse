@@ -2,6 +2,8 @@ import prisma from "@/lib/prisma";
 import { CourseCategory, Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
+import { createBulkNotifications } from "@/lib/notifications";
+import { emitNotificationsToUsers } from "@/lib/socket-emit";
 
 export async function GET(
   req: NextRequest,
@@ -67,6 +69,8 @@ export async function GET(
       XII: "Kelas 12",
     } as const;
 
+    const isPrivileged = User.role === "instruktur" || User.role === "admin";
+
     const result = {
       id: m.id,
       title: m.title,
@@ -79,9 +83,21 @@ export async function GET(
       startedAt: m.startedAt,
       thumbnailUrl: m.thumbnailUrl,
       isJoined: m.enrollments.length > 0,
+      // For editing: flat email list of all invited users
       invites: (m.invites || [])
         .map((inv) => inv.user?.email || null)
         .filter(Boolean),
+      // For instructor view: rich invite status data
+      inviteDetails: isPrivileged
+        ? (m.invites || []).map((inv) => ({
+            id: inv.id,
+            email: inv.user?.email || null,
+            name: inv.user?.name || null,
+            avatar: inv.user?.avatar || null,
+            status: inv.status,
+            createdAt: inv.createdAt,
+          }))
+        : undefined,
     };
 
     return NextResponse.json(result);
@@ -190,8 +206,16 @@ export async function PUT(
 
     const { id } = await params;
     const body = await req.json();
-    const { title, description, date, time, category, grade, thumbnailUrl } =
-      body;
+    const {
+      title,
+      description,
+      date,
+      time,
+      category,
+      grade,
+      thumbnailUrl,
+      invites,
+    } = body;
 
     // Detailed validation
     if (!title || !title.toString().trim()) {
@@ -291,6 +315,71 @@ export async function PUT(
         },
       },
     });
+
+    // Handle new invites if provided
+    if (invites && Array.isArray(invites) && invites.length > 0) {
+      // Look up user IDs by email
+      const invitedUsersDb = await prisma.user.findMany({
+        where: { email: { in: invites } },
+        select: { id: true, email: true },
+      });
+
+      const invitedUserIds = invitedUsersDb.map((u) => u.id);
+
+      // Check which users already have pending or accepted invitations
+      const existingInvites = await prisma.materialInvite.findMany({
+        where: {
+          materialId: id,
+          userId: { in: invitedUserIds },
+          status: { in: ["pending", "accepted"] },
+        },
+        select: { userId: true },
+      });
+
+      const alreadyInvitedIds = new Set(
+        existingInvites.map((inv) => inv.userId),
+      );
+      const newUsers = invitedUsersDb.filter(
+        (u) => !alreadyInvitedIds.has(u.id),
+      );
+
+      if (newUsers.length > 0) {
+        const generateToken = () =>
+          Math.random().toString(36).substring(2, 15) +
+          Math.random().toString(36).substring(2, 15);
+
+        const inviteData = newUsers.map((u) => ({
+          materialId: id,
+          instructorId: session.user.id,
+          userId: u.id,
+          token: generateToken(),
+          status: "pending" as const,
+        }));
+
+        await prisma.materialInvite.createMany({ data: inviteData });
+
+        // Create notification records for newly invited users
+        const notifications = await createBulkNotifications(
+          inviteData.map((inv) => ({
+            userId: inv.userId,
+            type: "invitation" as const,
+            title: "Undangan Kajian",
+            message: `${updatedMaterial.instructor?.name || "Instruktur"} mengundang Anda untuk bergabung ke kajian "${updatedMaterial.title}"`,
+            icon: "book",
+            resourceType: "material",
+            resourceId: id,
+            actionUrl: `/materials/${id}`,
+            inviteToken: inv.token,
+            senderId: session.user.id,
+          })),
+        );
+
+        // Push real-time notifications
+        await emitNotificationsToUsers(
+          notifications.map((n) => ({ userId: n.userId, notification: n })),
+        );
+      }
+    }
 
     return NextResponse.json(updatedMaterial, { status: 200 });
   } catch (error) {
