@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SessionProvider } from 'next-auth/react';
-import { SocketProvider } from '@/lib/socket';
-import InvitationNotifications from '@/components/ui/InvitationNotifications';
-import PageTransitionProvider from '@/components/ui/PageTransitionProvider';
+import { SessionProvider } from "next-auth/react";
+import { SocketProvider } from "@/lib/socket";
+import { NotificationProvider } from "@/lib/notification-provider";
+import PageTransitionProvider from "@/components/ui/PageTransitionProvider";
+import { Suspense } from "react";
 
 import "./globals.css";
 
@@ -31,13 +32,18 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        style={{ fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive" }}
+        style={{
+          fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive",
+        }}
       >
         <SessionProvider>
           <SocketProvider>
-            <PageTransitionProvider />
-            <InvitationNotifications />
-            {children}
+            <NotificationProvider>
+              <Suspense fallback={null}>
+                <PageTransitionProvider />
+              </Suspense>
+              {children}
+            </NotificationProvider>
           </SocketProvider>
         </SessionProvider>
       </body>

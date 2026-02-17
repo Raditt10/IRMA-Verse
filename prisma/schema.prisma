@@ -57,6 +57,8 @@ model User {
   invitesAsUser           MaterialInvite[]   @relation("MaterialInviteUser")
   courseEnrollments       CourseEnrollment[]
   competitions            Competition[]      @relation("competitionInstructor")
+  notifications           Notification[]     @relation("userNotifications")
+  sentNotifications       Notification[]     @relation("senderNotifications")
 
   @@map("users")
 }
@@ -289,4 +291,51 @@ model Competition {
   @@index([instructorId])
   @@index([date])
   @@map("competitions")
+}
+
+// ==========================================
+// Universal Notification System
+// ==========================================
+
+enum NotificationType {
+  basic      // Informational notification (no action required)
+  invitation // Invitation that can be accepted or rejected
+}
+
+enum NotificationStatus {
+  unread
+  read
+  accepted   // Only for invitation type
+  rejected   // Only for invitation type
+  expired    // Only for invitation type
+}
+
+model Notification {
+  id          String             @id @default(cuid())
+  userId      String             // Recipient of the notification
+  type        NotificationType   @default(basic)
+  status      NotificationStatus @default(unread)
+  title       String
+  message     String             @db.Text
+  icon        String?            // Optional icon identifier (e.g. "bell", "book", "trophy")
+  
+  // Metadata for linking to related resources
+  resourceType String?           // e.g. "material", "schedule", "competition", "news"
+  resourceId   String?           // ID of the related resource
+  actionUrl    String?           // URL to navigate to when clicked
+  
+  // Invitation-specific fields
+  inviteToken  String?  @unique  // Link to MaterialInvite token (for invitation type)
+  senderId     String?           // Who triggered this notification
+  
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  user   User  @relation("userNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  sender User? @relation("senderNotifications", fields: [senderId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status])
+  @@index([userId, createdAt])
+  @@index([inviteToken])
+  @@map("notifications")
 }

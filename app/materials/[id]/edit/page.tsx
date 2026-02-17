@@ -19,6 +19,9 @@ import {
   Save,
   ArrowLeft,
   Users,
+  CheckCircle,
+  Clock,
+  XCircle,
 } from "lucide-react";
 import { Input } from "@/components/ui/InputText";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,9 +53,21 @@ const EditMaterial = () => {
 
   // --- Invite State ---
   const [inviteInput, setInviteInput] = useState("");
-  const [invitedUsers, setInvitedUsers] = useState<string[]>([]);
-  const [userOptions, setUserOptions] = useState<{ value: string; label: string; avatar?: string; email: string }[]>([]);
-  const [searchResults, setSearchResults] = useState<{ value: string; label: string; avatar?: string; email: string }[]>([]);
+  const [invitedUsers, setInvitedUsers] = useState<string[]>([]); // New invites (emails)
+  const [existingInvites, setExistingInvites] = useState<
+    {
+      email: string;
+      name: string | null;
+      avatar: string | null;
+      status: string;
+    }[]
+  >([]); // Already invited users with status
+  const [userOptions, setUserOptions] = useState<
+    { value: string; label: string; avatar?: string; email: string }[]
+  >([]);
+  const [searchResults, setSearchResults] = useState<
+    { value: string; label: string; avatar?: string; email: string }[]
+  >([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
 
   const showToast = (message: string, type: "success" | "error") => {
@@ -113,16 +128,19 @@ const EditMaterial = () => {
             thumbnailUrl: material.thumbnailUrl || "",
           });
 
-          // Load existing participants/invites if any. Accept array of emails or objects.
-          if (material.invites && Array.isArray(material.invites)) {
-            const invites = material.invites.map((inv: any) => {
-              if (!inv) return "";
-              if (typeof inv === "string") return inv;
-              if (inv.email) return inv.email;
-              return inv;
-            }).filter(Boolean);
-            setInvitedUsers(invites);
+          // Load existing invite details with status
+          if (material.inviteDetails && Array.isArray(material.inviteDetails)) {
+            setExistingInvites(
+              material.inviteDetails.map((inv: any) => ({
+                email: inv.email || "",
+                name: inv.name || null,
+                avatar: inv.avatar || null,
+                status: inv.status || "pending",
+              })),
+            );
           }
+          // New invites start empty (only newly added users)
+          setInvitedUsers([]);
         }
       } catch (err: any) {
         console.error(err);
@@ -138,7 +156,9 @@ const EditMaterial = () => {
   }, [materialId]);
 
   // --- Handlers ---
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -150,18 +170,18 @@ const EditMaterial = () => {
       try {
         const formData = new FormData();
         formData.append("file", file);
-        
+
         const res = await fetch("/api/upload", {
           method: "POST",
           body: formData,
         });
-        
+
         if (!res.ok) {
           const error = await res.json();
           showToast(error.message || "Gagal mengunggah gambar", "error");
           return;
         }
-        
+
         const data = await res.json();
         setFormData((prev) => ({ ...prev, thumbnailUrl: data.url }));
         showToast("Gambar berhasil diunggah", "success");
@@ -176,11 +196,13 @@ const EditMaterial = () => {
   const handleSearchInvite = (query: string) => {
     setInviteInput(query);
     if (query.trim()) {
+      const existingEmails = existingInvites.map((inv) => inv.email);
       const filtered = userOptions.filter(
         (u) =>
           (u.label.toLowerCase().includes(query.toLowerCase()) ||
             u.email.toLowerCase().includes(query.toLowerCase())) &&
-          !invitedUsers.includes(u.value)
+          !invitedUsers.includes(u.value) &&
+          !existingEmails.includes(u.value),
       );
       setSearchResults(filtered);
       setShowSearchResults(true);
@@ -206,15 +228,28 @@ const EditMaterial = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title.trim()) { showToast("Judul kajian tidak boleh kosong", "error"); return; }
-    if (!formData.description.trim()) { showToast("Deskripsi kajian tidak boleh kosong", "error"); return; }
-    if (!formData.date) { showToast("Tanggal kajian harus dipilih", "error"); return; }
-    if (!formData.time) { showToast("Jam kajian harus dipilih", "error"); return; }
+    if (!formData.title.trim()) {
+      showToast("Judul kajian tidak boleh kosong", "error");
+      return;
+    }
+    if (!formData.description.trim()) {
+      showToast("Deskripsi kajian tidak boleh kosong", "error");
+      return;
+    }
+    if (!formData.date) {
+      showToast("Tanggal kajian harus dipilih", "error");
+      return;
+    }
+    if (!formData.time) {
+      showToast("Jam kajian harus dipilih", "error");
+      return;
+    }
 
     setSubmitting(true);
     try {
-      const payload = { ...formData, invites: invitedUsers }; // Include invites
-      
+      // Only send newly added invites, existing invites are already tracked server-side
+      const payload = { ...formData, invites: invitedUsers };
+
       const res = await fetch(`/api/materials/${materialId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -232,10 +267,12 @@ const EditMaterial = () => {
 
       showToast("Kajian berhasil diperbarui. Mengalihkan...", "success");
       setTimeout(() => router.push(`/materials/${materialId}`), 1500);
-
     } catch (error: any) {
       console.error("Error updating material:", error);
-      showToast(error.message || "Terjadi kesalahan saat memperbarui kajian", "error");
+      showToast(
+        error.message || "Terjadi kesalahan saat memperbarui kajian",
+        "error",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -244,7 +281,7 @@ const EditMaterial = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
-         <Loading text="Memuat data kajian..." size="lg" />
+        <Loading text="Memuat data kajian..." size="lg" />
       </div>
     );
   }
@@ -275,19 +312,24 @@ const EditMaterial = () => {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+            <form
+              onSubmit={handleSubmit}
+              className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"
+            >
               {/* --- KOLOM KIRI: FORM UTAMA --- */}
               <div className="lg:col-span-2 space-y-6 lg:space-y-8">
-                
                 {/* Card 1: Informasi Dasar */}
                 <div className="bg-white p-5 lg:p-8 rounded-3xl lg:rounded-[2.5rem] border-2 border-slate-200 shadow-[0_4px_0_0_#cbd5e1] lg:shadow-[0_8px_0_0_#cbd5e1]">
                   <h2 className="text-lg lg:text-xl font-black text-slate-700 mb-4 lg:mb-6 flex items-center gap-2">
-                    <Type className="h-5 w-5 lg:h-6 lg:w-6 text-teal-500" /> Informasi Dasar
+                    <Type className="h-5 w-5 lg:h-6 lg:w-6 text-teal-500" />{" "}
+                    Informasi Dasar
                   </h2>
 
                   <div className="space-y-4 lg:space-y-6">
                     <div className="space-y-2">
-                      <label className="block text-xs lg:text-sm font-bold text-slate-600 ml-1">Judul Kajian</label>
+                      <label className="block text-xs lg:text-sm font-bold text-slate-600 ml-1">
+                        Judul Kajian
+                      </label>
                       <Input
                         type="text"
                         name="title"
@@ -299,7 +341,9 @@ const EditMaterial = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-xs lg:text-sm font-bold text-slate-600 ml-1">Deskripsi & Materi</label>
+                      <label className="block text-xs lg:text-sm font-bold text-slate-600 ml-1">
+                        Deskripsi & Materi
+                      </label>
                       <Textarea
                         name="description"
                         required
@@ -312,12 +356,20 @@ const EditMaterial = () => {
 
                     <div className="pt-6 border-t-2 border-slate-100">
                       <CategoryFilter
-                        categories={["Program Wajib", "Program Ekstra", "Program Next Level"]}
+                        categories={[
+                          "Program Wajib",
+                          "Program Ekstra",
+                          "Program Next Level",
+                        ]}
                         subCategories={["Kelas 10", "Kelas 11", "Kelas 12"]}
                         selectedCategory={formData.category}
                         selectedSubCategory={formData.grade}
-                        onCategoryChange={(val) => setFormData({ ...formData, category: val })}
-                        onSubCategoryChange={(val) => setFormData({ ...formData, grade: val })}
+                        onCategoryChange={(val) =>
+                          setFormData({ ...formData, category: val })
+                        }
+                        onSubCategoryChange={(val) =>
+                          setFormData({ ...formData, grade: val })
+                        }
                       />
                     </div>
                   </div>
@@ -326,7 +378,8 @@ const EditMaterial = () => {
                 {/* Card 2: Waktu Pelaksanaan */}
                 <div className="bg-white p-5 lg:p-8 rounded-3xl lg:rounded-[2.5rem] border-2 border-slate-200 shadow-[0_4px_0_0_#cbd5e1] lg:shadow-[0_8px_0_0_#cbd5e1]">
                   <h2 className="text-lg lg:text-xl font-black text-slate-700 mb-4 lg:mb-6 flex items-center gap-2">
-                    <Calendar className="h-5 w-5 lg:h-6 lg:w-6 text-indigo-500" /> Waktu Pelaksanaan
+                    <Calendar className="h-5 w-5 lg:h-6 lg:w-6 text-indigo-500" />{" "}
+                    Waktu Pelaksanaan
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
                     <DatePicker
@@ -346,10 +399,11 @@ const EditMaterial = () => {
 
               {/* --- KOLOM KANAN: MEDIA & UNDANG PESERTA --- */}
               <div className="space-y-6 lg:space-y-8">
-                
                 {/* Upload Thumbnail */}
                 <div className="bg-white p-5 lg:p-6 rounded-3xl lg:rounded-[2.5rem] border-2 border-slate-200 shadow-[0_4px_0_0_#cbd5e1] lg:shadow-[0_8px_0_0_#cbd5e1] text-center">
-                  <label className="block text-xs lg:text-sm font-bold text-slate-600 mb-3 lg:mb-4">Thumbnail Kajian</label>
+                  <label className="block text-xs lg:text-sm font-bold text-slate-600 mb-3 lg:mb-4">
+                    Thumbnail Kajian
+                  </label>
                   <div className="relative group cursor-pointer">
                     <input
                       type="file"
@@ -360,10 +414,16 @@ const EditMaterial = () => {
                     />
                     {formData.thumbnailUrl ? (
                       <div className="relative w-full h-40 lg:h-48 rounded-2xl lg:rounded-3xl overflow-hidden border-2 border-slate-200 group-hover:border-teal-400 transition-all">
-                        <img src={formData.thumbnailUrl} alt="Preview" className="w-full h-full object-cover" />
+                        <img
+                          src={formData.thumbnailUrl}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
                         <button
                           type="button"
-                          onClick={() => setFormData({ ...formData, thumbnailUrl: "" })}
+                          onClick={() =>
+                            setFormData({ ...formData, thumbnailUrl: "" })
+                          }
                           className="absolute top-2 right-2 p-1.5 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
                         >
                           <X className="w-4 h-4" />
@@ -379,7 +439,9 @@ const EditMaterial = () => {
                         ) : (
                           <>
                             <Upload className="w-6 h-6 lg:w-8 lg:h-8 text-slate-400 mb-2 group-hover:text-teal-500" />
-                            <span className="text-xs lg:text-sm font-bold text-slate-400">Klik untuk Upload</span>
+                            <span className="text-xs lg:text-sm font-bold text-slate-400">
+                              Klik untuk Upload
+                            </span>
                           </>
                         )}
                       </label>
@@ -394,63 +456,168 @@ const EditMaterial = () => {
                   </h2>
 
                   <div className="space-y-3 lg:space-y-4">
-                    <div className="relative">
-                      <SearchInput
-                        placeholder="Cari nama atau email peserta..."
-                        value={inviteInput}
-                        onChange={(value) => handleSearchInvite(value)}
-                        className="w-full"
-                      />
-
-                      {/* Search Results Dropdown */}
-                      {showSearchResults && searchResults.length > 0 && (
-                        <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-amber-200 rounded-2xl shadow-lg z-10 max-h-64 overflow-y-auto">
-                          {searchResults.map((user) => (
-                            <button
-                              key={user.value}
-                              type="button"
-                              onClick={() => handleAddInvite(user.value)}
-                              className="w-full px-4 py-3 flex items-center gap-3 hover:bg-amber-50 border-b border-amber-100 last:border-b-0 transition-colors text-left"
-                            >
-                              {user.avatar ? (
-                                <img src={user.avatar} alt={user.label} className="h-8 w-8 rounded-full object-cover" />
-                              ) : (
-                                <div className="h-8 w-8 rounded-full bg-amber-200 flex items-center justify-center text-xs font-bold text-amber-700">
-                                  {user.label.charAt(0).toUpperCase()}
+                    {/* Existing Invites with Status */}
+                    {existingInvites.length > 0 && (
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
+                          Peserta yang Sudah Diundang
+                        </label>
+                        <div className="bg-slate-50 rounded-2xl border-2 border-slate-100 p-3 space-y-2 max-h-48 overflow-y-auto">
+                          {existingInvites.map((inv, idx) => {
+                            const statusConfig: Record<
+                              string,
+                              {
+                                label: string;
+                                color: string;
+                                icon: React.ReactNode;
+                              }
+                            > = {
+                              pending: {
+                                label: "Menunggu",
+                                color:
+                                  "bg-amber-100 text-amber-700 border-amber-200",
+                                icon: <Clock className="w-3.5 h-3.5" />,
+                              },
+                              accepted: {
+                                label: "Diterima",
+                                color:
+                                  "bg-emerald-100 text-emerald-700 border-emerald-200",
+                                icon: <CheckCircle className="w-3.5 h-3.5" />,
+                              },
+                              rejected: {
+                                label: "Ditolak",
+                                color: "bg-red-100 text-red-700 border-red-200",
+                                icon: <XCircle className="w-3.5 h-3.5" />,
+                              },
+                            };
+                            const cfg =
+                              statusConfig[inv.status] || statusConfig.pending;
+                            return (
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-slate-200"
+                              >
+                                <div className="flex items-center gap-2">
+                                  {inv.avatar ? (
+                                    <img
+                                      src={inv.avatar}
+                                      alt={inv.name || inv.email}
+                                      className="w-7 h-7 rounded-full object-cover border border-slate-200"
+                                    />
+                                  ) : (
+                                    <span className="w-7 h-7 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 text-xs font-bold">
+                                      {(inv.name || inv.email)
+                                        .charAt(0)
+                                        .toUpperCase()}
+                                    </span>
+                                  )}
+                                  <div className="min-w-0">
+                                    <p className="text-xs font-bold text-slate-700 truncate">
+                                      {inv.name || inv.email}
+                                    </p>
+                                    {inv.name && (
+                                      <p className="text-[10px] text-slate-400 truncate">
+                                        {inv.email}
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
-                              )}
-                              <div className="flex-1 text-left">
-                                <p className="font-bold text-slate-700 text-sm">{user.label}</p>
-                                <p className="text-xs text-slate-500">{user.email}</p>
+                                <span
+                                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border ${cfg.color}`}
+                                >
+                                  {cfg.icon} {cfg.label}
+                                </span>
                               </div>
-                            </button>
-                          ))}
+                            );
+                          })}
                         </div>
-                      )}
+                      </div>
+                    )}
+
+                    {/* Search for new invites */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
+                        Undang Peserta Baru
+                      </label>
+                      <div className="relative">
+                        <SearchInput
+                          placeholder="Cari nama atau email peserta..."
+                          value={inviteInput}
+                          onChange={(value) => handleSearchInvite(value)}
+                          className="w-full"
+                        />
+
+                        {/* Search Results Dropdown */}
+                        {showSearchResults && searchResults.length > 0 && (
+                          <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-amber-200 rounded-2xl shadow-lg z-10 max-h-64 overflow-y-auto">
+                            {searchResults.map((user) => (
+                              <button
+                                key={user.value}
+                                type="button"
+                                onClick={() => handleAddInvite(user.value)}
+                                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-amber-50 border-b border-amber-100 last:border-b-0 transition-colors text-left"
+                              >
+                                {user.avatar ? (
+                                  <img
+                                    src={user.avatar}
+                                    alt={user.label}
+                                    className="h-8 w-8 rounded-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="h-8 w-8 rounded-full bg-amber-200 flex items-center justify-center text-xs font-bold text-amber-700">
+                                    {user.label.charAt(0).toUpperCase()}
+                                  </div>
+                                )}
+                                <div className="flex-1 text-left">
+                                  <p className="font-bold text-slate-700 text-sm">
+                                    {user.label}
+                                  </p>
+                                  <p className="text-xs text-slate-500">
+                                    {user.email}
+                                  </p>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Invited Chips List */}
-                    <div className="min-h-20 lg:min-h-25 bg-slate-50 rounded-2xl border-2 border-slate-100 p-3">
+                    {/* New Invited Chips List */}
+                    <div className="min-h-16 bg-slate-50 rounded-2xl border-2 border-slate-100 p-3">
                       {invitedUsers.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-slate-300 text-xs lg:text-sm font-bold py-2 lg:py-4 text-center">
-                          <Users className="w-6 h-6 lg:w-8 lg:h-8 mb-1 opacity-50" />
-                          Belum ada peserta
+                        <div className="h-full flex flex-col items-center justify-center text-slate-300 text-xs font-bold py-2 text-center">
+                          <Users className="w-6 h-6 mb-1 opacity-50" />
+                          Cari dan tambah peserta baru di atas
                         </div>
                       ) : (
                         <div className="flex flex-wrap gap-2">
                           {invitedUsers.map((userEmail, idx) => {
-                            const user = userOptions.find((u) => u.value === userEmail);
+                            const user = userOptions.find(
+                              (u) => u.value === userEmail,
+                            );
                             return (
                               <div
                                 key={idx}
-                                className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg bg-white border-2 border-amber-200 text-amber-700 text-[10px] lg:text-xs font-bold shadow-sm animate-in zoom-in duration-200 max-w-full"
+                                className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg bg-white border-2 border-teal-200 text-teal-700 text-[10px] lg:text-xs font-bold shadow-sm animate-in zoom-in duration-200 max-w-full"
                               >
                                 {user?.avatar ? (
-                                  <img src={user.avatar} alt={user.label} className="w-6 h-6 rounded-full object-cover border border-amber-300" />
+                                  <img
+                                    src={user.avatar}
+                                    alt={user.label}
+                                    className="w-6 h-6 rounded-full object-cover border border-teal-300"
+                                  />
                                 ) : (
-                                  <span className="w-6 h-6 flex items-center justify-center bg-amber-100 rounded-full text-amber-500 font-bold">👤</span>
+                                  <span className="w-6 h-6 flex items-center justify-center bg-teal-100 rounded-full text-teal-500 font-bold">
+                                    👤
+                                  </span>
                                 )}
-                                <span className="truncate max-w-30">{user?.label || userEmail}</span>
+                                <span className="truncate max-w-30">
+                                  {user?.label || userEmail}
+                                </span>
+                                <span className="px-1.5 py-0.5 rounded text-[9px] bg-teal-50 text-teal-600 border border-teal-200">
+                                  Baru
+                                </span>
                                 <button
                                   type="button"
                                   onClick={() => handleRemoveInvite(idx)}
@@ -475,11 +642,13 @@ const EditMaterial = () => {
                 >
                   {submitting ? (
                     <>
-                      <Sparkles className="w-5 h-5 lg:w-6 lg:h-6 animate-spin" /> Menyimpan...
+                      <Sparkles className="w-5 h-5 lg:w-6 lg:h-6 animate-spin" />{" "}
+                      Menyimpan...
                     </>
                   ) : (
                     <>
-                      <Save className="w-5 h-5 lg:w-6 lg:h-6" /> Simpan Perubahan
+                      <Save className="w-5 h-5 lg:w-6 lg:h-6" /> Simpan
+                      Perubahan
                     </>
                   )}
                 </button>
@@ -489,7 +658,12 @@ const EditMaterial = () => {
         </div>
       </div>
       <ChatbotButton />
-      <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast((prev) => ({ ...prev, show: false }))} />
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+      />
     </div>
   );
 };

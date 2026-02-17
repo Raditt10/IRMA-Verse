@@ -20,7 +20,6 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import Sidebar from "@/components/ui/Sidebar";
 import DashboardHeader from "@/components/ui/Header";
 import ChatbotButton from "@/components/ui/Chatbot";
@@ -36,21 +35,52 @@ export default function AdminDashboard() {
   };
 
   const recentUsers = [
-    { id: 1, name: "Ahmad Zaki", email: "ahmad@irma.com", role: "INSTRUCTOR", joinedAt: "2 jam lalu" },
-    { id: 2, name: "Fatimah Zahra", email: "fatimah@irma.com", role: "USER", joinedAt: "5 jam lalu" },
-    { id: 3, name: "Muhammad Rayan", email: "rayan@irma.com", role: "USER", joinedAt: "1 hari lalu" },
+    {
+      id: 1,
+      name: "Ahmad Zaki",
+      email: "ahmad@irma.com",
+      role: "INSTRUCTOR",
+      joinedAt: "2 jam lalu",
+    },
+    {
+      id: 2,
+      name: "Fatimah Zahra",
+      email: "fatimah@irma.com",
+      role: "USER",
+      joinedAt: "5 jam lalu",
+    },
+    {
+      id: 3,
+      name: "Muhammad Rayan",
+      email: "rayan@irma.com",
+      role: "USER",
+      joinedAt: "1 hari lalu",
+    },
   ];
 
   const systemAlerts = [
-    { id: 1, type: "warning", message: "Storage mencapai 85% kapasitas", time: "2 jam lalu" },
-    { id: 2, type: "info", message: "Backup sistem berhasil dilakukan", time: "6 jam lalu" },
-    { id: 3, type: "success", message: "Semua sistem berjalan normal", time: "1 hari lalu" },
+    {
+      id: 1,
+      type: "warning",
+      message: "Storage mencapai 85% kapasitas",
+      time: "2 jam lalu",
+    },
+    {
+      id: 2,
+      type: "info",
+      message: "Backup sistem berhasil dilakukan",
+      time: "6 jam lalu",
+    },
+    {
+      id: 3,
+      type: "success",
+      message: "Semua sistem berjalan normal",
+      time: "1 hari lalu",
+    },
   ];
 
   return (
-    <div
-      className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100"
-    >
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100">
       <DashboardHeader />
 
       <div className="flex">
@@ -78,10 +108,16 @@ export default function AdminDashboard() {
                     <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center shadow-[3px_3px_6px_rgba(0,0,0,0.1),-3px_-3px_6px_rgba(255,255,255,1)]">
                       <Users className="h-6 w-6 text-slate-700" />
                     </div>
-                    <span className="text-xs font-semibold text-blue-600 bg-blue-500/10 px-3 py-1 rounded-full">+48</span>
+                    <span className="text-xs font-semibold text-blue-600 bg-blue-500/10 px-3 py-1 rounded-full">
+                      +48
+                    </span>
                   </div>
-                  <p className="text-slate-600 text-sm font-medium mb-1">Total Pengguna</p>
-                  <p className="text-3xl font-bold text-slate-900">{stats.totalUsers.toLocaleString('id-ID')}</p>
+                  <p className="text-slate-600 text-sm font-medium mb-1">
+                    Total Pengguna
+                  </p>
+                  <p className="text-3xl font-bold text-slate-900">
+                    {stats.totalUsers.toLocaleString("id-ID")}
+                  </p>
                 </div>
               </div>
 
@@ -91,10 +127,16 @@ export default function AdminDashboard() {
                     <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center shadow-[3px_3px_6px_rgba(0,0,0,0.1),-3px_-3px_6px_rgba(255,255,255,1)]">
                       <BookOpen className="h-6 w-6 text-slate-700" />
                     </div>
-                    <span className="text-xs font-semibold text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full">+3</span>
+                    <span className="text-xs font-semibold text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full">
+                      +3
+                    </span>
                   </div>
-                  <p className="text-slate-600 text-sm font-medium mb-1">Total Instruktur</p>
-                  <p className="text-3xl font-bold text-slate-900">{stats.totalInstructors}</p>
+                  <p className="text-slate-600 text-sm font-medium mb-1">
+                    Total Instruktur
+                  </p>
+                  <p className="text-3xl font-bold text-slate-900">
+                    {stats.totalInstructors}
+                  </p>
                 </div>
               </div>
 
@@ -104,10 +146,16 @@ export default function AdminDashboard() {
                     <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center shadow-[3px_3px_6px_rgba(0,0,0,0.1),-3px_-3px_6px_rgba(255,255,255,1)]">
                       <Calendar className="h-6 w-6 text-slate-700" />
                     </div>
-                    <span className="text-xs font-semibold text-purple-600 bg-purple-500/10 px-3 py-1 rounded-full">Aktif</span>
+                    <span className="text-xs font-semibold text-purple-600 bg-purple-500/10 px-3 py-1 rounded-full">
+                      Aktif
+                    </span>
                   </div>
-                  <p className="text-slate-600 text-sm font-medium mb-1">Kajian Aktif</p>
-                  <p className="text-3xl font-bold text-slate-900">{stats.activeCourses}</p>
+                  <p className="text-slate-600 text-sm font-medium mb-1">
+                    Kajian Aktif
+                  </p>
+                  <p className="text-3xl font-bold text-slate-900">
+                    {stats.activeCourses}
+                  </p>
                 </div>
               </div>
 
@@ -117,10 +165,16 @@ export default function AdminDashboard() {
                     <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center shadow-[3px_3px_6px_rgba(0,0,0,0.1),-3px_-3px_6px_rgba(255,255,255,1)]">
                       <TrendingUp className="h-6 w-6 text-slate-700" />
                     </div>
-                    <span className="text-xs font-semibold text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full">+12%</span>
+                    <span className="text-xs font-semibold text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full">
+                      +12%
+                    </span>
                   </div>
-                  <p className="text-slate-600 text-sm font-medium mb-1">Pendapatan Total</p>
-                  <p className="text-3xl font-bold text-slate-900">Rp {(stats.totalRevenue / 1000000).toLocaleString('id-ID')}M</p>
+                  <p className="text-slate-600 text-sm font-medium mb-1">
+                    Pendapatan Total
+                  </p>
+                  <p className="text-3xl font-bold text-slate-900">
+                    Rp {(stats.totalRevenue / 1000000).toLocaleString("id-ID")}M
+                  </p>
                 </div>
               </div>
             </div>
@@ -141,8 +195,12 @@ export default function AdminDashboard() {
                       <Users className="h-6 w-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900">Kelola Pengguna</h3>
-                      <p className="text-sm text-gray-600">Atur hak akses dan data pengguna</p>
+                      <h3 className="font-bold text-gray-900">
+                        Kelola Pengguna
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Atur hak akses dan data pengguna
+                      </p>
                     </div>
                   </div>
                 </Link>
@@ -156,8 +214,12 @@ export default function AdminDashboard() {
                       <BookOpen className="h-6 w-6 text-emerald-600" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900">Kelola Instruktur</h3>
-                      <p className="text-sm text-gray-600">Kelola dan verifikasi instruktur</p>
+                      <h3 className="font-bold text-gray-900">
+                        Kelola Instruktur
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Kelola dan verifikasi instruktur
+                      </p>
                     </div>
                   </div>
                 </Link>
@@ -172,7 +234,9 @@ export default function AdminDashboard() {
                     </div>
                     <div>
                       <h3 className="font-bold text-gray-900">Kelola Kajian</h3>
-                      <p className="text-sm text-gray-600">Monitor dan kontrol semua kajian</p>
+                      <p className="text-sm text-gray-600">
+                        Monitor dan kontrol semua kajian
+                      </p>
                     </div>
                   </div>
                 </Link>
@@ -186,8 +250,12 @@ export default function AdminDashboard() {
                       <BarChart3 className="h-6 w-6 text-orange-600" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900">Laporan Sistem</h3>
-                      <p className="text-sm text-gray-600">Lihat analitik dan statistik</p>
+                      <h3 className="font-bold text-gray-900">
+                        Laporan Sistem
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Lihat analitik dan statistik
+                      </p>
                     </div>
                   </div>
                 </Link>
@@ -201,8 +269,12 @@ export default function AdminDashboard() {
                       <Settings className="h-6 w-6 text-indigo-600" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900">Pengaturan Sistem</h3>
-                      <p className="text-sm text-gray-600">Konfigurasi sistem IRMA Verse</p>
+                      <h3 className="font-bold text-gray-900">
+                        Pengaturan Sistem
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Konfigurasi sistem IRMA Verse
+                      </p>
                     </div>
                   </div>
                 </Link>
@@ -216,8 +288,12 @@ export default function AdminDashboard() {
                       <Activity className="h-6 w-6 text-red-600" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900">Monitoring Sistem</h3>
-                      <p className="text-sm text-gray-600">Monitor performa dan status</p>
+                      <h3 className="font-bold text-gray-900">
+                        Monitoring Sistem
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Monitor performa dan status
+                      </p>
                     </div>
                   </div>
                 </Link>
@@ -241,7 +317,9 @@ export default function AdminDashboard() {
                       <div className="flex-1">
                         <h3 className="font-bold text-gray-900">{user.name}</h3>
                         <p className="text-sm text-gray-600">{user.email}</p>
-                        <p className="text-xs text-gray-500 mt-1">{user.joinedAt}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {user.joinedAt}
+                        </p>
                       </div>
                       <div className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
                         {user.role}
@@ -265,8 +343,8 @@ export default function AdminDashboard() {
                         alert.type === "warning"
                           ? "bg-yellow-50"
                           : alert.type === "success"
-                          ? "bg-green-50"
-                          : "bg-blue-50"
+                            ? "bg-green-50"
+                            : "bg-blue-50"
                       }`}
                     >
                       <div
@@ -274,17 +352,25 @@ export default function AdminDashboard() {
                           alert.type === "warning"
                             ? "text-yellow-600"
                             : alert.type === "success"
-                            ? "text-green-600"
-                            : "text-blue-600"
+                              ? "text-green-600"
+                              : "text-blue-600"
                         }`}
                       >
-                        {alert.type === "warning" && <AlertCircle className="h-5 w-5" />}
-                        {alert.type === "success" && <CheckCircle2 className="h-5 w-5" />}
+                        {alert.type === "warning" && (
+                          <AlertCircle className="h-5 w-5" />
+                        )}
+                        {alert.type === "success" && (
+                          <CheckCircle2 className="h-5 w-5" />
+                        )}
                         {alert.type === "info" && <Clock className="h-5 w-5" />}
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-gray-900">{alert.message}</p>
-                        <p className="text-xs text-gray-500 mt-1">{alert.time}</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {alert.message}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {alert.time}
+                        </p>
                       </div>
                     </div>
                   ))}
